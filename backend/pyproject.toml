@@ -13,6 +13,7 @@ dependencies = [
     "pygithub>=2.8.1",
     "pyjwt>=2.10.1",
     "python-dotenv>=1.2.1",
+    "tomli>=2.3.0",
     "uvicorn>=0.38.0",
 ]
 

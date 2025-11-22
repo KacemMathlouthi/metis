@@ -48,6 +48,7 @@ dependencies = [
     { name = "pygithub" },
     { name = "pyjwt" },
     { name = "python-dotenv" },
+    { name = "tomli" },
     { name = "uvicorn" },
 ]
 
@@ -76,6 +77,7 @@ requires-dist = [
     { name = "pygithub", specifier = ">=2.8.1" },
     { name = "pyjwt", specifier = ">=2.10.1" },
     { name = "python-dotenv", specifier = ">=1.2.1" },
+    { name = "tomli", specifier = ">=2.3.0" },
     { name = "uvicorn", specifier = ">=0.38.0" },
 ]
 
