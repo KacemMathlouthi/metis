@@ -53,16 +53,19 @@ class ReviewerConfig(BaseModel):
         """
         sensitivity_map = {
             SensitivityLevel.LOW: (
-                "Focus only on critical bugs and security issues. "
-                "Skip minor style or formatting concerns."
+                "EXTRA STRICT: Only flag critical bugs, security vulnerabilities, and data corruption risks. "
+                "Ignore everything else - no suggestions, no style comments, no improvements. "
+                "If there are no critical issues, approve immediately."
             ),
             SensitivityLevel.MEDIUM: (
-                "Review for bugs, security issues, and significant code quality problems. "
-                "Mention style issues if they impact readability."
+                "Focus on bugs, security issues, resource leaks, and poor error handling. "
+                "Skip minor style issues, naming preferences, and theoretical improvements. "
+                "Limit your review to 3-5 most important issues."
             ),
             SensitivityLevel.HIGH: (
-                "Conduct a thorough review covering all aspects: bugs, security, "
-                "performance, style, documentation, and best practices."
+                "Thorough review including bugs, security, performance, design issues, and missing tests. "
+                "Still prioritize critical issues first. "
+                "Keep the review focused and actionable - avoid listing every minor issue."
             ),
         }
         return sensitivity_map[self.sensitivity]
