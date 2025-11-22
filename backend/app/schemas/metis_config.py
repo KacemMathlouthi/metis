@@ -6,6 +6,8 @@ including sensitivity levels and LLM parameters.
 
 from enum import Enum
 
+from pydantic import BaseModel, Field
+
 from app.core.config import settings
 
 
@@ -17,39 +19,31 @@ class SensitivityLevel(str, Enum):
     HIGH = "high"
 
 
-class ReviewerConfig:
-    """Configuration for AI code reviewer.
+class ReviewerConfig(BaseModel):
+    """Configuration for AI code reviewer."""
 
-    Attributes:
-        sensitivity: Review sensitivity level (low/medium/high)
-        user_instructions: Custom instructions to append to system prompt
-        temperature: LLM temperature for response generation
-        max_tokens: Maximum tokens in LLM response
-        model: LLM model to use
-    """
-
-    def __init__(
-        self,
-        sensitivity: SensitivityLevel = SensitivityLevel.MEDIUM,
-        user_instructions: str = "",
-        temperature: float = 0.3,
-        max_tokens: int = 2000,
-        model: str | None = None,
-    ) -> None:
-        """Initialize reviewer configuration.
-
-        Args:
-            sensitivity: Review sensitivity level
-            user_instructions: Additional instructions for the AI reviewer
-            temperature: LLM temperature (0.0-1.0)
-            max_tokens: Maximum response tokens
-            model: Model name override (defaults to settings)
-        """
-        self.sensitivity = sensitivity
-        self.user_instructions = user_instructions
-        self.temperature = temperature
-        self.max_tokens = max_tokens
-        self.model = model or settings.AI_MODEL
+    sensitivity: SensitivityLevel = Field(
+        default=SensitivityLevel.MEDIUM,
+        description="Review sensitivity level (low/medium/high)",
+    )
+    user_instructions: str = Field(
+        default="",
+        description="Custom instructions to append to system prompt",
+    )
+    temperature: float = Field(
+        default=0.3,
+        ge=0.0,
+        le=1.0,
+        description="LLM temperature for response generation",
+    )
+    max_tokens: int = Field(
+        gt=0,
+        description="Maximum tokens in LLM response",
+    )
+    model: str = Field(
+        default_factory=lambda: settings.MODEL_NAME,
+        description="LLM model to use",
+    )
 
     def get_sensitivity_instructions(self) -> str:
         """Get sensitivity-specific instructions.
@@ -74,32 +68,25 @@ class ReviewerConfig:
         return sensitivity_map[self.sensitivity]
 
 
-class SummaryConfig:
-    """Configuration for AI summary writer.
+class SummaryConfig(BaseModel):
+    """Configuration for AI summary writer."""
 
-    Attributes:
-        user_instructions: Custom instructions for summary generation
-        temperature: LLM temperature
-        max_tokens: Maximum tokens in response
-        model: LLM model to use
-    """
-
-    def __init__(
-        self,
-        user_instructions: str = "",
-        temperature: float = 0.5,
-        max_tokens: int = 1000,
-        model: str | None = None,
-    ) -> None:
-        """Initialize summary configuration.
-
-        Args:
-            user_instructions: Additional instructions for summary writer
-            temperature: LLM temperature (0.0-1.0)
-            max_tokens: Maximum response tokens
-            model: Model name override (defaults to settings)
-        """
-        self.user_instructions = user_instructions
-        self.temperature = temperature
-        self.max_tokens = max_tokens
-        self.model = model or settings.MODEL_NAME
+    user_instructions: str = Field(
+        default="",
+        description="Custom instructions for summary generation",
+    )
+    temperature: float = Field(
+        default=0.1,
+        ge=0.0,
+        le=1.0,
+        description="LLM temperature",
+    )
+    max_tokens: int = Field(
+        default=8192,
+        gt=0,
+        description="Maximum tokens in response",
+    )
+    model: str = Field(
+        default_factory=lambda: settings.MODEL_NAME,
+        description="LLM model to use",
+    )
