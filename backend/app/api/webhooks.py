@@ -30,10 +30,10 @@ async def github_webhook(
     data = await request.json()
 
     # Handle different event types
-    if x_github_event == "ping":
-        return handle_ping()
-
-    if x_github_event == "pull_request":
-        return handle_pull_request(data)
-
-    return handle_other_event(x_github_event)
+    match x_github_event:
+        case "ping":
+            return handle_ping()
+        case "pull_request":
+            return await handle_pull_request(data)
+        case _:
+            return handle_other_event(x_github_event)
