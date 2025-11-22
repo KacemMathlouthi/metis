@@ -63,6 +63,40 @@ class GitHubService:
         token: str = data["token"]
         return token
 
+    async def get_pr_diff(
+        self,
+        owner: str,
+        repo: str,
+        pr_number: int,
+        installation_id: int | None = None,
+    ) -> str:
+        """Get pull request diff.
+
+        Args:
+            owner: Repository owner
+            repo: Repository name
+            pr_number: Pull request number
+            installation_id: GitHub App installation ID
+
+        Returns:
+            PR diff as string.
+        """
+        if installation_id is None:
+            raise ValueError("installation_id is required for fetching PR diff")
+        token = await self.get_installation_token(installation_id)
+
+        response = await self._client.get(
+            f"{self.base_url}/repos/{owner}/{repo}/pulls/{pr_number}",
+            headers={
+                "Authorization": f"Bearer {token}",
+                "Accept": "application/vnd.github.v3.diff",
+            },
+        )
+        response.raise_for_status()
+
+        diff: str = response.text
+        return diff
+
     async def create_pr_review(
         self,
         owner: str,
