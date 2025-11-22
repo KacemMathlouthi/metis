@@ -71,6 +71,7 @@ Structure your review as natural prose with markdown formatting suitable for Git
    - **Request changes**: Critical issues must be fixed
 
 IMPORTANT:
+- Don't use tables, use paragraphs with syntax highlighting, code snippets, bullet points, and proper markdown syntax for a PR Review
 - Reference code with file paths like `app/services/github.py:84` or `app/services/github.py:84-90`
 - Include code snippets in proper markdown code blocks with language tags
 - Keep explanations concise - developers want fixes, not essays
