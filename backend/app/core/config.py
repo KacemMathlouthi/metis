@@ -21,11 +21,13 @@ class Settings(BaseSettings):
     port: int = 8000
 
     # GitHub App settings
-    github_app_id: int | None = None
-    github_app_name: str | None = None
-    github_webhook_secret: str | None = None
-    github_private_key: str | None = None  # Will load from file
-    github_private_key_path: str | None = None
+    GITHUB_APP_ID: int | None = None
+    GITHUB_CLIENT_ID: str | None = None
+    GITHUB_CLIENT_SECRET_ID: str | None = None
+    GITHUB_APP_NAME: str | None = None
+    GITHUB_SECRET_KEY_PATH: str | None = None
+    GITHUB_WEBHOOK_SECRET: str | None = None
+    GITHUB_INSTALLATION_ID: int | None = None
 
     model_config = SettingsConfigDict(
         env_file=".env", env_file_encoding="utf-8", case_sensitive=False, extra="ignore"
