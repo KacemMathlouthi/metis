@@ -29,6 +29,11 @@ class Settings(BaseSettings):
     GITHUB_WEBHOOK_SECRET: str | None = None
     GITHUB_INSTALLATION_ID: int | None = None
 
+    # LLM Provider settings
+    PROVIDER_API_KEY: str | None = None
+    PROVIDER_BASE_URL: str | None = None
+    MODEL_NAME: str | None = None
+
     model_config = SettingsConfigDict(
         env_file=".env", env_file_encoding="utf-8", case_sensitive=False, extra="ignore"
     )
