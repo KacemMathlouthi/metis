@@ -48,21 +48,17 @@ async def handle_pull_request(data: dict[str, Any]) -> dict[str, str]:
         agent = MetisAgent(
             reviewer_config=ReviewerConfig(
                 sensitivity=SensitivityLevel.MEDIUM,
-                user_instructions="Focus on code quality, potential bugs, and best practices.",
-                temperature=0.3,
-                max_tokens=81912,
+                user_instructions="",
+                temperature=0.1,
+                max_tokens=8192,
             )
         )
-
-        print("Diff: ", diff)
 
         # Generate AI review
         review_text = await agent.review_pr(
             diff=diff,
             context={"title": pr_title, "description": pr_description},
         )
-
-        print("Rewiew Text: ", review_text)
 
         # Post review to GitHub
         result = await github_service.create_pr_review(
