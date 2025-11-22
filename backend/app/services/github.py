@@ -6,6 +6,7 @@ fetch pull request data, and post comments/reviews to GitHub PRs.
 
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from typing import Any
 
 import httpx
 import jwt
@@ -45,7 +46,8 @@ class GitHubService:
             "exp": int((now + timedelta(minutes=10)).timestamp()),
             "iss": str(self.app_id),
         }
-        return jwt.encode(payload, self.private_key, algorithm="RS256")
+        token: str = jwt.encode(payload, self.private_key, algorithm="RS256")
+        return token
 
     async def get_installation_token(self, installation_id: int) -> str:
         """Get an installation access token for a specific installation."""
@@ -58,7 +60,8 @@ class GitHubService:
         response.raise_for_status()
 
         data = response.json()
-        return data["token"]
+        token: str = data["token"]
+        return token
 
     async def create_pr_review(
         self,
@@ -68,7 +71,7 @@ class GitHubService:
         review_body: str,
         event: str = "COMMENT",
         installation_id: int | None = None,
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Create a pull request review.
 
         Args:
@@ -98,7 +101,8 @@ class GitHubService:
         )
         response.raise_for_status()
 
-        return response.json()
+        result: dict[str, Any] = response.json()
+        return result
 
 
 # Global instance
