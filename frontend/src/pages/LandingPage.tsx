@@ -42,7 +42,7 @@ export const LandingPage: React.FC = () => {
 
         <div className="relative z-10 max-w-5xl">
           <Badge className="mb-6 rotate-[-2deg] border-2 border-white bg-black text-white shadow-[4px_4px_0px_0px_#F472B6]">
-            V2.0 IS NOW LIVE
+            OPEN SOURCE
           </Badge>
           <h1 className="mb-8 text-6xl leading-none font-black tracking-tight md:text-8xl">
             YOUR AI <br />
@@ -53,7 +53,7 @@ export const LandingPage: React.FC = () => {
           </h1>
           <p className="mx-auto mb-10 max-w-2xl border-2 border-black bg-white p-4 text-xl font-bold shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] md:text-2xl">
             Metis doesn't just chat. It reviews PRs, writes docs, fixes bugs, and makes your repo
-            shine. Stop doing the boring stuff.
+            shine.
           </p>
           <div className="flex flex-col justify-center gap-6 md:flex-row">
             <Button size="xl" className="bg-[#F472B6]">
@@ -172,21 +172,39 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* Footer */}
-      <footer className="bg-black px-4 py-12 text-center text-white">
-        <h2 className="mb-4 bg-gradient-to-r from-[#FCD34D] via-[#F472B6] to-[#4ADE80] bg-clip-text text-8xl font-black text-transparent">
-          METIS
-        </h2>
-        <p className="mb-8 font-mono">BUILT FOR DEVS WHO HATE BUSY WORK.</p>
-        <div className="flex justify-center gap-6">
-          <a href="#" className="hover:text-[#FCD34D]">
-            TWITTER
-          </a>
-          <a href="#" className="hover:text-[#FCD34D]">
-            GITHUB
-          </a>
-          <a href="#" className="hover:text-[#FCD34D]">
-            DISCORD
-          </a>
+      <footer className="relative overflow-hidden bg-black px-4 pb-0 pt-20 text-center">
+        <div className="relative z-10 mb-12">
+          <p className="mb-8 text-xl font-bold text-white">
+            Made by{' '}
+            <span className="inline-block -rotate-1 transform border-2 border-[#FCD34D] bg-[#FCD34D] px-3 py-1 text-black shadow-[3px_3px_0px_0px_rgba(255,255,255,0.3)]">
+              Kacem Mathlouthi
+            </span>{' '}
+            with 💗
+          </p>
+          <div className="flex justify-center gap-6">
+            <a
+              href="https://github.com/KacemMathlouthi"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transform border-2 border-white bg-white px-6 py-3 font-black text-black shadow-[4px_4px_0px_0px_#F472B6] transition-all hover:-translate-y-1 hover:translate-x-1 hover:shadow-[6px_6px_0px_0px_#F472B6]"
+            >
+              <Github className="inline h-5 w-5" /> GITHUB
+            </a>
+            <a
+              href="https://linkedin.com/in/kacem-mathlouthi"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transform border-2 border-white bg-white px-6 py-3 font-black text-black shadow-[4px_4px_0px_0px_#FCD34D] transition-all hover:-translate-y-1 hover:translate-x-1 hover:shadow-[6px_6px_0px_0px_#4ADE80]"
+            >
+              LINKEDIN
+            </a>
+          </div>
+        </div>
+        <div className="relative">
+          <h2 className="bg-gradient-to-b from-[#FCD34D] via-[#ffc400] to-[#F472B6] bg-clip-text pb-0 text-[8rem] font-black leading-none text-transparent md:text-[14rem] lg:text-[18rem] xl:text-[22rem]">
+            METIS
+          </h2>
+          <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black to-transparent" />
         </div>
       </footer>
     </div>
