@@ -4,11 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ArrowRight, Bot, CheckCircle, Code, FileText, Github } from 'lucide-react';
 
-interface LandingPageProps {
-  onEnterApp: () => void;
-}
-
-export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
+export const LandingPage: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col bg-[#FCD34D]">
       {/* Navigation */}
@@ -24,7 +20,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
           <a href="#docs" className="font-bold hover:underline decoration-4 underline-offset-4">DOCS</a>
           <a href="#pricing" className="font-bold hover:underline decoration-4 underline-offset-4">PRICING</a>
         </div>
-        <Button onClick={onEnterApp} variant="noShadow" className="bg-[#4ADE80]">
+        <Button variant="noShadow" className="bg-[#4ADE80]">
           LAUNCH APP <ArrowRight className="w-5 h-5" />
         </Button>
       </nav>
@@ -51,10 +47,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
             Stop doing the boring stuff.
           </p>
           <div className="flex flex-col md:flex-row gap-6 justify-center">
-            <Button onClick={onEnterApp} size="xl" className="bg-[#F472B6]">
+            <Button size="xl" className="bg-[#F472B6]">
               INSTALL ON GITHUB <Github className="w-6 h-6" />
             </Button>
-            <Button onClick={onEnterApp} size="xl" variant="noShadow" className="bg-white">
+            <Button size="xl" variant="noShadow" className="bg-white">
               VIEW DEMO
             </Button>
           </div>
