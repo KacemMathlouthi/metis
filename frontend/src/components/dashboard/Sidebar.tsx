@@ -92,7 +92,7 @@ export const AppSidebar: React.FC = () => {
                   size="lg"
                   className="data-[state=open]:bg-gray-100 data-[state=open]:text-black"
                 >
-                  <div className="flex aspect-square size-8 items-center justify-center rounded-lg border-2 border-black bg-white text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                  <div className="flex aspect-square size-8 items-center justify-center rounded-lg border-2 border-black bg-white text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] group-data-[collapsible=icon]:!border-0 group-data-[collapsible=icon]:!shadow-none">
                     <activeRepo.logo className="size-4" />
                   </div>
                   <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
