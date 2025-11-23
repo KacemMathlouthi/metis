@@ -5,7 +5,7 @@ import { Github } from 'lucide-react';
 
 export const Hero: React.FC = () => {
   return (
-    <header className="relative flex flex-1 flex-col items-center justify-center overflow-hidden px-4 py-20 text-center">
+    <header className="relative flex min-h-[calc(100vh-84px)] flex-1 flex-col items-center justify-center overflow-hidden px-4 py-20 text-center">
       {/* Decorative Grid Background */}
       <div className="pointer-events-none absolute inset-0 grid grid-cols-[repeat(20,minmax(0,1fr))] opacity-10">
         {Array.from({ length: 400 }).map((_, i) => (
@@ -15,7 +15,15 @@ export const Hero: React.FC = () => {
 
       <div className="relative z-10 max-w-5xl">
         <Badge className="mb-6 rotate-[-2deg] border-2 border-white bg-black text-white shadow-[4px_4px_0px_0px_#F472B6]">
-          OPEN SOURCE
+          OPEN SOURCE -{' '}
+          <a
+            href="https://github.com/KacemMathlouthi/metis"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:underline"
+          >
+            KacemMathlouthi/metis
+          </a>
         </Badge>
         <h1 className="mb-8 text-6xl leading-none font-black tracking-tight md:text-8xl">
           YOUR AI <br />
@@ -32,7 +40,7 @@ export const Hero: React.FC = () => {
           <Button size="xl" className="bg-[#F472B6]">
             INSTALL ON GITHUB <Github className="h-6 w-6" />
           </Button>
-          <Button size="xl" variant="noShadow" className="bg-white">
+          <Button size="xl" className="bg-white">
             VIEW DEMO
           </Button>
         </div>

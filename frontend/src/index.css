@@ -86,4 +86,20 @@
   .animate-marquee {
     animation: marquee 20s linear infinite;
   }
+
+  .shadow-brutal-pink {
+    box-shadow: 4px 4px 0px 0px #F472B6;
+  }
+  .shadow-brutal-pink-lg {
+    box-shadow: 6px 6px 0px 0px #F472B6;
+  }
+  .shadow-brutal-yellow {
+    box-shadow: 4px 4px 0px 0px #FCD34D;
+  }
+  .shadow-brutal-yellow-lg {
+    box-shadow: 6px 6px 0px 0px #FCD34D;
+  }
+  .shadow-brutal-white {
+    box-shadow: 3px 3px 0px 0px rgba(255,255,255,0.3);
+  }
 }
