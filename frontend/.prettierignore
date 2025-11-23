@@ -1,0 +1,9 @@
+node_modules
+dist
+build
+.pnpm-store
+pnpm-lock.yaml
+*.min.js
+*.min.css
+coverage
+.vite
