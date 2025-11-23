@@ -26,23 +26,57 @@ export const CodeTerminal: React.FC = () => {
           </ul>
         </div>
         <div className="w-full md:w-1/2">
-          <div className="rounded-none bg-black p-2 shadow-[12px_12px_0px_0px_#fff]">
-            <div className="h-80 overflow-y-auto border-2 border-gray-700 bg-[#1e1e1e] p-6 font-mono text-sm text-green-400 md:text-base">
-              <p className="mb-2">
-                <span className="text-blue-400">➜</span>{' '}
-                <span className="text-yellow-400">~</span> git push origin feature/new-api
-              </p>
-              <p className="mb-2 opacity-50">Enumerating objects: 5, done.</p>
-              <p className="mb-2 opacity-50">
-                Writing objects: 100% (3/3), 320 bytes | 320.00 KiB/s, done.
-              </p>
-              <p className="mb-6 opacity-50">To github.com:user/repo.git</p>
+          <div className="overflow-hidden rounded-xl border-4 border-black bg-[#0f172a] shadow-[12px_12px_0px_0px_#000]">
+            {/* Window Header */}
+            <div className="flex items-center gap-2 border-b-4 border-black bg-[#1e293b] px-4 py-3">
+              <div className="h-3 w-3 rounded-full border border-black/20 bg-[#FF5F56]"></div>
+              <div className="h-3 w-3 rounded-full border border-black/20 bg-[#FFBD2E]"></div>
+              <div className="h-3 w-3 rounded-full border border-black/20 bg-[#27C93F]"></div>
+              <div className="ml-4 font-mono text-xs font-bold text-gray-400">
+                metis-bot — bash
+              </div>
+            </div>
 
-              <p className="mb-2 text-white">@metis-bot is analyzing changes...</p>
-              <p className="mb-2 text-white">Found 2 optimizations.</p>
-              <p className="mb-2 text-white">Applying suggestions...</p>
-              <p className="font-bold text-[#F472B6]">✔ PR Commented.</p>
-              <p className="font-bold text-[#F472B6]">✔ Documentation Updated.</p>
+            {/* Terminal Content */}
+            <div className="p-6 font-mono text-sm leading-relaxed md:text-base">
+              <div className="group">
+                <p className="mb-2">
+                  <span className="font-bold text-[#F472B6]">➜</span>{' '}
+                  <span className="font-bold text-[#4ADE80]">~/project</span>{' '}
+                  <span className="text-white">git push origin feature/new-api</span>
+                </p>
+                <div className="mb-4 ml-1 border-l-2 border-gray-700/50 pl-4">
+                  <p className="text-gray-400">Enumerating objects: 5, done.</p>
+                  <p className="text-gray-400">Writing objects: 100% (3/3), 320 bytes, done.</p>
+                  <p className="text-gray-400">To github.com:user/repo.git</p>
+                </div>
+              </div>
+
+              <div className="animate-pulse">
+                <p className="mb-2 font-bold text-white">
+                  <span className="text-[#F472B6]">@metis-bot</span> is analyzing changes...
+                </p>
+              </div>
+
+              <div className="mt-4 space-y-2">
+                <div className="flex items-center gap-2 text-[#4ADE80]">
+                  <span className="text-xl">✔</span>
+                  <span>Found 2 Critical Issues!</span>
+                </div>
+                <div className="flex items-center gap-2 text-[#4ADE80]">
+                  <span className="text-xl">✔</span>
+                  <span>Documenting the PR...</span>
+                </div>
+                <div className="mt-4 flex items-center gap-2 rounded border border-[#F472B6]/20 bg-[#F472B6]/10 p-2 font-bold text-[#F472B6]">
+                  <span>PR Reviewed & Summary Generated!</span>
+                </div>
+              </div>
+
+              <p className="mt-4">
+                <span className="font-bold text-[#F472B6]">➜</span>{' '}
+                <span className="font-bold text-[#4ADE80]">~/project</span>{' '}
+                <span className="inline-block h-4 w-2 align-middle bg-white animate-pulse"></span>
+              </p>
             </div>
           </div>
         </div>
