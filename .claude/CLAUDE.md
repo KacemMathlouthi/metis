@@ -79,14 +79,43 @@ app/
 
 ### Frontend Structure (`frontend/src/`)
 
-Basic React + TypeScript setup. Currently minimal boilerplate.
+React + TypeScript with a neo-brutalist design system. Features landing page and dashboard.
 
 ```
 src/
-├── main.tsx            # Application entry point
-├── App.tsx             # Root component
-└── assets/             # Static assets
+├── main.tsx                    # Application entry point
+├── App.tsx                     # Root component with routing
+├── assets/                     # Static assets
+├── components/
+│   ├── dashboard/              # Dashboard layout components
+│   │   ├── DashboardLayout.tsx # Main dashboard wrapper with sidebar
+│   │   └── Sidebar.tsx         # Navigation sidebar
+│   ├── landing/                # Landing page sections
+│   │   ├── Navbar.tsx          # Top navigation
+│   │   ├── Hero.tsx            # Hero section
+│   │   ├── Marquee.tsx         # Scrolling marquee
+│   │   ├── Features.tsx        # Feature highlights
+│   │   ├── CodeTerminal.tsx    # Code preview terminal
+│   │   └── Footer.tsx          # Page footer
+│   └── ui/                     # shadcn/ui components (neo-brutalist styled)
+│       └── *.tsx               # button, card, badge, chart, table, etc.
+├── hooks/
+│   └── use-mobile.ts           # Mobile detection hook
+├── lib/
+│   └── utils.ts                # Utility functions (cn, etc.)
+└── pages/
+    ├── LandingPage.tsx         # Marketing landing page
+    └── dashboard/
+        ├── DashboardPage.tsx   # Main dashboard with metrics & quick actions
+        ├── AnalyticsPage.tsx   # Charts, stats, and issue tracking table
+        └── AIReviewPage.tsx    # AI review configuration settings
 ```
+
+**Design System**: Neo-brutalist with:
+- Primary yellow: `#FCD34D`
+- Bold black borders (`border-2 border-black`)
+- Hard shadows (`shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`)
+- Font-black typography
 
 **Vite Config**: Uses `@` alias for `./src` imports.
 
@@ -179,8 +208,25 @@ Based on architecture docs, these are planned but not yet built:
 - AI/LLM integration (Claude, GPT-4)
 - Static code analysis service
 - PostgreSQL database for review storage
-- Web dashboard for viewing reviews
+- ~~Web dashboard for viewing reviews~~ *(Frontend UI implemented, needs backend integration)*
 - Multi-region deployment with failover
 - Distributed tracing (OpenTelemetry/Jaeger)
+
+## Current Progress
+
+### Frontend (Completed)
+- **Landing Page**: Full marketing page with Navbar, Hero, Marquee, Features, CodeTerminal, Footer
+- **Dashboard Layout**: Sidebar navigation with DashboardLayout wrapper
+- **Dashboard Page**: Metrics cards (PRs Reviewed, Issues Detected, Time Saved), quick action cards with mini charts
+- **Analytics Page**: Stats row, area/bar charts (Recharts), expandable issues table with severity badges
+- **AI Review Settings Page**: Sensitivity selector, custom instructions textarea, ignore patterns management, toggle switches
+- **UI Components**: Full shadcn/ui component library with neo-brutalist styling (button, card, badge, chart, table, tabs, etc.)
+
+### Frontend (Pending)
+- Backend API integration (currently using mock data)
+- Authentication/OAuth flow with GitHub
+- Real-time data fetching for metrics and issues
+- Repository selector/switching
+- User settings and profile management
 
 When implementing new features, refer to `docs/TECHNICAL_ARCHITECTURE.md` for detailed design patterns.
