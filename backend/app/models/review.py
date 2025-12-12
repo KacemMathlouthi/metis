@@ -48,8 +48,8 @@ class Review(Base, BaseModel):
     # Review content
     review_text = Column(Text, nullable=True, comment="Overall review summary")
 
-    # Metadata
-    metadata = Column(
+    # PR Metadata (renamed from 'metadata' to avoid SQLAlchemy reserved name)
+    pr_metadata = Column(
         JSONB,
         default={},
         comment="PR title, author, description, file count, etc.",
