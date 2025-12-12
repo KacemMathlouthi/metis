@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Bot, Code, FileText, Shield, Zap, GitPullRequest } from 'lucide-react';
+import { Bot, Code, FileText, GitPullRequest } from 'lucide-react';
 
 export const Features: React.FC = () => {
   const features = [
@@ -55,10 +55,10 @@ export const Features: React.FC = () => {
                 <div className="mb-6 flex h-16 w-16 items-center justify-center border-4 border-black bg-white p-3 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-transform duration-300 hover:rotate-6">
                   {feature.icon}
                 </div>
-                <h3 className="mb-3 text-2xl font-black uppercase tracking-tight">
+                <h3 className="mb-3 text-2xl font-black tracking-tight uppercase">
                   {feature.title}
                 </h3>
-                <p className="text-lg font-bold leading-relaxed">{feature.description}</p>
+                <p className="text-lg leading-relaxed font-bold">{feature.description}</p>
               </CardContent>
             </Card>
           ))}
