@@ -50,7 +50,7 @@ class GitHubOAuthService:
                 headers={"Accept": "application/json"},
                 data={
                     "client_id": settings.GITHUB_CLIENT_ID,
-                    "client_secret": settings.GITHUB_CLIENT_SECRET,
+                    "client_secret": settings.GITHUB_CLIENT_SECRET_ID,
                     "code": code,
                 },
             )
