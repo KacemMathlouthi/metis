@@ -1,0 +1,116 @@
+/**
+ * API client for backend communication.
+ *
+ * Provides methods for all backend endpoints with automatic cookie-based
+ * authentication. Handles errors and throws exceptions for error handling
+ * by the caller (ProtectedRoute handles 401 redirects).
+ */
+
+import type { User, Repository, RepositoryConfig } from '@/types/api';
+
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
+class ApiClient {
+  /**
+   * Make HTTP request with automatic cookie handling.
+   *
+   * Includes credentials (cookies) with every request for authentication.
+   * Throws error on non-2xx responses. Caller handles 401 appropriately.
+   */
+  private async request<T>(
+    endpoint: string,
+    options?: RequestInit
+  ): Promise<T> {
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      ...options,
+      credentials: 'include', // Send cookies with request
+      headers: {
+        'Content-Type': 'application/json',
+        ...options?.headers,
+      },
+    });
+
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(`API error ${response.status}: ${error}`);
+    }
+
+    return response.json();
+  }
+
+  // ==================== Auth Endpoints ====================
+
+  /**
+   * Get current authenticated user profile.
+   * Requires valid access_token cookie.
+   */
+  async getMe(): Promise<User> {
+    return this.request<User>('/auth/me');
+  }
+
+  /**
+   * Logout user by clearing authentication cookies.
+   * Automatically redirects to home page after logout.
+   */
+  async logout(): Promise<void> {
+    await this.request('/auth/logout', { method: 'POST' });
+    window.location.href = '/';
+  }
+
+  /**
+   * Refresh access token using refresh token.
+   * Called automatically when access token expires.
+   */
+  async refreshToken(): Promise<{ access_token: string }> {
+    return this.request<{ access_token: string }>('/auth/refresh', {
+      method: 'POST',
+    });
+  }
+
+  // ==================== Repository Endpoints ====================
+
+  /**
+   * List user's GitHub App installations.
+   * Shows which repositories user can enable reviews for.
+   */
+  async listInstallations(): Promise<any> {
+    return this.request('/repositories/installations');
+  }
+
+  /**
+   * List all repositories user has enabled for reviews.
+   */
+  async listRepositories(): Promise<Repository[]> {
+    return this.request<Repository[]>('/repositories/list');
+  }
+
+  /**
+   * Enable code reviews for a repository.
+   */
+  async enableRepository(data: {
+    github_installation_id: number;
+    repository: string;
+    config: RepositoryConfig;
+  }): Promise<{ status: string; installation_id: string }> {
+    return this.request('/repositories/enable', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  /**
+   * Update repository review configuration.
+   */
+  async updateRepositoryConfig(
+    installationId: string,
+    config: RepositoryConfig
+  ): Promise<{ status: string }> {
+    return this.request(`/repositories/${installationId}/config`, {
+      method: 'PATCH',
+      body: JSON.stringify(config),
+    });
+  }
+}
+
+export const apiClient = new ApiClient();
