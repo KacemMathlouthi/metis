@@ -26,17 +26,12 @@ class GitHubOAuthService:
         self.user_api_url = "https://api.github.com/user"
         self.installations_url = "https://api.github.com/user/installations"
 
-    def get_authorization_url(self, state: str) -> str:
-        """Generate GitHub OAuth authorization URL.
-
-        The state parameter is a random token for CSRF protection.
-        GitHub will include it in the callback, and we verify it matches.
-        """
+    def get_authorization_url(self) -> str:
+        """Generate GitHub OAuth authorization URL."""
         params = {
             "client_id": settings.GITHUB_CLIENT_ID,
             "redirect_uri": f"{settings.FRONTEND_URL}/auth/callback",
             "scope": "user:email read:org",  # Permissions we need
-            "state": state,
         }
 
         query_string = "&".join(f"{k}={v}" for k, v in params.items())
