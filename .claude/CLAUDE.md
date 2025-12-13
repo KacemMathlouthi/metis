@@ -244,8 +244,6 @@ Coverage report available at `htmlcov/index.html`.
   - `Installation` - GitHub App installations with JSONB review configuration
   - `Review` - PR reviews with status tracking (PENDING/PROCESSING/COMPLETED/FAILED)
   - `ReviewComment` - Line-specific code issues with severity and category enums
-  - `UsageMetrics` - Daily aggregated usage per installation
-  - `WebhookEvent` - Complete webhook audit trail
 - **Database Migrations**: Alembic configured with initial schema migration
 - **Session Management**: FastAPI `get_db()` dependency with automatic transaction handling
 - **Indexes**: Composite indexes for query optimization

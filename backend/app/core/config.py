@@ -35,7 +35,7 @@ class Settings(BaseSettings):
     MODEL_NAME: str | None = None
 
     # Database settings
-    DATABASE_URL: str = "postgresql+asyncpg://metis:metis_dev@localhost:5432/metis"
+    DATABASE_URL: str
     DATABASE_POOL_SIZE: int = 20
     DATABASE_MAX_OVERFLOW: int = 10
     DATABASE_ECHO: bool = False
