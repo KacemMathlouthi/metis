@@ -23,6 +23,13 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 # Install dependencies (using uv)
 uv sync
 
+# Database
+docker-compose -f docker-compose.dev.yml up -d  # Start PostgreSQL
+alembic upgrade head                             # Run migrations
+alembic revision --autogenerate -m "description" # Create migration
+alembic downgrade -1                             # Rollback one migration
+alembic history                                  # View migration history
+
 # Code quality
 ruff check .              # Lint
 ruff format .             # Format
@@ -64,18 +71,27 @@ app/
 │   └── webhooks.py      # GitHub webhook endpoint (/webhooks/github)
 ├── core/                # Core configuration
 │   └── config.py        # Pydantic Settings for env vars
+├── db/                  # Database layer
+│   ├── base.py          # Async engine, session factory
+│   ├── session.py       # get_db() dependency
+│    base_class.py    # BaseModel with UUID, timestamps
+├── models/              # SQLAlchemy ORM models
+│   ├── user.py          # User accounts (GitHub OAuth)
+│   ├── installation.py  # GitHub App installations
+│   └── review.py        # Review & ReviewComment models
 ├── services/            # Business logic
 │   ├── github.py        # GitHub API client (JWT auth, installation tokens, PR reviews)
-│   └── webhook.py       # Webhook signature verification and event handling
+│   ├── webhook.py       # Webhook signature verification and event handling
+│   └── metis_agent.py   # AI reviewer and summary writer
 ├── schemas/             # Pydantic models for request/response validation
-├── models/              # Database models (future)
 └── utils/               # Utility functions
 ```
 
 **Key flows**:
 1. **Webhook Reception**: GitHub sends webhook → `api/webhooks.py` → signature verification → event routing
 2. **GitHub Authentication**: App generates JWT → exchanges for installation token → authenticated API calls
-3. **PR Review**: Webhook triggers → fetch PR data → (future: AI analysis) → post review via `services/github.py`
+3. **PR Review**: Webhook triggers → fetch PR data → AI analysis → post review via `services/github.py`
+4. **Database Access**: FastAPI endpoint → `get_db()` dependency → async SQLAlchemy session → automatic commit/rollback
 
 ### Frontend Structure (`frontend/src/`)
 
@@ -200,19 +216,39 @@ pytest --cov=app --cov-report=html
 
 Coverage report available at `htmlcov/index.html`.
 
-## Planned Features (Not Implemented)
+## Planned Features
 
-Based on architecture docs, these are planned but not yet built:
+### Implemented ✅
+- **PostgreSQL database** with async SQLAlchemy
+- **Database models** for users, installations, reviews, comments, metrics
+- **Alembic migrations** with async support
+- ~~Web dashboard UI~~ *(Frontend UI complete, needs backend integration)*
+
+### Not Yet Implemented
+- User authentication (GitHub OAuth for end users)
+- Repository enrollment and management API
 - Redis-based job queue for async processing
 - Celery workers for background review tasks
-- AI/LLM integration (Claude, GPT-4)
-- Static code analysis service
-- PostgreSQL database for review storage
-- ~~Web dashboard for viewing reviews~~ *(Frontend UI implemented, needs backend integration)*
-- Multi-region deployment with failover
-- Distributed tracing (OpenTelemetry/Jaeger)
+- Line-by-line GitHub review comments (currently PR-level only)
+- Enhanced AI agent with tool calling (read files, search code)
+- Docker containerization
+- Kubernetes deployment
+- Distributed tracing and monitoring
 
 ## Current Progress
+
+### Backend (Completed)
+- **Database Layer**: PostgreSQL with async SQLAlchemy engine and connection pooling
+- **Database Models** (6 models with relationships):
+  - `User` - GitHub OAuth users with encrypted access tokens
+  - `Installation` - GitHub App installations with JSONB review configuration
+  - `Review` - PR reviews with status tracking (PENDING/PROCESSING/COMPLETED/FAILED)
+  - `ReviewComment` - Line-specific code issues with severity and category enums
+- **Database Migrations**: Alembic configured with initial schema migration
+- **Session Management**: FastAPI `get_db()` dependency with automatic transaction handling
+- **Indexes**: Composite indexes for query optimization
+- **GitHub App Integration**: JWT authentication, webhook verification, PR diff fetching
+- **AI Review Engine**: Basic synchronous review generation with configurable sensitivity
 
 ### Frontend (Completed)
 - **Landing Page**: Full marketing page with Navbar, Hero, Marquee, Features, CodeTerminal, Footer
@@ -222,11 +258,11 @@ Based on architecture docs, these are planned but not yet built:
 - **AI Review Settings Page**: Sensitivity selector, custom instructions textarea, ignore patterns management, toggle switches
 - **UI Components**: Full shadcn/ui component library with neo-brutalist styling (button, card, badge, chart, table, tabs, etc.)
 
-### Frontend (Pending)
-- Backend API integration (currently using mock data)
-- Authentication/OAuth flow with GitHub
-- Real-time data fetching for metrics and issues
-- Repository selector/switching
-- User settings and profile management
+### Next Steps
+- User authentication with GitHub OAuth
+- Repository enrollment API
+- Backend API integration for frontend
+- Redis + Celery for async processing
+- Docker containerization
 
 When implementing new features, refer to `docs/TECHNICAL_ARCHITECTURE.md` for detailed design patterns.

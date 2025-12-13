@@ -32,9 +32,7 @@ export const CodeTerminal: React.FC = () => {
               <div className="h-3 w-3 rounded-full border border-black/20 bg-[#FF5F56]"></div>
               <div className="h-3 w-3 rounded-full border border-black/20 bg-[#FFBD2E]"></div>
               <div className="h-3 w-3 rounded-full border border-black/20 bg-[#27C93F]"></div>
-              <div className="ml-4 font-mono text-xs font-bold text-gray-400">
-                metis-bot — bash
-              </div>
+              <div className="ml-4 font-mono text-xs font-bold text-gray-400">metis-bot — bash</div>
             </div>
 
             {/* Terminal Content */}
@@ -75,7 +73,7 @@ export const CodeTerminal: React.FC = () => {
               <p className="mt-4">
                 <span className="font-bold text-[#F472B6]">➜</span>{' '}
                 <span className="font-bold text-[#4ADE80]">~/project</span>{' '}
-                <span className="inline-block h-4 w-2 align-middle bg-white animate-pulse"></span>
+                <span className="inline-block h-4 w-2 animate-pulse bg-white align-middle"></span>
               </p>
             </div>
           </div>

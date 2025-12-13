@@ -16,7 +16,7 @@ import {
   Code2,
   FileDiff,
 } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,7 +26,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuShortcut,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from '@/components/ui/dropdown-menu';
 import {
   Sidebar,
   SidebarContent,
@@ -40,34 +40,34 @@ import {
   SidebarGroupLabel,
   useSidebar,
   SidebarRail,
-} from "@/components/ui/sidebar"
+} from '@/components/ui/sidebar';
 
 export const AppSidebar: React.FC = () => {
   const location = useLocation();
-  const { isMobile } = useSidebar()
+  const { isMobile } = useSidebar();
   const [activeRepo, setActiveRepo] = React.useState({
-    name: "metis-frontend",
+    name: 'metis-frontend',
     logo: Code2,
-    plan: "Pro",
-  })
+    plan: 'Pro',
+  });
 
   const repositories = [
     {
-      name: "metis-frontend",
+      name: 'metis-frontend',
       logo: Code2,
-      plan: "Pro",
+      plan: 'Pro',
     },
     {
-      name: "metis-backend",
+      name: 'metis-backend',
       logo: Code2,
-      plan: "Free",
+      plan: 'Free',
     },
     {
-      name: "metis-docs",
+      name: 'metis-docs',
       logo: Code2,
-      plan: "Free",
+      plan: 'Free',
     },
-  ]
+  ];
 
   const navItems = [
     { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard' },
@@ -82,7 +82,9 @@ export const AppSidebar: React.FC = () => {
           <div className="flex h-8 w-8 shrink-0 items-center justify-center border-2 border-black bg-white text-lg font-black text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
             M
           </div>
-          <span className="text-xl font-black italic tracking-tighter group-data-[collapsible=icon]:hidden">METIS</span>
+          <span className="text-xl font-black tracking-tighter italic group-data-[collapsible=icon]:hidden">
+            METIS
+          </span>
         </div>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -96,9 +98,7 @@ export const AppSidebar: React.FC = () => {
                     <activeRepo.logo className="size-4" />
                   </div>
                   <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
-                    <span className="truncate font-semibold">
-                      {activeRepo.name}
-                    </span>
+                    <span className="truncate font-semibold">{activeRepo.name}</span>
                     <span className="truncate text-xs">{activeRepo.plan}</span>
                   </div>
                   <ChevronsUpDown className="ml-auto group-data-[collapsible=icon]:hidden" />
@@ -107,31 +107,33 @@ export const AppSidebar: React.FC = () => {
               <DropdownMenuContent
                 className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg border-2 border-black bg-white p-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
                 align="start"
-                side={isMobile ? "bottom" : "right"}
+                side={isMobile ? 'bottom' : 'right'}
                 sideOffset={4}
               >
-                <DropdownMenuLabel className="text-xs text-muted-foreground">
+                <DropdownMenuLabel className="text-muted-foreground text-xs">
                   Repositories
                 </DropdownMenuLabel>
                 {repositories.map((repo) => (
                   <DropdownMenuItem
                     key={repo.name}
                     onClick={() => setActiveRepo(repo)}
-                    className="gap-2 p-2 bg-white hover:bg-gray-100"
+                    className="gap-2 bg-white p-2 hover:bg-gray-100"
                   >
                     <div className="flex size-6 items-center justify-center rounded-sm border border-black">
                       <repo.logo className="size-4 shrink-0" />
                     </div>
                     {repo.name}
-                    <DropdownMenuShortcut>⌘{repo.name.substring(0, 1).toUpperCase()}</DropdownMenuShortcut>
+                    <DropdownMenuShortcut>
+                      ⌘{repo.name.substring(0, 1).toUpperCase()}
+                    </DropdownMenuShortcut>
                   </DropdownMenuItem>
                 ))}
                 <DropdownMenuSeparator className="bg-black" />
-                <DropdownMenuItem className="gap-2 p-2 bg-white hover:bg-gray-100">
-                  <div className="flex size-6 items-center justify-center rounded-md border border-black bg-background">
+                <DropdownMenuItem className="gap-2 bg-white p-2 hover:bg-gray-100">
+                  <div className="bg-background flex size-6 items-center justify-center rounded-md border border-black">
                     <Plus className="size-4" />
                   </div>
-                  <div className="font-medium text-muted-foreground">Add repository</div>
+                  <div className="text-muted-foreground font-medium">Add repository</div>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -148,11 +150,7 @@ export const AppSidebar: React.FC = () => {
                 const isActive = location.pathname === item.href;
                 return (
                   <SidebarMenuItem key={item.href}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={isActive}
-                      tooltip={item.label}
-                    >
+                    <SidebarMenuButton asChild isActive={isActive} tooltip={item.label}>
                       <Link to={item.href}>
                         <item.icon />
                         <span>{item.label}</span>
@@ -224,7 +222,7 @@ export const AppSidebar: React.FC = () => {
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg border-2 border-black bg-white p-1 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
-                side={isMobile ? "bottom" : "right"}
+                side={isMobile ? 'bottom' : 'right'}
                 align="end"
                 sideOffset={4}
               >

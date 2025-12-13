@@ -1,8 +1,7 @@
 import React from 'react';
 
 export const Marquee: React.FC = () => {
-  const content =
-    '• PR REVIEWS • DOC UPDATES • TITLE GENERATION • BUG FIXES • SECURITY AUDITS ';
+  const content = '• PR REVIEWS • DOC UPDATES • TITLE GENERATION • BUG FIXES • SECURITY AUDITS ';
   const repeatedContent = content.repeat(4);
 
   return (

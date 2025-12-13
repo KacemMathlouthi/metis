@@ -34,6 +34,12 @@ class Settings(BaseSettings):
     PROVIDER_BASE_URL: str | None = None
     MODEL_NAME: str | None = None
 
+    # Database settings
+    DATABASE_URL: str
+    DATABASE_POOL_SIZE: int = 20
+    DATABASE_MAX_OVERFLOW: int = 10
+    DATABASE_ECHO: bool = False
+
     model_config = SettingsConfigDict(
         env_file=".env", env_file_encoding="utf-8", case_sensitive=False, extra="ignore"
     )

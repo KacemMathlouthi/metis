@@ -1,5 +1,5 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -13,11 +13,11 @@
   --ring: oklch(0% 0 0);
   --overlay: oklch(0% 0 0 / 0.8);
   --shadow: 2px 2px 0px 0px var(--border);
-  --chart-1: #FACC00;
-  --chart-2: #7A83FF;
-  --chart-3: #FF4D50;
-  --chart-4: #00D696;
-  --chart-5: #0099FF;
+  --chart-1: #facc00;
+  --chart-2: #7a83ff;
+  --chart-3: #ff4d50;
+  --chart-4: #00d696;
+  --chart-5: #0099ff;
   --chart-active-dot: #000;
 }
 
@@ -30,11 +30,11 @@
   --border: oklch(0% 0 0);
   --ring: oklch(100% 0 0);
   --shadow: 2px 2px 0px 0px var(--border);
-  --chart-1: #E0B700;
-  --chart-2: #7A83FF;
-  --chart-3: #FF6669;
-  --chart-4: #00BD84;
-  --chart-5: #008AE5;
+  --chart-1: #e0b700;
+  --chart-2: #7a83ff;
+  --chart-3: #ff6669;
+  --chart-4: #00bd84;
+  --chart-5: #008ae5;
   --chart-active-dot: #fff;
 }
 
@@ -62,13 +62,18 @@
   --font-weight-base: 500;
   --font-weight-heading: 800;
 }
-  
+
 @layer base {
   body {
     @apply text-foreground font-base bg-background;
   }
 
-  h1, h2, h3, h4, h5, h6{
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-heading;
   }
 }
@@ -88,18 +93,18 @@
   }
 
   .shadow-brutal-pink {
-    box-shadow: 4px 4px 0px 0px #F472B6;
+    box-shadow: 4px 4px 0px 0px #f472b6;
   }
   .shadow-brutal-pink-lg {
-    box-shadow: 6px 6px 0px 0px #F472B6;
+    box-shadow: 6px 6px 0px 0px #f472b6;
   }
   .shadow-brutal-yellow {
-    box-shadow: 4px 4px 0px 0px #FCD34D;
+    box-shadow: 4px 4px 0px 0px #fcd34d;
   }
   .shadow-brutal-yellow-lg {
-    box-shadow: 6px 6px 0px 0px #FCD34D;
+    box-shadow: 6px 6px 0px 0px #fcd34d;
   }
   .shadow-brutal-white {
-    box-shadow: 3px 3px 0px 0px rgba(255,255,255,0.3);
+    box-shadow: 3px 3px 0px 0px rgba(255, 255, 255, 0.3);
   }
 }

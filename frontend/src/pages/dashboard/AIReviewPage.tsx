@@ -1,21 +1,11 @@
 import React, { useState } from 'react';
-import { 
-  Bot, 
-  Zap, 
-  FileText, 
-  GitCommit, 
-  Ban, 
-  Book, 
-  Plus, 
-  Trash2,
-  Sparkles
-} from "lucide-react"
+import { Bot, Zap, FileText, GitCommit, Ban, Book, Plus, Trash2, Sparkles } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
-import { Textarea } from "@/components/ui/textarea"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
+import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
 
 export const AIReviewPage: React.FC = () => {
   const [sensitivity, setSensitivity] = useState<'low' | 'medium' | 'high'>('medium');
@@ -30,14 +20,16 @@ export const AIReviewPage: React.FC = () => {
   };
 
   const removePattern = (pattern: string) => {
-    setIgnorePatterns(ignorePatterns.filter(p => p !== pattern));
+    setIgnorePatterns(ignorePatterns.filter((p) => p !== pattern));
   };
 
   return (
-    <div className="space-y-6 p-2 max-w-5xl mx-auto">
+    <div className="mx-auto max-w-5xl space-y-6 p-2">
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-black">Review Configuration</h1>
-        <p className="text-muted-foreground">Customize Metis's code review behavior and preferences.</p>
+        <p className="text-muted-foreground">
+          Customize Metis's code review behavior and preferences.
+        </p>
       </div>
 
       {/* AI Agent Info */}
@@ -47,7 +39,9 @@ export const AIReviewPage: React.FC = () => {
             <Bot className="h-6 w-6" />
             <CardTitle>Metis Agent Capabilities</CardTitle>
           </div>
-          <CardDescription>Automated feedback on pull requests with actionable insights.</CardDescription>
+          <CardDescription>
+            Automated feedback on pull requests with actionable insights.
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-start gap-3 rounded-md border-2 border-black bg-blue-50 p-4">
@@ -55,21 +49,27 @@ export const AIReviewPage: React.FC = () => {
               <Sparkles className="h-4 w-4 text-blue-700" />
             </div>
             <div>
-              <p className="font-bold text-sm">On-Demand Reviews</p>
-              <p className="text-sm text-muted-foreground mt-1">
-                Mention <Badge variant="neutral" className="bg-white border-black text-xs">@metis-ai</Badge> in any pull request to trigger a fresh review, ask for clarification, or request code changes.
+              <p className="text-sm font-bold">On-Demand Reviews</p>
+              <p className="text-muted-foreground mt-1 text-sm">
+                Mention{' '}
+                <Badge variant="neutral" className="border-black bg-white text-xs">
+                  @metis-ai
+                </Badge>{' '}
+                in any pull request to trigger a fresh review, ask for clarification, or request
+                code changes.
               </p>
             </div>
           </div>
-          
+
           <div className="flex items-start gap-3 rounded-md border-2 border-black bg-green-50 p-4">
-             <div className="mt-1 rounded-full bg-green-200 p-1">
+            <div className="mt-1 rounded-full bg-green-200 p-1">
               <Book className="h-4 w-4 text-green-700" />
             </div>
             <div>
-              <p className="font-bold text-sm">Feedback Loop</p>
-              <p className="text-sm text-muted-foreground mt-1">
-                Reply directly to Metis's comments to provide context or correct its understanding of your project.
+              <p className="text-sm font-bold">Feedback Loop</p>
+              <p className="text-muted-foreground mt-1 text-sm">
+                Reply directly to Metis's comments to provide context or correct its understanding
+                of your project.
               </p>
             </div>
           </div>
@@ -86,28 +86,38 @@ export const AIReviewPage: React.FC = () => {
           <CardDescription>Adjust the granularity and strictness of the analysis.</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             {[
-              { id: 'low', label: 'Low', desc: 'Focuses only on critical bugs and major security flaws.' },
-              { id: 'medium', label: 'Default', desc: 'Standard analysis balancing comprehensive checks with noise reduction.' },
-              { id: 'high', label: 'High', desc: 'Exhaustive review covering style, minor optimizations, and potential edge cases.' }
+              {
+                id: 'low',
+                label: 'Low',
+                desc: 'Focuses only on critical bugs and major security flaws.',
+              },
+              {
+                id: 'medium',
+                label: 'Default',
+                desc: 'Standard analysis balancing comprehensive checks with noise reduction.',
+              },
+              {
+                id: 'high',
+                label: 'High',
+                desc: 'Exhaustive review covering style, minor optimizations, and potential edge cases.',
+              },
             ].map((option) => (
-              <div 
+              <div
                 key={option.id}
                 onClick={() => setSensitivity(option.id as any)}
-                className={`
-                  cursor-pointer rounded-md border-2 p-4 transition-all
-                  ${sensitivity === option.id 
-                    ? 'border-black bg-[#FCD34D] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]' 
+                className={`cursor-pointer rounded-md border-2 p-4 transition-all ${
+                  sensitivity === option.id
+                    ? 'border-black bg-[#FCD34D] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]'
                     : 'border-gray-200 hover:border-black hover:bg-gray-50'
-                  }
-                `}
+                } `}
               >
-                <div className="flex justify-between items-center mb-2">
+                <div className="mb-2 flex items-center justify-between">
                   <span className="font-bold">{option.label}</span>
                   {sensitivity === option.id && <div className="h-3 w-3 rounded-full bg-black" />}
                 </div>
-                <p className="text-xs text-muted-foreground">{option.desc}</p>
+                <p className="text-muted-foreground text-xs">{option.desc}</p>
               </div>
             ))}
           </div>
@@ -122,16 +132,17 @@ export const AIReviewPage: React.FC = () => {
             <CardTitle>Tailored Instructions</CardTitle>
           </div>
           <CardDescription>
-            Provide specific guidelines for Metis to follow. Repository context files (e.g., AGENTS.md) are automatically detected.
+            Provide specific guidelines for Metis to follow. Repository context files (e.g.,
+            AGENTS.md) are automatically detected.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Textarea 
+          <Textarea
             placeholder="Enter specific coding standards, architectural patterns, or focus areas for Metis..."
-            className="min-h-[120px] border-2 border-black resize-none focus-visible:ring-0 focus-visible:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+            className="min-h-[120px] resize-none border-2 border-black focus-visible:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus-visible:ring-0"
           />
           <div className="mt-4 flex justify-end">
-            <Button className="border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[1px] hover:shadow-none transition-all">
+            <Button className="border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-y-[1px] hover:shadow-none">
               Save Instructions
             </Button>
           </div>
@@ -148,16 +159,18 @@ export const AIReviewPage: React.FC = () => {
                 <CardTitle>Continuous Review</CardTitle>
               </div>
               <CardDescription>
-                Analyze new commits pushed to existing PRs. If disabled, Metis only reviews the initial pull request.
+                Analyze new commits pushed to existing PRs. If disabled, Metis only reviews the
+                initial pull request.
               </CardDescription>
             </div>
             <Switch className="scale-125" />
           </div>
         </CardHeader>
         <CardContent>
-           <p className="text-sm text-muted-foreground bg-gray-50 p-3 rounded border border-gray-200">
-             Metis will only comment on new issues introduced in subsequent commits to minimize noise.
-           </p>
+          <p className="text-muted-foreground rounded border border-gray-200 bg-gray-50 p-3 text-sm">
+            Metis will only comment on new issues introduced in subsequent commits to minimize
+            noise.
+          </p>
         </CardContent>
       </Card>
 
@@ -168,32 +181,38 @@ export const AIReviewPage: React.FC = () => {
             <Ban className="h-6 w-6" />
             <CardTitle>Exclusion Rules</CardTitle>
           </div>
-          <CardDescription>Specify file patterns that Metis should skip during reviews.</CardDescription>
+          <CardDescription>
+            Specify file patterns that Metis should skip during reviews.
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex gap-2">
-            <Input 
-              placeholder="e.g., *.test.ts, vendor/*" 
+            <Input
+              placeholder="e.g., *.test.ts, vendor/*"
               value={newPattern}
               onChange={(e) => setNewPattern(e.target.value)}
               className="border-2 border-black focus-visible:ring-0"
             />
-            <Button 
+            <Button
               onClick={addPattern}
-              className="border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[1px] hover:shadow-none transition-all"
+              className="border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-y-[1px] hover:shadow-none"
             >
-              <Plus className="h-4 w-4 mr-2" /> Add
+              <Plus className="mr-2 h-4 w-4" /> Add
             </Button>
           </div>
-          
+
           <div className="flex flex-wrap gap-2">
             {ignorePatterns.map((pattern) => (
-              <Badge key={pattern} variant="neutral" className="pl-3 pr-1 py-1 h-8 border-2 border-black bg-gray-100 text-sm flex items-center gap-2">
+              <Badge
+                key={pattern}
+                variant="neutral"
+                className="flex h-8 items-center gap-2 border-2 border-black bg-gray-100 py-1 pr-1 pl-3 text-sm"
+              >
                 {pattern}
-                <Button 
-                  variant="noShadow" 
-                  size="icon" 
-                  className="h-5 w-5 hover:bg-red-100 hover:text-red-600 rounded-full"
+                <Button
+                  variant="noShadow"
+                  size="icon"
+                  className="h-5 w-5 rounded-full hover:bg-red-100 hover:text-red-600"
                   onClick={() => removePattern(pattern)}
                 >
                   <Trash2 className="h-3 w-3" />
