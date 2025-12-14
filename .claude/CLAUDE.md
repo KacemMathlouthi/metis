@@ -68,19 +68,28 @@ pnpm lint                 # Lint with ESLint
 app/
 ├── main.py              # FastAPI app initialization, CORS, health endpoints
 ├── api/                 # API route handlers
+│   ├── auth.py          # Authentication endpoints (OAuth, login, logout, me)
 │   └── webhooks.py      # GitHub webhook endpoint (/webhooks/github)
 ├── core/                # Core configuration
-│   └── config.py        # Pydantic Settings for env vars
+│   ├── config.py        # Pydantic Settings for env vars, JWT settings
+│   ├── security.py      # JWT generation/verification, token encryption (Fernet)
+│   └── auth_deps.py     # get_current_user() dependency for protected routes
 ├── db/                  # Database layer
-│   ├── base.py          # Async engine, session factory
-│   ├── session.py       # get_db() dependency
-│    base_class.py    # BaseModel with UUID, timestamps
+│   ├── base.py          # Async SQLAlchemy engine, session factory
+│   ├── session.py       # get_db() dependency with auto commit/rollback
+│   └── base_class.py    # BaseModel with UUID, timestamps
 ├── models/              # SQLAlchemy ORM models
 │   ├── user.py          # User accounts (GitHub OAuth)
-│   ├── installation.py  # GitHub App installations
-│   └── review.py        # Review & ReviewComment models
+│   ├── installation.py  # GitHub App installations with JSONB config
+│   ├── review.py        # Review & ReviewComment models
+│   └── metrics.py       # UsageMetrics & WebhookEvent audit logs
+├── repositories/        # Repository pattern (data access layer)
+│   ├── user.py          # User CRUD with token encryption
+│   ├── installation.py  # Installation CRUD operations
+│   └── review.py        # Review and ReviewComment CRUD
 ├── services/            # Business logic
 │   ├── github.py        # GitHub API client (JWT auth, installation tokens, PR reviews)
+│   ├── oauth.py         # GitHub OAuth flow (login, token exchange, user info)
 │   ├── webhook.py       # Webhook signature verification and event handling
 │   └── metis_agent.py   # AI reviewer and summary writer
 ├── schemas/             # Pydantic models for request/response validation
@@ -89,9 +98,11 @@ app/
 
 **Key flows**:
 1. **Webhook Reception**: GitHub sends webhook → `api/webhooks.py` → signature verification → event routing
-2. **GitHub Authentication**: App generates JWT → exchanges for installation token → authenticated API calls
-3. **PR Review**: Webhook triggers → fetch PR data → AI analysis → post review via `services/github.py`
-4. **Database Access**: FastAPI endpoint → `get_db()` dependency → async SQLAlchemy session → automatic commit/rollback
+2. **GitHub App Auth**: App generates JWT → exchanges for installation token → authenticated API calls
+3. **User OAuth**: User clicks login → GitHub OAuth → callback → create/update user in DB → set JWT cookies → redirect to dashboard
+4. **Protected Routes**: Request → `get_current_user()` dependency → verify JWT cookie → query user from DB → endpoint access
+5. **PR Review**: Webhook triggers → fetch PR data → AI analysis → post review via `services/github.py`
+6. **Database Access**: FastAPI endpoint → `get_db()` dependency → async SQLAlchemy session → automatic commit/rollback
 
 ### Frontend Structure (`frontend/src/`)
 
@@ -100,12 +111,13 @@ React + TypeScript with a neo-brutalist design system. Features landing page and
 ```
 src/
 ├── main.tsx                    # Application entry point
-├── App.tsx                     # Root component with routing
+├── App.tsx                     # Root component with routing, AuthProvider wrapper
 ├── assets/                     # Static assets
 ├── components/
+│   ├── ProtectedRoute.tsx      # Auth guard for dashboard routes
 │   ├── dashboard/              # Dashboard layout components
 │   │   ├── DashboardLayout.tsx # Main dashboard wrapper with sidebar
-│   │   └── Sidebar.tsx         # Navigation sidebar
+│   │   └── Sidebar.tsx         # Navigation sidebar with real user data
 │   ├── landing/                # Landing page sections
 │   │   ├── Navbar.tsx          # Top navigation
 │   │   ├── Hero.tsx            # Hero section
@@ -114,13 +126,22 @@ src/
 │   │   ├── CodeTerminal.tsx    # Code preview terminal
 │   │   └── Footer.tsx          # Page footer
 │   └── ui/                     # shadcn/ui components (neo-brutalist styled)
-│       └── *.tsx               # button, card, badge, chart, table, etc.
+│       ├── *.tsx               # button, card, badge, chart, table, etc.
+│       └── PixelBlast.tsx      # Animated pixel background component
+├── contexts/
+│   └── AuthContext.tsx         # Auth state management (user, loading, logout)
 ├── hooks/
 │   └── use-mobile.ts           # Mobile detection hook
 ├── lib/
+│   ├── api-client.ts           # API client with cookie-based auth
 │   └── utils.ts                # Utility functions (cn, etc.)
+├── types/
+│   └── api.ts                  # TypeScript types for API responses
 └── pages/
     ├── LandingPage.tsx         # Marketing landing page
+    ├── LoginPage.tsx           # GitHub OAuth login with PixelBlast background
+    ├── CallbackPage.tsx        # OAuth callback handler
+    ├── NotFoundPage.tsx        # Creative 404 page with PixelBlast
     └── dashboard/
         ├── DashboardPage.tsx   # Main dashboard with metrics & quick actions
         ├── AnalyticsPage.tsx   # Charts, stats, and issue tracking table
@@ -216,23 +237,43 @@ pytest --cov=app --cov-report=html
 
 Coverage report available at `htmlcov/index.html`.
 
-## Planned Features
+## Implemented Features ✅
 
-### Implemented ✅
-- **PostgreSQL database** with async SQLAlchemy
-- **Database models** for users, installations, reviews, comments, metrics
+### Database & Models
+- **PostgreSQL** with async SQLAlchemy and connection pooling
+- **6 Database models**: User, Installation, Review, ReviewComment, UsageMetrics, WebhookEvent
 - **Alembic migrations** with async support
-- ~~Web dashboard UI~~ *(Frontend UI complete, needs backend integration)*
+- **Repository pattern** for data access (CRUD operations)
+- **Composite indexes** for query optimization
 
-### Not Yet Implemented
-- User authentication (GitHub OAuth for end users)
-- Repository enrollment and management API
+### Authentication & Authorization
+- **GitHub OAuth 2.0** user authentication flow
+- **JWT tokens** (access + refresh) with HTTP-only cookies
+- **Token encryption** (Fernet) for storing GitHub OAuth tokens in database
+- **Protected routes** with `get_current_user()` dependency
+- **Session management** with automatic token refresh
+
+### Frontend
+- **Complete UI** with landing, login, callback, dashboard, analytics, AI settings, 404 pages
+- **Auth integration** with AuthContext and ProtectedRoute guard
+- **Real user data** displayed in sidebar (GitHub profile, avatar)
+- **PixelBlast animations** on login, callback, and 404 pages
+- **API client** with type-safe methods and cookie-based auth
+
+### GitHub Integration
+- **GitHub App authentication** (installation tokens)
+- **Webhook handling** with signature verification
+- **AI code review** with configurable sensitivity
+
+## Not Yet Implemented
+
+- Repository enrollment API (list installations, enable repos)
 - Redis-based job queue for async processing
 - Celery workers for background review tasks
 - Line-by-line GitHub review comments (currently PR-level only)
 - Enhanced AI agent with tool calling (read files, search code)
 - Docker containerization
-- Kubernetes deployment
+- Kubernetes deployment with Helm
 - Distributed tracing and monitoring
 
 ## Current Progress

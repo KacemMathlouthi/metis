@@ -19,9 +19,9 @@ export const Navbar: React.FC = () => {
           CONTACT
         </a>
       </div>
-      <a href="/app">
+      <a href="/login">
         <Button className="bg-[#4ADE80]">
-          LAUNCH APP <ArrowRight className="h-5 w-5" />
+          LOGIN <ArrowRight className="h-5 w-5" />
         </Button>
       </a>
     </nav>
