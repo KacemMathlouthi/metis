@@ -138,6 +138,86 @@ class GitHubService:
         result: dict[str, Any] = response.json()
         return result
 
+    async def get_installation_repositories(
+        self, installation_id: int
+    ) -> list[dict[str, Any]]:
+        """Get all repositories accessible to a specific installation.
+
+        Uses GitHub App installation token to fetch repositories that
+        the installation has access to. This is used to show users which
+        repos they can enable for code review.
+
+        Args:
+            installation_id: GitHub App installation ID
+
+        Returns:
+            List of repository data from GitHub API
+        """
+        token = await self.get_installation_token(installation_id)
+
+        response = await self._client.get(
+            f"{self.base_url}/installation/repositories",
+            headers={"Authorization": f"Bearer {token}"},
+        )
+        response.raise_for_status()
+
+        data = response.json()
+        repositories: list[dict[str, Any]] = data.get("repositories", [])
+        return repositories
+
+    async def get_user_installations_with_repos(
+        self, user_access_token: str
+    ) -> list[dict[str, Any]]:
+        """Get user's GitHub App installations with their accessible repositories.
+
+        Uses the user's OAuth token to fetch all installations, then for each
+        installation fetches the repositories it has access to.
+
+        Args:
+            user_access_token: User's GitHub OAuth access token
+
+        Returns:
+            List of installations with nested repositories
+        """
+        # First, get user's installations
+        response = await self._client.get(
+            f"{self.base_url}/user/installations",
+            headers={
+                "Authorization": f"Bearer {user_access_token}",
+                "Accept": "application/vnd.github+json",
+            },
+        )
+        response.raise_for_status()
+
+        data = response.json()
+        installations = data.get("installations", [])
+
+        # For each installation, fetch accessible repositories
+        installations_with_repos = []
+        for installation in installations:
+            installation_id = installation["id"]
+
+            # Get installation token to fetch repos
+            try:
+                repos = await self.get_installation_repositories(installation_id)
+
+                installations_with_repos.append(
+                    {
+                        "id": installation_id,
+                        "account": installation["account"],
+                        "repository_selection": installation.get("repository_selection", "all"),
+                        "repositories": repos,
+                        "created_at": installation.get("created_at"),
+                        "updated_at": installation.get("updated_at"),
+                    }
+                )
+            except Exception as e:
+                # Skip installations we can't access
+                print(f"Warning: Could not fetch repos for installation {installation_id}: {e}")
+                continue
+
+        return installations_with_repos
+
 
 # Global instance
 github_service = GitHubService()
