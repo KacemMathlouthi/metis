@@ -7,10 +7,11 @@ Webhook handlers queue Celery tasks for async processing.
 import hashlib
 import hmac
 
+from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
-from app.repositories.installation import InstallationRepository
+from app.models.installation import Installation
 from app.repositories.review import ReviewRepository
 from app.tasks.review_task import process_pr_review
 
@@ -60,11 +61,17 @@ async def handle_pull_request(
     pr_number = pull_request["number"]
     commit_sha = pull_request["head"]["sha"]
 
-    # Look up Installation record in database by GitHub installation ID
-    installation_repo = InstallationRepository()
-    installation_record = await installation_repo.get_by_github_installation_id(
-        db, github_installation_id
+    # Look up Installation record by BOTH github_installation_id AND repository
+    # (one installation can have multiple repos)
+    installation_query = await db.execute(
+        select(Installation).where(
+            and_(
+                Installation.github_installation_id == github_installation_id,
+                Installation.repository == repo_full_name,
+            )
+        )
     )
+    installation_record = installation_query.scalar_one_or_none()
 
     if not installation_record:
         # Installation not found - user hasn't enrolled this repo yet
