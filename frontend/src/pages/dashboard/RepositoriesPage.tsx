@@ -6,7 +6,8 @@
  */
 
 import { useState, useEffect } from 'react';
-import { RefreshCw, Plus, Settings, CheckCircle2, XCircle, Code2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { RefreshCw, Plus, Settings, CheckCircle2, XCircle, Code2, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -15,6 +16,7 @@ import type { GitHubInstallation, Installation, InstallationConfig } from '@/typ
 import { useRepository } from '@/contexts/RepositoryContext';
 
 export const RepositoriesPage = () => {
+  const navigate = useNavigate();
   const { refetchInstallations } = useRepository();
   const [githubInstallations, setGithubInstallations] = useState<GitHubInstallation[]>([]);
   const [enabledInstallations, setEnabledInstallations] = useState<Installation[]>([]);
@@ -131,14 +133,29 @@ export const RepositoriesPage = () => {
             Enable code reviews for your GitHub repositories
           </p>
         </div>
-        <Button
-          onClick={handleSync}
-          disabled={syncing}
-          className="border-2 border-black bg-[#FCD34D] font-bold text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
-        >
-          <RefreshCw className={`mr-2 h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
-          {syncing ? 'Syncing...' : 'Sync from GitHub'}
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            onClick={handleSync}
+            disabled={syncing}
+            variant="neutral"
+            className="border-2 border-black font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
+          >
+            <RefreshCw className={`mr-2 h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
+            {syncing ? 'Syncing...' : 'Sync from GitHub'}
+          </Button>
+          <Button
+            onClick={() =>
+              window.open(
+                'https://github.com/apps/metis-ai-testing/installations/new',
+                '_blank'
+              )
+            }
+            className="border-2 border-black bg-[#4ADE80] font-bold text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
+          >
+            <ExternalLink className="mr-2 h-4 w-4" />
+            Install on GitHub
+          </Button>
+        </div>
       </div>
 
       {error && (
@@ -236,9 +253,7 @@ export const RepositoriesPage = () => {
                                 size="sm"
                                 variant="neutral"
                                 className="border-2 border-black font-bold"
-                                onClick={() =>
-                                  alert('Config modal coming soon')
-                                }
+                                onClick={() => navigate('/dashboard/ai-review')}
                               >
                                 <Settings className="mr-1 h-4 w-4" />
                                 Configure
