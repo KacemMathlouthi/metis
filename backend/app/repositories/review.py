@@ -204,6 +204,48 @@ class ReviewRepository:
         )
         return list(result.scalars().all())
 
+    @staticmethod
+    async def create_pending_review(
+        db: AsyncSession,
+        installation_id: UUID | str,
+        repository: str,
+        pr_number: int,
+        commit_sha: str,
+        pr_metadata: dict,
+        celery_task_id: str,
+    ) -> Review:
+        """Create Review record in PENDING state with Celery task ID.
+
+        Used by webhook handler to create review before queueing async task.
+
+        Args:
+            db: Database session
+            installation_id: Installation UUID
+            repository: Repository in format 'owner/repo'
+            pr_number: Pull request number
+            commit_sha: Git commit SHA being reviewed
+            pr_metadata: PR metadata (title, author, url, etc.)
+            celery_task_id: Celery task ID for tracking
+
+        Returns:
+            Created Review object with PENDING status
+        """
+        review = Review(
+            installation_id=installation_id,
+            repository=repository,
+            pr_number=pr_number,
+            commit_sha=commit_sha,
+            pr_metadata=pr_metadata,
+            status="PENDING",
+            celery_task_id=celery_task_id,
+        )
+
+        db.add(review)
+        await db.flush()
+        await db.refresh(review)
+
+        return review
+
 
 class ReviewCommentRepository:
     """Data access layer for ReviewComment model.
