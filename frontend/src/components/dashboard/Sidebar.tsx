@@ -9,18 +9,14 @@ import {
   CheckCircle2,
   ChevronsUpDown,
   Plus,
-  Sparkles,
-  BadgeCheck,
-  CreditCard,
-  Bell,
   Code2,
   FileDiff,
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useAuth } from '@/contexts/AuthContext';
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -45,6 +41,7 @@ import {
 export const AppSidebar: React.FC = () => {
   const location = useLocation();
   const { isMobile } = useSidebar();
+  const { user, logout } = useAuth();
   const [activeRepo, setActiveRepo] = React.useState({
     name: 'metis-frontend',
     logo: Code2,
@@ -210,12 +207,14 @@ export const AppSidebar: React.FC = () => {
                   className="data-[state=open]:bg-gray-100 data-[state=open]:text-black"
                 >
                   <Avatar className="h-8 w-8 rounded-lg border-2 border-black">
-                    <AvatarImage src="https://github.com/shadcn.png" alt="User" />
-                    <AvatarFallback className="rounded-lg">KM</AvatarFallback>
+                    <AvatarImage src={user?.avatar_url || ''} alt={user?.username} />
+                    <AvatarFallback className="rounded-lg">
+                      {user?.username?.slice(0, 2).toUpperCase() || 'U'}
+                    </AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
-                    <span className="truncate font-semibold">Kacem Mathlouthi</span>
-                    <span className="truncate text-xs">kacem@metis.ai</span>
+                    <span className="truncate font-semibold">{user?.username || 'User'}</span>
+                    <span className="truncate text-xs">{user?.email || 'No email'}</span>
                   </div>
                   <ChevronsUpDown className="ml-auto size-4 group-data-[collapsible=icon]:hidden" />
                 </SidebarMenuButton>
@@ -229,39 +228,22 @@ export const AppSidebar: React.FC = () => {
                 <DropdownMenuLabel className="p-0 font-normal">
                   <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                     <Avatar className="h-8 w-8 rounded-lg border-2 border-black">
-                      <AvatarImage src="https://github.com/shadcn.png" alt="User" />
-                      <AvatarFallback className="rounded-lg">KM</AvatarFallback>
+                      <AvatarImage src={user?.avatar_url || ''} alt={user?.username} />
+                      <AvatarFallback className="rounded-lg">
+                        {user?.username?.slice(0, 2).toUpperCase() || 'U'}
+                      </AvatarFallback>
                     </Avatar>
                     <div className="grid flex-1 text-left text-sm leading-tight">
-                      <span className="truncate font-semibold">Kacem Mathlouthi</span>
-                      <span className="truncate text-xs">kacem@metis.ai</span>
+                      <span className="truncate font-semibold">{user?.username || 'User'}</span>
+                      <span className="truncate text-xs">{user?.email || 'No email'}</span>
                     </div>
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator className="bg-black" />
-                <DropdownMenuGroup className="space-y-1">
-                  <DropdownMenuItem className="rounded-md border-2 border-transparent bg-white font-bold text-black focus:border-black focus:bg-gray-100">
-                    <Sparkles className="mr-2 h-4 w-4" />
-                    Upgrade to Pro
-                  </DropdownMenuItem>
-                </DropdownMenuGroup>
-                <DropdownMenuSeparator className="bg-black" />
-                <DropdownMenuGroup className="space-y-1">
-                  <DropdownMenuItem className="rounded-md border-2 border-transparent bg-white font-bold text-black focus:border-black focus:bg-gray-100">
-                    <BadgeCheck className="mr-2 h-4 w-4" />
-                    Account
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="rounded-md border-2 border-transparent bg-white font-bold text-black focus:border-black focus:bg-gray-100">
-                    <CreditCard className="mr-2 h-4 w-4" />
-                    Billing
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="rounded-md border-2 border-transparent bg-white font-bold text-black focus:border-black focus:bg-gray-100">
-                    <Bell className="mr-2 h-4 w-4" />
-                    Notifications
-                  </DropdownMenuItem>
-                </DropdownMenuGroup>
-                <DropdownMenuSeparator className="bg-black" />
-                <DropdownMenuItem className="rounded-md border-2 border-transparent bg-white font-bold text-red-600 focus:border-black focus:bg-gray-100">
+                <DropdownMenuItem
+                  className="rounded-md border-2 border-transparent bg-white font-bold text-red-600 focus:border-black focus:bg-gray-100 cursor-pointer"
+                  onClick={logout}
+                >
                   <LogOut className="mr-2 h-4 w-4" />
                   Log out
                 </DropdownMenuItem>
