@@ -20,24 +20,19 @@ celery_app.conf.update(
     task_serializer="json",
     accept_content=["json"],
     result_serializer="json",
-
     # Task Execution
     task_acks_late=True,  # Acknowledge after completion (requeue if worker crashes)
     task_reject_on_worker_lost=True,  # Requeue lost tasks
     worker_prefetch_multiplier=1,  # Fair distribution for long-running tasks
-
     # Worker Management
     worker_max_tasks_per_child=100,  # Prevent memory leaks (restart after 100 tasks)
     worker_disable_rate_limits=False,
-
     # Time Limits
     task_time_limit=settings.CELERY_TASK_TIME_LIMIT,  # Hard limit
     task_soft_time_limit=settings.CELERY_TASK_SOFT_TIME_LIMIT,  # Warning
-
     # Result Backend
     result_expires=3600,  # Results stored for 1 hour
     result_backend_transport_options={"master_name": "mymaster"},
-
     # Timezone
     timezone="UTC",
     enable_utc=True,

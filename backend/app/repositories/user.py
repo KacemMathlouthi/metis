@@ -51,7 +51,9 @@ class UserRepository:
         return result.scalar_one_or_none()
 
     @staticmethod
-    async def get_all_active(db: AsyncSession, skip: int = 0, limit: int = 100) -> list[User]:
+    async def get_all_active(
+        db: AsyncSession, skip: int = 0, limit: int = 100
+    ) -> list[User]:
         """Get all active users with pagination.
 
         Args:
@@ -63,7 +65,10 @@ class UserRepository:
             List of active User objects
         """
         result = await db.execute(
-            select(User).where(User.is_active == True).offset(skip).limit(limit)  # noqa: E712
+            select(User)
+            .where(User.is_active == True)
+            .offset(skip)
+            .limit(limit)  # noqa: E712
         )
         return list(result.scalars().all())
 
@@ -144,7 +149,10 @@ class UserRepository:
 
     @staticmethod
     async def update_profile(
-        db: AsyncSession, user: User, username: str | None = None, email: str | None = None
+        db: AsyncSession,
+        user: User,
+        username: str | None = None,
+        email: str | None = None,
     ) -> User:
         """Update user profile information.
 

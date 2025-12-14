@@ -80,12 +80,12 @@ async def process_pr_review(
 
             # Step 5: Generate AI review
             agent = MetisAgent()
-            
+
             context = {
                 "title": review.pr_metadata.get("title", ""),
                 "description": review.pr_metadata.get("description", ""),
             }
-            
+
             review_text = await agent.review_pr(diff=diff, context=context)
 
             # Step 6: Post review to GitHub

@@ -39,7 +39,9 @@ Sensitivity Level: {self.config.sensitivity.value}
 """.strip()
         return REVIEW_SYSTEM_PROMPT + "\n\n" + user_settings
 
-    async def review_code(self, diff: str, context: dict[str, Any] | None = None) -> str:
+    async def review_code(
+        self, diff: str, context: dict[str, Any] | None = None
+    ) -> str:
         """Generate code review for a diff.
 
         Args:
@@ -105,7 +107,9 @@ class AISummaryWriter:
         user_section = self.config.user_instructions or "No additional instructions."
         return SUMMARY_SYSTEM_PROMPT + "\n\n" + user_section
 
-    async def generate_summary(self, diff: str, context: dict[str, Any] | None = None) -> str:
+    async def generate_summary(
+        self, diff: str, context: dict[str, Any] | None = None
+    ) -> str:
         """Generate PR summary from diff.
 
         Args:
@@ -185,7 +189,9 @@ class MetisAgent:
         """
         return await self.reviewer.review_code(diff, context)
 
-    async def summarize_pr(self, diff: str, context: dict[str, Any] | None = None) -> str:
+    async def summarize_pr(
+        self, diff: str, context: dict[str, Any] | None = None
+    ) -> str:
         """Generate pull request summary.
 
         Args:

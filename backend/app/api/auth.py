@@ -56,7 +56,9 @@ async def github_callback(
 
     if existing_user:
         # Update existing user's tokens
-        user = await UserRepository.update_tokens(db, existing_user, access_token, refresh_token)
+        user = await UserRepository.update_tokens(
+            db, existing_user, access_token, refresh_token
+        )
     else:
         # Create new user
         user = await UserRepository.create(
@@ -110,7 +112,9 @@ async def refresh_access_token(
     cookie to get a new access token without requiring re-authentication.
     """
     if not refresh_token:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="No refresh token")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="No refresh token"
+        )
 
     try:
         payload = verify_token(refresh_token)
@@ -132,7 +136,9 @@ async def refresh_access_token(
         # Verify user still exists and is active
         user = await UserRepository.get_by_id(db, user_id)
         if not user or not user.is_active:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found"
+            )
 
         # Generate new access token
         new_access_token = create_access_token(data={"sub": str(user.id)})
@@ -140,7 +146,9 @@ async def refresh_access_token(
         return {"access_token": new_access_token, "token_type": "bearer"}
 
     except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(e)) from e
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail=str(e)
+        ) from e
 
 
 @router.post("/logout")
@@ -174,7 +182,9 @@ async def get_me(current_user: User = Depends(get_current_user)) -> dict[str, An
         "avatar_url": current_user.avatar_url,
         "github_id": current_user.github_id,
         "last_login_at": (
-            current_user.last_login_at.isoformat() if current_user.last_login_at else None
+            current_user.last_login_at.isoformat()
+            if current_user.last_login_at
+            else None
         ),
         "is_active": current_user.is_active,
     }
