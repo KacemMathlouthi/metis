@@ -10,6 +10,7 @@ import hmac
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
+from app.repositories.installation import InstallationRepository
 from app.repositories.review import ReviewRepository
 from app.tasks.review_task import process_pr_review
 
@@ -52,16 +53,29 @@ async def handle_pull_request(
         return {"status": "ignored", "reason": f"Action '{action}' not handled"}
 
     # Extract data
-    installation_id = installation["id"]
+    github_installation_id = installation["id"]  # GitHub's installation ID
     repo_full_name = repository["full_name"]
     pr_number = pull_request["number"]
     commit_sha = pull_request["head"]["sha"]
+
+    # Look up Installation record in database by GitHub installation ID
+    installation_repo = InstallationRepository()
+    installation_record = await installation_repo.get_by_github_installation_id(
+        db, github_installation_id
+    )
+
+    if not installation_record:
+        # Installation not found - user hasn't enrolled this repo yet
+        return {
+            "status": "ignored",
+            "reason": f"Installation {github_installation_id} not found. Repository not enrolled.",
+        }
 
     # Create Review record in PENDING state FIRST (to get review_id)
     review_repo = ReviewRepository()
     review = await review_repo.create(
         db=db,
-        installation_id=settings.GITHUB_INSTALLATION_ID,  # TODO: Get from Installation table
+        installation_id=installation_record.id,  # Use UUID from Installation table
         repository=repo_full_name,
         pr_number=pr_number,
         commit_sha=commit_sha,
@@ -75,7 +89,7 @@ async def handle_pull_request(
     # Queue Celery task (returns immediately)
     task = process_pr_review.delay(
         review_id=str(review.id),
-        installation_id=installation_id,
+        installation_id=github_installation_id,  # Pass GitHub's integer ID to worker
         repository=repo_full_name,
         pr_number=pr_number,
     )
