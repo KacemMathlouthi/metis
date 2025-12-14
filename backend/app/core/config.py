@@ -52,6 +52,18 @@ class Settings(BaseSettings):
     # Encryption key
     ENCRYPTION_KEY: str
 
+    # Redis Configuration
+    REDIS_URL: str
+    REDIS_MAX_CONNECTIONS: int = 50
+    REDIS_SOCKET_KEEPALIVE: bool = True
+    REDIS_SOCKET_TIMEOUT: int = 5
+
+    # Celery Configuration
+    CELERY_BROKER_URL: str
+    CELERY_RESULT_BACKEND: str
+    CELERY_TASK_TIME_LIMIT: int = 600
+    CELERY_TASK_SOFT_TIME_LIMIT: int = 540
+
     model_config = SettingsConfigDict(
         env_file=".env", env_file_encoding="utf-8", case_sensitive=False, extra="ignore"
     )
