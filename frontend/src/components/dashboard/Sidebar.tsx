@@ -14,13 +14,13 @@ import {
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/contexts/AuthContext';
+import { useRepository } from '@/contexts/RepositoryContext';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
@@ -42,34 +42,13 @@ export const AppSidebar: React.FC = () => {
   const location = useLocation();
   const { isMobile } = useSidebar();
   const { user, logout } = useAuth();
-  const [activeRepo, setActiveRepo] = React.useState({
-    name: 'metis-frontend',
-    logo: Code2,
-    plan: 'Pro',
-  });
-
-  const repositories = [
-    {
-      name: 'metis-frontend',
-      logo: Code2,
-      plan: 'Pro',
-    },
-    {
-      name: 'metis-backend',
-      logo: Code2,
-      plan: 'Free',
-    },
-    {
-      name: 'metis-docs',
-      logo: Code2,
-      plan: 'Free',
-    },
-  ];
+  const { selectedRepo, setSelectedRepo, installations, loading } = useRepository();
 
   const navItems = [
     { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard' },
-    { icon: Bot, label: 'AI Review', href: '/dashboard/ai-review' },
     { icon: BarChart3, label: 'Analytics', href: '/dashboard/analytics' },
+    { icon: Bot, label: 'AI Review', href: '/dashboard/ai-review' },
+    { icon: Code2, label: 'Repositories', href: '/dashboard/repositories' },
   ];
 
   return (
@@ -92,11 +71,15 @@ export const AppSidebar: React.FC = () => {
                   className="data-[state=open]:bg-gray-100 data-[state=open]:text-black"
                 >
                   <div className="flex aspect-square size-8 items-center justify-center rounded-lg border-2 border-black bg-white text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] group-data-[collapsible=icon]:!border-0 group-data-[collapsible=icon]:!shadow-none">
-                    <activeRepo.logo className="size-4" />
+                    <Code2 className="size-4" />
                   </div>
                   <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
-                    <span className="truncate font-semibold">{activeRepo.name}</span>
-                    <span className="truncate text-xs">{activeRepo.plan}</span>
+                    <span className="truncate font-semibold">
+                      {selectedRepo?.repository || 'No repository'}
+                    </span>
+                    <span className="truncate text-xs">
+                      {selectedRepo?.account_type || 'Select a repo'}
+                    </span>
                   </div>
                   <ChevronsUpDown className="ml-auto group-data-[collapsible=icon]:hidden" />
                 </SidebarMenuButton>
@@ -108,30 +91,52 @@ export const AppSidebar: React.FC = () => {
                 sideOffset={4}
               >
                 <DropdownMenuLabel className="text-muted-foreground text-xs">
-                  Repositories
+                  {loading ? 'Loading...' : `Repositories (${installations.length})`}
                 </DropdownMenuLabel>
-                {repositories.map((repo) => (
+                {installations.length === 0 && !loading && (
+                  <div className="p-4 text-center text-sm text-gray-500">
+                    No repositories enabled.
+                    <br />
+                    <Link to="/dashboard/repositories" className="font-bold text-black underline">
+                      Add your first repo →
+                    </Link>
+                  </div>
+                )}
+                {installations.map((installation) => (
                   <DropdownMenuItem
-                    key={repo.name}
-                    onClick={() => setActiveRepo(repo)}
-                    className="gap-2 bg-white p-2 hover:bg-gray-100"
+                    key={installation.id}
+                    onClick={() => setSelectedRepo(installation)}
+                    className={`gap-2 bg-white p-2 hover:bg-gray-100 ${
+                      selectedRepo?.id === installation.id ? 'bg-[#FCD34D]' : ''
+                    }`}
                   >
                     <div className="flex size-6 items-center justify-center rounded-sm border border-black">
-                      <repo.logo className="size-4 shrink-0" />
+                      <Code2 className="size-4 shrink-0" />
                     </div>
-                    {repo.name}
-                    <DropdownMenuShortcut>
-                      ⌘{repo.name.substring(0, 1).toUpperCase()}
-                    </DropdownMenuShortcut>
+                    <div className="flex flex-1 flex-col">
+                      <span className="text-sm font-semibold">{installation.repository}</span>
+                      <span className="text-xs text-gray-500">{installation.account_name}</span>
+                    </div>
+                    {selectedRepo?.id === installation.id && (
+                      <CheckCircle2 className="size-4 text-green-600" />
+                    )}
                   </DropdownMenuItem>
                 ))}
-                <DropdownMenuSeparator className="bg-black" />
-                <DropdownMenuItem className="gap-2 bg-white p-2 hover:bg-gray-100">
-                  <div className="bg-background flex size-6 items-center justify-center rounded-md border border-black">
-                    <Plus className="size-4" />
-                  </div>
-                  <div className="text-muted-foreground font-medium">Add repository</div>
-                </DropdownMenuItem>
+                {installations.length > 0 && (
+                  <>
+                    <DropdownMenuSeparator className="bg-black" />
+                    <DropdownMenuItem asChild className="gap-2 bg-white p-2 hover:bg-gray-100">
+                      <Link to="/dashboard/repositories">
+                        <div className="bg-background flex size-6 items-center justify-center rounded-md border border-black">
+                          <Plus className="size-4" />
+                        </div>
+                        <div className="text-muted-foreground font-medium">
+                          Manage repositories
+                        </div>
+                      </Link>
+                    </DropdownMenuItem>
+                  </>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           </SidebarMenuItem>
