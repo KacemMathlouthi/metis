@@ -43,21 +43,19 @@ export const AIReviewPage: React.FC = () => {
     }
   }, [selectedRepo]);
 
-  // Check for changes
+  // Check for changes (deep equality check ignoring key order)
   useEffect(() => {
     if (!originalConfig) return;
 
-    const currentConfig: InstallationConfig = {
-      sensitivity: sensitivity,
-      custom_instructions: customInstructions,
-      ignore_patterns: ignorePatterns,
-      auto_review_enabled: autoReview,
-    };
-
     const changed =
-      JSON.stringify(currentConfig) !== JSON.stringify(originalConfig);
+      sensitivity !== originalConfig.sensitivity ||
+      customInstructions !== originalConfig.custom_instructions ||
+      autoReview !== originalConfig.auto_review_enabled ||
+      JSON.stringify([...ignorePatterns].sort()) !==
+        JSON.stringify([...originalConfig.ignore_patterns].sort());
+
     setHasChanges(changed);
-  }, [sensitivity, customInstructions, ignorePatterns, autoReview]);
+  }, [sensitivity, customInstructions, ignorePatterns, autoReview, originalConfig]);
 
   const addPattern = () => {
     if (newPattern && !ignorePatterns.includes(newPattern)) {
