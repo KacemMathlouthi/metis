@@ -1,17 +1,17 @@
-"""GitHub webhook service handlers.
+"""GitHub webhook service handlers with async task dispatching.
 
-This module contains functions to verify and handle GitHub webhook events,
-including signature verification, pull request processing, and event routing.
+This module contains functions to verify and handle GitHub webhook events.
+Webhook handlers queue Celery tasks for async processing.
 """
 
 import hashlib
 import hmac
-from typing import Any
+
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
-from app.schemas.metis_config import ReviewerConfig, SensitivityLevel
-from app.services.github import github_service
-from app.services.metis_agent import MetisAgent
+from app.repositories.review import ReviewRepository
+from app.tasks.review_task import process_pr_review
 
 
 def verify_github_signature(payload: bytes, signature: str | None) -> bool:
@@ -24,59 +24,72 @@ def verify_github_signature(payload: bytes, signature: str | None) -> bool:
     return hmac.compare_digest(signature, expected_signature)
 
 
-async def handle_pull_request(data: dict[str, Any]) -> dict[str, str]:
-    """Handle pull request event."""
-    action = data.get("action")
-    pr_data = data.get("pull_request", {})
-    pr_number = pr_data.get("number")
-    pr_title = pr_data.get("title", "")
-    pr_description = pr_data.get("body", "")
+async def handle_pull_request(
+    action: str,
+    pull_request: dict,
+    repository: dict,
+    installation: dict,
+    db: AsyncSession,
+) -> dict:
+    """Handle pull_request webhook events by queueing async tasks.
 
-    repo_full_name = data.get("repository", {}).get("full_name")
-    owner_name, repo_name = repo_full_name.split("/")
+    1. Create Review record (PENDING)
+    2. Queue Celery task
+    3. Return immediately (<500ms)
 
-    if action in ["opened", "synchronize", "reopened"]:
-        # Fetch PR diff
-        diff = await github_service.get_pr_diff(
-            owner=owner_name,
-            repo=repo_name,
-            pr_number=pr_number,
-            installation_id=settings.GITHUB_INSTALLATION_ID,
-        )
+    Args:
+        action: PR action (opened, synchronize, reopened)
+        pull_request: PR data from webhook
+        repository: Repository data from webhook
+        installation: Installation data from webhook
+        db: Database session
 
-        # Initialize Metis agent with config
-        agent = MetisAgent(
-            reviewer_config=ReviewerConfig(
-                sensitivity=SensitivityLevel.MEDIUM,
-                user_instructions="",
-                temperature=0.1,
-                max_tokens=8192,
-            )
-        )
+    Returns:
+        dict with status, task_id, and review_id
+    """
+    # Only process on PR opened, synchronized, or reopened
+    if action not in ("opened", "synchronize", "reopened"):
+        return {"status": "ignored", "reason": f"Action '{action}' not handled"}
 
-        # Generate AI review
-        review_text = await agent.review_pr(
-            diff=diff,
-            context={"title": pr_title, "description": pr_description},
-        )
+    # Extract data
+    installation_id = installation["id"]
+    repo_full_name = repository["full_name"]
+    pr_number = pull_request["number"]
+    commit_sha = pull_request["head"]["sha"]
 
-        # Post review to GitHub
-        result = await github_service.create_pr_review(
-            owner=owner_name,
-            repo=repo_name,
-            pr_number=pr_number,
-            review_body=review_text,
-            installation_id=settings.GITHUB_INSTALLATION_ID,
-        )
+    # Create Review record in PENDING state FIRST (to get review_id)
+    review_repo = ReviewRepository()
+    review = await review_repo.create(
+        db=db,
+        installation_id=settings.GITHUB_INSTALLATION_ID,  # TODO: Get from Installation table
+        repository=repo_full_name,
+        pr_number=pr_number,
+        commit_sha=commit_sha,
+        metadata={
+            "title": pull_request["title"],
+            "author": pull_request["user"]["login"],
+            "url": pull_request["html_url"],
+        },
+    )
 
-        return {
-            "status": "OK",
-            "response": f"AI review submitted to PR {pr_number} at {owner_name}/{repo_name}",
-            "comment_url": str(result.get("html_url")),
-            "comment_id": str(result.get("id")),
-        }
+    # Queue Celery task (returns immediately)
+    task = process_pr_review.delay(
+        review_id=str(review.id),
+        installation_id=installation_id,
+        repository=repo_full_name,
+        pr_number=pr_number,
+    )
 
-    return {"status": "ignored", "response": f"action_{action}_not_handled"}
+    # Update review with Celery task ID
+    review.celery_task_id = task.id
+    await db.commit()
+
+    return {
+        "status": "accepted",
+        "message": f"Review queued for PR #{pr_number}",
+        "task_id": task.id,
+        "review_id": str(review.id),
+    }
 
 
 def handle_ping() -> dict[str, str]:
