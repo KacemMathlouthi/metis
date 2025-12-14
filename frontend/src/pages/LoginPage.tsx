@@ -17,7 +17,7 @@ export const LoginPage = () => {
   };
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center p-4" style={{ backgroundColor: '#FFFBEB' }}>
+    <div className="relative flex min-h-screen items-center justify-center p-4" style={{ backgroundColor: '#fffef8ff' }}>
       {/* Animated background */}
       <div className="fixed inset-0 z-0" style={{ width: '100vw', height: '100vh' }}>
         <PixelBlast
