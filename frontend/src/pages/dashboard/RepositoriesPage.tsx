@@ -9,6 +9,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { RefreshCw, Plus, Settings, CheckCircle2, XCircle, Code2, ExternalLink, AlertCircle } from 'lucide-react';
 import { useToast } from '@/contexts/ToastContext';
+import { getLanguageIcon, truncateText } from '@/lib/language-icons';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -264,24 +265,38 @@ export const RepositoriesPage = () => {
                         }`}
                       >
                         <div className="flex items-center gap-3">
-                          {enabled ? (
-                            <CheckCircle2 className="h-5 w-5 text-green-600" />
-                          ) : (
-                            <XCircle className="h-5 w-5 text-gray-400" />
-                          )}
-                          <div>
-                            <p className="font-bold">{repo.full_name}</p>
-                            <p className="text-xs text-gray-600">
-                              {repo.description || 'No description'}
+                          {/* Language Icon with white background */}
+                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border-2 border-black bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                            {getLanguageIcon(repo.language)}
+                          </div>
+
+                          {/* Status Icon */}
+                          <div className="flex-shrink-0">
+                            {enabled ? (
+                              <CheckCircle2 className="h-5 w-5 text-green-600" />
+                            ) : (
+                              <XCircle className="h-5 w-5 text-gray-400" />
+                            )}
+                          </div>
+
+                          <div className="min-w-0 flex-1">
+                            <p className="font-bold text-sm">{repo.full_name}</p>
+                            <div className="flex items-center gap-2">
+                              {/* Language badge first */}
                               {repo.language && (
                                 <Badge
                                   variant="neutral"
-                                  className="ml-2 border border-black text-xs"
+                                  className="border border-black text-xs flex-shrink-0"
                                 >
                                   {repo.language}
                                 </Badge>
                               )}
-                            </p>
+                              {/* Description - truncated to 40 chars */}
+                              <span className="text-xs text-gray-500">•</span>
+                              <p className="text-xs text-gray-600 truncate">
+                                {truncateText(repo.description, 60)}
+                              </p>
+                            </div>
                           </div>
                         </div>
 

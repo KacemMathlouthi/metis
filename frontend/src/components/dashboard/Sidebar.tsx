@@ -247,8 +247,8 @@ export const AppSidebar: React.FC = () => {
                 {/* Manage Repositories Link */}
                 <DropdownMenuItem asChild className="gap-2 bg-white p-2 hover:bg-gray-100">
                   <Link to="/dashboard/repositories">
-                    <Code2 className="size-4" />
-                    <span className="font-semibold">Repositories</span>
+                    <Plus className="size-4" />
+                    <span className="font-semibold">Manage repositories</span>
                   </Link>
                 </DropdownMenuItem>
 

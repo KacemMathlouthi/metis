@@ -44,17 +44,23 @@ export function RepositoryProvider({ children }: { children: ReactNode }) {
       const data = await apiClient.listInstallations(true); // active only
       setInstallations(data);
 
-      // Auto-select first installation if none selected
-      if (!selectedRepo && data.length > 0) {
-        setSelectedRepo(data[0]);
-        // Store in localStorage for persistence
-        localStorage.setItem('selectedRepoId', data[0].id);
-      } else if (selectedRepo) {
-        // Update selected repo if it's in the list (in case config changed)
-        const updated = data.find((inst) => inst.id === selectedRepo.id);
-        if (updated) {
-          setSelectedRepo(updated);
+      // Restore from localStorage or auto-select first
+      const savedRepoId = localStorage.getItem('selectedRepoId');
+
+      if (savedRepoId) {
+        // Try to find saved repo in the list
+        const saved = data.find((inst) => inst.id === savedRepoId);
+        if (saved) {
+          setSelectedRepo(saved);
+        } else if (data.length > 0) {
+          // Saved repo not found, select first
+          setSelectedRepo(data[0]);
+          localStorage.setItem('selectedRepoId', data[0].id);
         }
+      } else if (data.length > 0) {
+        // No saved repo, select first
+        setSelectedRepo(data[0]);
+        localStorage.setItem('selectedRepoId', data[0].id);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch installations');
@@ -72,6 +78,15 @@ export function RepositoryProvider({ children }: { children: ReactNode }) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Refetch data when selected repository changes (for future repo-specific data)
+  useEffect(() => {
+    if (selectedRepo) {
+      // TODO: Trigger refetch of dashboard stats, PRs, issues for this repo
+      console.log('Selected repository changed:', selectedRepo.repository);
+      // Future: dispatch event or call refetch callbacks
+    }
+  }, [selectedRepo]);
 
   // Update localStorage when selection changes
   const handleSetSelectedRepo = (repo: Installation | null) => {
