@@ -37,11 +37,6 @@ export function RepositoryProvider({ children }: { children: ReactNode }) {
   const hasFetchedRef = React.useRef(false); // Prevent duplicate fetches
 
   const fetchInstallations = async () => {
-    // Prevent duplicate fetches in StrictMode
-    if (hasFetchedRef.current && loading) {
-      return;
-    }
-
     setLoading(true);
     setError(null);
 
@@ -66,15 +61,16 @@ export function RepositoryProvider({ children }: { children: ReactNode }) {
       console.error('Failed to fetch installations:', err);
     } finally {
       setLoading(false);
-      hasFetchedRef.current = true;
     }
   };
 
-  // Restore selected repo from localStorage on mount
+  // Fetch installations only once on mount
   useEffect(() => {
     if (!hasFetchedRef.current) {
+      hasFetchedRef.current = true;
       fetchInstallations();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Update localStorage when selection changes

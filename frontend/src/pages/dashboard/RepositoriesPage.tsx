@@ -5,24 +5,41 @@
  * code reviews for repositories, and configure review settings.
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { RefreshCw, Plus, Settings, CheckCircle2, XCircle, Code2, ExternalLink } from 'lucide-react';
+import { RefreshCw, Plus, Settings, CheckCircle2, XCircle, Code2, ExternalLink, AlertCircle } from 'lucide-react';
+import { useToast } from '@/contexts/ToastContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { apiClient } from '@/lib/api-client';
 import type { GitHubInstallation, Installation, InstallationConfig } from '@/types/api';
 import { useRepository } from '@/contexts/RepositoryContext';
 
 export const RepositoriesPage = () => {
   const navigate = useNavigate();
+  const toast = useToast();
   const { refetchInstallations } = useRepository();
   const [githubInstallations, setGithubInstallations] = useState<GitHubInstallation[]>([]);
   const [enabledInstallations, setEnabledInstallations] = useState<Installation[]>([]);
   const [loading, setLoading] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [confirmDisable, setConfirmDisable] = useState<{ open: boolean; id: string | null }>({
+    open: false,
+    id: null,
+  });
 
   const fetchData = async () => {
     setLoading(true);
@@ -54,10 +71,15 @@ export const RepositoriesPage = () => {
       setEnabledInstallations(result.installations);
       await refetchInstallations();
 
-      // Show success message
-      alert(`Synced ${result.synced} installations (${result.created} new, ${result.updated} updated)`);
+      // Show success toast
+      toast.success(
+        'Installations Synced',
+        `${result.synced} installations synced (${result.created} new, ${result.updated} updated)`
+      );
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Sync failed');
+      const errorMsg = err instanceof Error ? err.message : 'Sync failed';
+      setError(errorMsg);
+      toast.error('Sync Failed', errorMsg);
       console.error('Sync failed:', err);
     } finally {
       setSyncing(false);
@@ -70,6 +92,8 @@ export const RepositoriesPage = () => {
     accountType: 'USER' | 'ORGANIZATION',
     accountName: string
   ) => {
+    const loadingId = toast.loading('Enabling repository...', `Setting up code reviews for ${repository}`);
+
     try {
       const defaultConfig: InstallationConfig = {
         sensitivity: 'MEDIUM',
@@ -89,27 +113,42 @@ export const RepositoriesPage = () => {
       // Refresh data
       await fetchData();
       await refetchInstallations();
+
+      toast.dismiss(loadingId);
+      toast.success('Repository Enabled', `Code reviews enabled for ${repository}`);
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Failed to enable repository');
+      const errorMsg = err instanceof Error ? err.message : 'Failed to enable repository';
+      toast.dismiss(loadingId);
+      toast.error('Enable Failed', errorMsg);
     }
   };
 
   const handleDisable = async (installationId: string) => {
-    if (!confirm('Disable code reviews for this repository?')) {
-      return;
-    }
+    const loadingId = toast.loading('Disabling repository...', 'Removing code review configuration');
 
     try {
       await apiClient.disableInstallation(installationId);
       await fetchData();
       await refetchInstallations();
+
+      toast.dismiss(loadingId);
+      toast.success('Repository Disabled', 'Code reviews have been disabled for this repository');
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Failed to disable repository');
+      const errorMsg = err instanceof Error ? err.message : 'Failed to disable repository';
+      toast.dismiss(loadingId);
+      toast.error('Disable Failed', errorMsg);
+    } finally {
+      setConfirmDisable({ open: false, id: null });
     }
   };
 
+  const hasFetchedRef = useRef(false);
+
   useEffect(() => {
-    fetchData();
+    if (!hasFetchedRef.current) {
+      fetchData();
+      hasFetchedRef.current = true;
+    }
   }, []);
 
   // Helper to check if a repo is enabled
@@ -159,11 +198,11 @@ export const RepositoriesPage = () => {
       </div>
 
       {error && (
-        <Card className="border-2 border-red-600 bg-red-50">
-          <CardContent className="pt-6">
-            <p className="font-bold text-red-600">{error}</p>
-          </CardContent>
-        </Card>
+        <Alert variant="destructive">
+          <AlertCircle />
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
       )}
 
       {loading ? (
@@ -262,7 +301,7 @@ export const RepositoriesPage = () => {
                                 size="sm"
                                 variant="neutral"
                                 className="border-2 border-red-600 bg-red-50 font-bold text-red-600 hover:bg-red-100"
-                                onClick={() => handleDisable(enabledInst.id)}
+                                onClick={() => setConfirmDisable({ open: true, id: enabledInst.id })}
                               >
                                 Disable
                               </Button>
@@ -323,6 +362,31 @@ export const RepositoriesPage = () => {
           )}
         </>
       )}
+
+      {/* Confirmation Dialog for Disabling */}
+      <AlertDialog
+        open={confirmDisable.open}
+        onOpenChange={(open) => setConfirmDisable({ open, id: confirmDisable.id })}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Disable Code Reviews?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will stop automatic code reviews for this repository. You can re-enable it
+              anytime.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => confirmDisable.id && handleDisable(confirmDisable.id)}
+              className="bg-black text-white border-black"
+            >
+              Disable Reviews
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
