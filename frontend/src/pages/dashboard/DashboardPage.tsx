@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { Area, AreaChart, ResponsiveContainer, XAxis, CartesianGrid } from 'recharts';
 import { Badge } from '@/components/ui/badge';
+import { useRepository } from '@/contexts/RepositoryContext';
 
 const miniChartData = [
   { name: 'Mon', value: 12 },
@@ -24,6 +25,7 @@ const miniChartData = [
 
 export const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
+  const { selectedRepo } = useRepository();
 
   return (
     <div className="space-y-8 p-2">
@@ -36,7 +38,7 @@ export const DashboardPage: React.FC = () => {
               variant="neutral"
               className="border-2 border-black bg-[#FCD34D] px-3 py-1 text-lg font-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
             >
-              metis-backend
+              {selectedRepo?.repository || 'No repository selected'}
             </Badge>
           </div>
         </div>
