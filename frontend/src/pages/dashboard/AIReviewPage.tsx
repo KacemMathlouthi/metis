@@ -1,16 +1,63 @@
-import React, { useState } from 'react';
-import { Bot, Zap, FileText, GitCommit, Ban, Book, Plus, Trash2, Sparkles } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Bot, Zap, FileText, GitCommit, Ban, Plus, Trash2, Sparkles } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { UnsavedChangesBar } from '@/components/UnsavedChangesBar';
+
+import { useRepository } from '@/contexts/RepositoryContext';
+import { useToast } from '@/contexts/ToastContext';
+import { apiClient } from '@/lib/api-client';
+
+import type { InstallationConfig } from '@/types/api';
 
 export const AIReviewPage: React.FC = () => {
-  const [sensitivity, setSensitivity] = useState<'low' | 'medium' | 'high'>('medium');
-  const [ignorePatterns, setIgnorePatterns] = useState<string[]>(['*.test.ts', 'vendor/*']);
+  const { selectedRepo } = useRepository();
+  const toast = useToast();
+
+  // Form state
+  const [sensitivity, setSensitivity] = useState<'LOW' | 'MEDIUM' | 'HIGH'>('MEDIUM');
+  const [customInstructions, setCustomInstructions] = useState('');
+  const [autoReview, setAutoReview] = useState(true);
+  const [ignorePatterns, setIgnorePatterns] = useState<string[]>([]);
   const [newPattern, setNewPattern] = useState('');
+
+  // Track original state for dirty checking
+  const [originalConfig, setOriginalConfig] = useState<InstallationConfig | null>(null);
+  const [hasChanges, setHasChanges] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  // Load config from selected installation
+  useEffect(() => {
+    if (selectedRepo) {
+      const config = selectedRepo.config;
+      setSensitivity(config.sensitivity as 'LOW' | 'MEDIUM' | 'HIGH');
+      setCustomInstructions(config.custom_instructions);
+      setIgnorePatterns(config.ignore_patterns);
+      setAutoReview(config.auto_review_enabled);
+      setOriginalConfig(config);
+      setHasChanges(false);
+    }
+  }, [selectedRepo]);
+
+  // Check for changes
+  useEffect(() => {
+    if (!originalConfig) return;
+
+    const currentConfig: InstallationConfig = {
+      sensitivity: sensitivity,
+      custom_instructions: customInstructions,
+      ignore_patterns: ignorePatterns,
+      auto_review_enabled: autoReview,
+    };
+
+    const changed =
+      JSON.stringify(currentConfig) !== JSON.stringify(originalConfig);
+    setHasChanges(changed);
+  }, [sensitivity, customInstructions, ignorePatterns, autoReview]);
 
   const addPattern = () => {
     if (newPattern && !ignorePatterns.includes(newPattern)) {
@@ -21,6 +68,50 @@ export const AIReviewPage: React.FC = () => {
 
   const removePattern = (pattern: string) => {
     setIgnorePatterns(ignorePatterns.filter((p) => p !== pattern));
+  };
+
+  const handleSave = async () => {
+    if (!selectedRepo) {
+      toast.error('No Repository Selected', 'Please select a repository first');
+      return;
+    }
+
+    setSaving(true);
+    const loadingId = toast.loading('Saving configuration...', 'Updating review settings');
+
+    try {
+      const config: InstallationConfig = {
+        sensitivity: sensitivity,
+        custom_instructions: customInstructions,
+        ignore_patterns: ignorePatterns,
+        auto_review_enabled: autoReview,
+      };
+
+      await apiClient.updateInstallationConfig(selectedRepo.id, config);
+
+      setOriginalConfig(config);
+      setHasChanges(false);
+
+      toast.dismiss(loadingId);
+      toast.success('Configuration Saved', 'Review settings updated successfully');
+    } catch (err) {
+      toast.dismiss(loadingId);
+      toast.error('Save Failed', err instanceof Error ? err.message : 'Failed to save configuration');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleRevert = () => {
+    if (!originalConfig) return;
+
+    setSensitivity(originalConfig.sensitivity as 'LOW' | 'MEDIUM' | 'HIGH');
+    setCustomInstructions(originalConfig.custom_instructions);
+    setIgnorePatterns(originalConfig.ignore_patterns);
+    setAutoReview(originalConfig.auto_review_enabled);
+    setHasChanges(false);
+
+    toast.info('Changes Reverted', 'Configuration reset to last saved state');
   };
 
   return (
@@ -60,19 +151,6 @@ export const AIReviewPage: React.FC = () => {
               </p>
             </div>
           </div>
-
-          <div className="flex items-start gap-3 rounded-md border-2 border-black bg-green-50 p-4">
-            <div className="mt-1 rounded-full bg-green-200 p-1">
-              <Book className="h-4 w-4 text-green-700" />
-            </div>
-            <div>
-              <p className="text-sm font-bold">Feedback Loop</p>
-              <p className="text-muted-foreground mt-1 text-sm">
-                Reply directly to Metis's comments to provide context or correct its understanding
-                of your project.
-              </p>
-            </div>
-          </div>
         </CardContent>
       </Card>
 
@@ -89,24 +167,24 @@ export const AIReviewPage: React.FC = () => {
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             {[
               {
-                id: 'low',
+                id: 'LOW',
                 label: 'Low',
                 desc: 'Focuses only on critical bugs and major security flaws.',
               },
               {
-                id: 'medium',
+                id: 'MEDIUM',
                 label: 'Default',
                 desc: 'Standard analysis balancing comprehensive checks with noise reduction.',
               },
               {
-                id: 'high',
+                id: 'HIGH',
                 label: 'High',
                 desc: 'Exhaustive review covering style, minor optimizations, and potential edge cases.',
               },
             ].map((option) => (
               <div
                 key={option.id}
-                onClick={() => setSensitivity(option.id as any)}
+                onClick={() => setSensitivity(option.id as 'LOW' | 'MEDIUM' | 'HIGH')}
                 className={`cursor-pointer rounded-md border-2 p-4 transition-all ${
                   sensitivity === option.id
                     ? 'border-black bg-[#FCD34D] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]'
@@ -138,14 +216,11 @@ export const AIReviewPage: React.FC = () => {
         </CardHeader>
         <CardContent>
           <Textarea
+            value={customInstructions}
+            onChange={(e) => setCustomInstructions(e.target.value)}
             placeholder="Enter specific coding standards, architectural patterns, or focus areas for Metis..."
             className="min-h-[120px] resize-none border-2 border-black focus-visible:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus-visible:ring-0"
           />
-          <div className="mt-4 flex justify-end">
-            <Button className="border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-y-[1px] hover:shadow-none">
-              Save Instructions
-            </Button>
-          </div>
         </CardContent>
       </Card>
 
@@ -163,7 +238,7 @@ export const AIReviewPage: React.FC = () => {
                 initial pull request.
               </CardDescription>
             </div>
-            <Switch className="scale-125" />
+            <Switch checked={autoReview} onCheckedChange={setAutoReview} className="scale-125" />
           </div>
         </CardHeader>
         <CardContent>
@@ -222,6 +297,15 @@ export const AIReviewPage: React.FC = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Save Bar */}
+      {hasChanges && (
+        <UnsavedChangesBar
+          onSave={handleSave}
+          onRevert={handleRevert}
+          saving={saving}
+        />
+      )}
     </div>
   );
 };
