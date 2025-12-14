@@ -11,6 +11,7 @@ import { DashboardPage } from './pages/dashboard/DashboardPage';
 import { AnalyticsPage } from './pages/dashboard/AnalyticsPage';
 import { AIReviewPage } from './pages/dashboard/AIReviewPage';
 import { RepositoriesPage } from './pages/dashboard/RepositoriesPage';
+import { ToastProvider } from './contexts/ToastContext';
 import './App.css';
 
 function App() {
@@ -18,7 +19,8 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <RepositoryProvider>
-          <Routes>
+          <ToastProvider>
+            <Routes>
             {/* Public Routes */}
             <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<LoginPage />} />
@@ -42,6 +44,7 @@ function App() {
             {/* 404 Page */}
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
+          </ToastProvider>
         </RepositoryProvider>
       </AuthProvider>
     </BrowserRouter>
