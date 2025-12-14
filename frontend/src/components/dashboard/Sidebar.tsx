@@ -48,7 +48,6 @@ export const AppSidebar: React.FC = () => {
     { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard' },
     { icon: BarChart3, label: 'Analytics', href: '/dashboard/analytics' },
     { icon: Bot, label: 'AI Review', href: '/dashboard/ai-review' },
-    { icon: Code2, label: 'Repositories', href: '/dashboard/repositories' },
   ];
 
   return (
@@ -244,6 +243,15 @@ export const AppSidebar: React.FC = () => {
                     </div>
                   </div>
                 </DropdownMenuLabel>
+                <DropdownMenuSeparator className="bg-black" />
+                {/* Manage Repositories Link */}
+                <DropdownMenuItem asChild className="gap-2 bg-white p-2 hover:bg-gray-100">
+                  <Link to="/dashboard/repositories">
+                    <Code2 className="size-4" />
+                    <span className="font-semibold">Repositories</span>
+                  </Link>
+                </DropdownMenuItem>
+
                 <DropdownMenuSeparator className="bg-black" />
                 <DropdownMenuItem
                   className="rounded-md border-2 border-transparent bg-white font-bold text-red-600 focus:border-black focus:bg-gray-100 cursor-pointer"
