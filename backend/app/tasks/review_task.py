@@ -4,6 +4,7 @@ Contains the main async task that processes pull request reviews
 with retry logic and database status tracking.
 """
 
+import asyncio
 from datetime import datetime, timezone
 from uuid import UUID
 
@@ -23,8 +24,21 @@ from app.services.metis_agent import MetisAgent
     time_limit=600,  # 10 minutes hard limit
     soft_time_limit=540,  # 9 minutes soft limit
 )
-async def process_pr_review(
+def process_pr_review(
     self,
+    review_id: str,
+    installation_id: int,
+    repository: str,
+    pr_number: int,
+) -> dict:
+    """Process PR review asynchronously (Celery entry point)."""
+    return asyncio.run(
+        _process_pr_review_async(self, review_id, installation_id, repository, pr_number)
+    )
+
+
+async def _process_pr_review_async(
+    task_self,
     review_id: str,
     installation_id: int,
     repository: str,
@@ -69,35 +83,30 @@ async def process_pr_review(
             review.started_at = start_time
             await db.commit()
 
-            # Step 3: Get installation token
+            # Step 3: Fetch PR diff from GitHub
             github = GitHubService()
-            token = await github.get_installation_token(installation_id)
-
-            # Step 4: Fetch PR diff from GitHub
             owner, repo = repository.split("/")
             print(f"Fetching diff for {repository}#{pr_number}")
-            diff = await github.get_pr_diff(owner, repo, pr_number, token)
+            diff = await github.get_pr_diff(owner, repo, pr_number, installation_id)
 
-            # Step 5: Generate AI review
+            # Step 4: Generate AI review
             agent = MetisAgent()
-
             context = {
                 "title": review.pr_metadata.get("title", ""),
                 "description": review.pr_metadata.get("description", ""),
             }
-
             review_text = await agent.review_pr(diff=diff, context=context)
 
-            # Step 6: Post review to GitHub
+            # Step 5: Post review to GitHub
             await github.create_pr_review(
                 owner=owner,
                 repo=repo,
                 pr_number=pr_number,
                 review_body=review_text,
-                token=token,
+                installation_id=installation_id,
             )
 
-            # Step 7: Update Review record
+            # Step 6: Update Review record
             review.status = "COMPLETED"
             review.completed_at = datetime.now(timezone.utc)
             review.review_text = review_text
@@ -113,7 +122,7 @@ async def process_pr_review(
             }
 
         except SoftTimeLimitExceeded:
-            print(f"Task {self.request.id} approaching time limit, wrapping up...")
+            print(f"Task {task_self.request.id} approaching time limit, wrapping up...")
 
             review.status = "FAILED"
             review.error = "Task exceeded time limit (9 minutes)"
