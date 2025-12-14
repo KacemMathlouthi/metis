@@ -89,16 +89,22 @@ async def sync_installations(
         for repo in repositories:
             repo_full_name = repo["full_name"]
 
-            # Check if installation already exists
-            existing = await installation_repo.get_by_github_installation_id(
-                db, github_installation_id
+            # Check if this specific repo is already in database
+            existing_query = await db.execute(
+                select(Installation).where(
+                    and_(
+                        Installation.github_installation_id == github_installation_id,
+                        Installation.repository == repo_full_name,
+                    )
+                )
             )
+            existing = existing_query.scalar_one_or_none()
 
-            if existing and existing.repository == repo_full_name:
+            if existing:
                 # Update existing installation
                 updated_count += 1
                 installation = existing
-            elif not existing:
+            else:
                 # Create new installation (active by default)
                 installation = await installation_repo.create(
                     db=db,
@@ -115,8 +121,6 @@ async def sync_installations(
                     },
                 )
                 created_count += 1
-            else:
-                continue
 
             synced_installations.append(
                 InstallationResponse(
