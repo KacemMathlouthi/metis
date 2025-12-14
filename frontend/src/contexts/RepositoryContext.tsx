@@ -5,6 +5,7 @@
  * Used by sidebar selector and dashboard pages to filter data by repo.
  */
 
+import * as React from 'react';
 import {
   createContext,
   useContext,
@@ -33,8 +34,14 @@ export function RepositoryProvider({ children }: { children: ReactNode }) {
   const [installations, setInstallations] = useState<Installation[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const hasFetchedRef = React.useRef(false); // Prevent duplicate fetches
 
   const fetchInstallations = async () => {
+    // Prevent duplicate fetches in StrictMode
+    if (hasFetchedRef.current && loading) {
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
@@ -46,10 +53,7 @@ export function RepositoryProvider({ children }: { children: ReactNode }) {
       if (!selectedRepo && data.length > 0) {
         setSelectedRepo(data[0]);
         // Store in localStorage for persistence
-        localStorage.setItem(
-          'selectedRepoId',
-          data[0].id
-        );
+        localStorage.setItem('selectedRepoId', data[0].id);
       } else if (selectedRepo) {
         // Update selected repo if it's in the list (in case config changed)
         const updated = data.find((inst) => inst.id === selectedRepo.id);
@@ -62,16 +66,15 @@ export function RepositoryProvider({ children }: { children: ReactNode }) {
       console.error('Failed to fetch installations:', err);
     } finally {
       setLoading(false);
+      hasFetchedRef.current = true;
     }
   };
 
   // Restore selected repo from localStorage on mount
   useEffect(() => {
-    const savedRepoId = localStorage.getItem('selectedRepoId');
-    if (savedRepoId) {
-      // Will be populated after fetchInstallations
+    if (!hasFetchedRef.current) {
+      fetchInstallations();
     }
-    fetchInstallations();
   }, []);
 
   // Update localStorage when selection changes
