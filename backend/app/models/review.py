@@ -24,6 +24,9 @@ class Review(Base, BaseModel):
 
     __tablename__ = "reviews"
 
+    # Celery task ID
+    celery_task_id = Column(String(255), nullable=True, index=True, comment="Celery task ID for tracking")
+
     # Link to installation
     installation_id = Column(
         UUID(as_uuid=True),
