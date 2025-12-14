@@ -8,10 +8,12 @@ from typing import Any
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.auth_deps import get_current_user
 from app.db.session import get_db
+from app.models.installation import Installation
 from app.models.user import User
 from app.repositories.installation import InstallationRepository
 from app.repositories.user import UserRepository
@@ -208,40 +210,30 @@ async def enable_repository(
     """
     installation_repo = InstallationRepository()
 
-    # Check if installation already exists and is active
-    existing = await installation_repo.check_exists(
-        db, request.github_installation_id, request.repository
-    )
-
-    if existing:
-        # Check if it's already active
-        installation = await installation_repo.get_by_github_installation_id(
-            db, request.github_installation_id
+    # Check if installation exists for this repository
+    existing_installation = await db.execute(
+        select(Installation).where(
+            and_(
+                Installation.github_installation_id == request.github_installation_id,
+                Installation.repository == request.repository,
+            )
         )
-        if (
-            installation
-            and installation.is_active
-            and installation.repository == request.repository
-        ):
+    )
+    installation = existing_installation.scalar_one_or_none()
+
+    if installation:
+        # Installation exists
+        if installation.is_active:
+            # Already enabled
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
                 detail=f"Repository {request.repository} is already enabled",
             )
-
-        # Reactivate if exists but inactive
-        if installation:
-            installation = await installation_repo.activate(db, installation)
-            await db.commit()
         else:
-            # Create new installation
-            installation = await installation_repo.create(
-                db=db,
-                github_installation_id=request.github_installation_id,
-                user_id=current_user.id,
-                account_type=request.account_type,
-                account_name=request.account_name,
-                repository=request.repository,
-                config=request.config.model_dump(),
+            # Reactivate inactive installation
+            installation = await installation_repo.activate(db, installation)
+            installation = await installation_repo.update_config(
+                db, installation, request.config.model_dump()
             )
             await db.commit()
     else:
