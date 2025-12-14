@@ -35,9 +35,39 @@ services:
     networks:
       - metis-network
 
+  redis:
+    image: redis:7-alpine
+    container_name: metis-redis
+    command: redis-server --maxmemory 512mb --maxmemory-policy allkeys-lru
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - metis-network
+
+  redis-insight:
+    image: redis/redisinsight:latest
+    container_name: metis-redis-insight
+    ports:
+      - "5540:5540"
+    volumes:
+      - redis_insight_data:/data
+    depends_on:
+      - redis
+    networks:
+      - metis-network
+
 volumes:
   postgres_data:
   pgadmin_data:
+  redis_data:
+  redis_insight_data:
 
 networks:
   metis-network:
