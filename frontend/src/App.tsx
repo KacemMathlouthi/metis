@@ -18,9 +18,8 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <RepositoryProvider>
-          <ToastProvider>
-            <Routes>
+        <ToastProvider>
+          <Routes>
             {/* Public Routes */}
             <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<LoginPage />} />
@@ -31,7 +30,9 @@ function App() {
               path="/dashboard"
               element={
                 <ProtectedRoute>
-                  <DashboardLayout />
+                  <RepositoryProvider>
+                    <DashboardLayout />
+                  </RepositoryProvider>
                 </ProtectedRoute>
               }
             >
@@ -44,8 +45,7 @@ function App() {
             {/* 404 Page */}
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
-          </ToastProvider>
-        </RepositoryProvider>
+        </ToastProvider>
       </AuthProvider>
     </BrowserRouter>
   );
