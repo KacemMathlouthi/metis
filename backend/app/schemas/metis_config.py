@@ -37,6 +37,7 @@ class ReviewerConfig(BaseModel):
         description="LLM temperature for response generation",
     )
     max_tokens: int = Field(
+        default=8192,
         gt=0,
         description="Maximum tokens in LLM response",
     )
