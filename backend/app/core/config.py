@@ -64,6 +64,11 @@ class Settings(BaseSettings):
     CELERY_TASK_TIME_LIMIT: int = 600
     CELERY_TASK_SOFT_TIME_LIMIT: int = 540
 
+    # Daytona Configuration
+    DAYTONA_API_KEY: str
+    DAYTONA_API_URL: str
+    DAYTONA_TARGET: str
+
     model_config = SettingsConfigDict(
         env_file=".env", env_file_encoding="utf-8", case_sensitive=False, extra="ignore"
     )

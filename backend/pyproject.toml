@@ -9,6 +9,7 @@ dependencies = [
     "asyncpg>=0.31.0",
     "celery[redis]>=5.6.0",
     "cryptography>=46.0.3",
+    "daytona>=0.125.0",
     "fastapi>=0.121.3",
     "flower>=2.0.1",
     "httpx>=0.28.1",
