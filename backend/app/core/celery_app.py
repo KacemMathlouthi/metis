@@ -85,3 +85,8 @@ def task_retry_handler(sender, **kwargs):
 def task_failure_handler(sender, task_id, exception, **kwargs):
     """Log task failure."""
     print(f"Task failed: {sender.name} [{task_id}] - {exception}")
+
+
+# Import tasks to register them with Celery
+# This must be at the end to avoid circular imports
+from app.tasks import review_task  # noqa: F401, E402

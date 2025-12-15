@@ -124,15 +124,19 @@ async def _process_pr_review_async(
         except SoftTimeLimitExceeded:
             print(f"Task {task_self.request.id} approaching time limit, wrapping up...")
 
-            review.status = "FAILED"
-            review.error = "Task exceeded time limit (9 minutes)"
-            await db.commit()
+            if review:
+                review.status = "FAILED"
+                review.error = "Task exceeded time limit (9 minutes)"
+                await db.commit()
 
             raise  # Re-raise to trigger retry
 
         except Exception as e:
-            review.status = "FAILED"
-            review.error = str(e)
-            await db.commit()
+            print(f"Task error: {e}")
+
+            if review:
+                review.status = "FAILED"
+                review.error = str(e)
+                await db.commit()
 
             raise
