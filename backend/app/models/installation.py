@@ -5,7 +5,7 @@ specific repository or organization. Stores the GitHub installation ID
 and review configuration (sensitivity, custom rules, etc.) as JSON.
 """
 
-from sqlalchemy import Boolean, Column, DateTime, Enum, ForeignKey, Integer, String
+from sqlalchemy import Boolean, Column, DateTime, Enum, ForeignKey, Index, Integer, String
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import relationship
 
@@ -22,11 +22,20 @@ class Installation(Base, BaseModel):
     """
 
     __tablename__ = "installations"
+    __table_args__ = (
+        # Composite unique constraint: one installation can have multiple repos
+        # but each (installation_id, repository) pair must be unique
+        Index(
+            "ix_installations_github_installation_id_repository",
+            "github_installation_id",
+            "repository",
+            unique=True,
+        ),
+    )
 
     # GitHub App installation
     github_installation_id = Column(
         Integer,
-        unique=True,
         nullable=False,
         index=True,
         comment="GitHub App installation ID",
@@ -68,7 +77,9 @@ class Installation(Base, BaseModel):
 
     # Relationships
     user = relationship("User", back_populates="installations")
-    reviews = relationship("Review", back_populates="installation", cascade="all, delete-orphan")
+    reviews = relationship(
+        "Review", back_populates="installation", cascade="all, delete-orphan"
+    )
 
     def __repr__(self) -> str:
         """String representation for debugging."""

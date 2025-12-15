@@ -1,7 +1,10 @@
 """GitHub webhook endpoint handler."""
 
-from fastapi import APIRouter, Header, HTTPException, Request
+from fastapi import APIRouter, Depends, Header, HTTPException, Request
+from fastapi.responses import JSONResponse
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.db.session import get_db
 from app.services.webhook import (
     handle_other_event,
     handle_ping,
@@ -17,8 +20,9 @@ async def github_webhook(
     request: Request,
     x_hub_signature_256: str | None = Header(None),
     x_github_event: str = Header(...),
-) -> dict[str, str]:
-    """Handle GitHub webhook events."""
+    db: AsyncSession = Depends(get_db),
+) -> JSONResponse:
+    """Handle GitHub webhook events with async task processing."""
     # Get raw payload for signature verification
     payload = await request.body()
 
@@ -32,8 +36,20 @@ async def github_webhook(
     # Handle different event types
     match x_github_event:
         case "ping":
-            return handle_ping()
+            result = handle_ping()
+            return JSONResponse(content=result, status_code=200)
+
         case "pull_request":
-            return await handle_pull_request(data)
+            result = await handle_pull_request(
+                action=data["action"],
+                pull_request=data["pull_request"],
+                repository=data["repository"],
+                installation=data["installation"],
+                db=db,
+            )
+            # Return 202 Accepted for async processing
+            return JSONResponse(content=result, status_code=202)
+
         case _:
-            return handle_other_event(x_github_event)
+            result = handle_other_event(x_github_event)
+            return JSONResponse(content=result, status_code=200)

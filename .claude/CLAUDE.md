@@ -168,7 +168,6 @@ The backend authenticates as a GitHub App using:
 - `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET`: OAuth credentials
 - `GITHUB_WEBHOOK_SECRET`: For signature verification
 - `GITHUB_SECRET_KEY_PATH`: Path to private key PEM file
-- `GITHUB_INSTALLATION_ID`: Installation identifier (for testing)
 
 See `docs/GITHUB_APP_SETUP.md` for complete setup instructions.
 

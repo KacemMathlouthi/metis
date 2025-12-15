@@ -6,7 +6,13 @@
  * by the caller (ProtectedRoute handles 401 redirects).
  */
 
-import type { User, Repository, RepositoryConfig } from '@/types/api';
+import type {
+  User,
+  Installation,
+  InstallationConfig,
+  GitHubInstallation,
+  SyncInstallationsResponse,
+} from '@/types/api';
 
 const API_BASE_URL =
   import.meta.env.VITE_API_URL || 'http://localhost:8000';
@@ -34,6 +40,11 @@ class ApiClient {
     if (!response.ok) {
       const error = await response.text();
       throw new Error(`API error ${response.status}: ${error}`);
+    }
+
+    // Handle 204 No Content (no response body)
+    if (response.status === 204) {
+      return undefined as T;
     }
 
     return response.json();
@@ -68,21 +79,33 @@ class ApiClient {
     });
   }
 
-  // ==================== Repository Endpoints ====================
+  // ==================== Installation Endpoints ====================
 
   /**
-   * List user's GitHub App installations.
-   * Shows which repositories user can enable reviews for.
+   * List user's GitHub App installations from GitHub API.
+   * Shows which repositories are available to enable.
    */
-  async listInstallations(): Promise<any> {
-    return this.request('/repositories/installations');
+  async getGitHubInstallations(): Promise<GitHubInstallation[]> {
+    return this.request<GitHubInstallation[]>('/api/installations/github');
   }
 
   /**
-   * List all repositories user has enabled for reviews.
+   * Sync installations from GitHub to database.
+   * Creates Installation records for available repositories.
    */
-  async listRepositories(): Promise<Repository[]> {
-    return this.request<Repository[]>('/repositories/list');
+  async syncInstallations(): Promise<SyncInstallationsResponse> {
+    return this.request<SyncInstallationsResponse>(
+      '/api/installations/sync',
+      { method: 'POST' }
+    );
+  }
+
+  /**
+   * List user's enabled installations from database.
+   */
+  async listInstallations(activeOnly: boolean = true): Promise<Installation[]> {
+    const query = activeOnly ? '?active_only=true' : '?active_only=false';
+    return this.request<Installation[]>(`/api/installations${query}`);
   }
 
   /**
@@ -91,24 +114,38 @@ class ApiClient {
   async enableRepository(data: {
     github_installation_id: number;
     repository: string;
-    config: RepositoryConfig;
-  }): Promise<{ status: string; installation_id: string }> {
-    return this.request('/repositories/enable', {
+    account_type: 'USER' | 'ORGANIZATION';
+    account_name: string;
+    config: InstallationConfig;
+  }): Promise<Installation> {
+    return this.request<Installation>('/api/installations/enable', {
       method: 'POST',
       body: JSON.stringify(data),
     });
   }
 
   /**
-   * Update repository review configuration.
+   * Update installation review configuration.
    */
-  async updateRepositoryConfig(
+  async updateInstallationConfig(
     installationId: string,
-    config: RepositoryConfig
-  ): Promise<{ status: string }> {
-    return this.request(`/repositories/${installationId}/config`, {
-      method: 'PATCH',
-      body: JSON.stringify(config),
+    config: InstallationConfig
+  ): Promise<Installation> {
+    return this.request<Installation>(
+      `/api/installations/${installationId}/config`,
+      {
+        method: 'PUT',
+        body: JSON.stringify({ config }),
+      }
+    );
+  }
+
+  /**
+   * Disable installation.
+   */
+  async disableInstallation(installationId: string): Promise<void> {
+    await this.request(`/api/installations/${installationId}`, {
+      method: 'DELETE',
     });
   }
 }

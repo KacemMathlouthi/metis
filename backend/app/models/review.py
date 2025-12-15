@@ -24,6 +24,11 @@ class Review(Base, BaseModel):
 
     __tablename__ = "reviews"
 
+    # Celery task ID
+    celery_task_id = Column(
+        String(255), nullable=True, index=True, comment="Celery task ID for tracking"
+    )
+
     # Link to installation
     installation_id = Column(
         UUID(as_uuid=True),
@@ -35,7 +40,9 @@ class Review(Base, BaseModel):
     # Pull request information
     pr_number = Column(Integer, nullable=False, index=True)
     repository = Column(String(500), nullable=False, index=True)
-    commit_sha = Column(String(40), nullable=False, comment="Git commit SHA being reviewed")
+    commit_sha = Column(
+        String(40), nullable=False, comment="Git commit SHA being reviewed"
+    )
 
     # Review status
     status = Column(
@@ -65,7 +72,9 @@ class Review(Base, BaseModel):
 
     # Relationships
     installation = relationship("Installation", back_populates="reviews")
-    comments = relationship("ReviewComment", back_populates="review", cascade="all, delete-orphan")
+    comments = relationship(
+        "ReviewComment", back_populates="review", cascade="all, delete-orphan"
+    )
 
     def __repr__(self) -> str:
         """String representation for debugging."""

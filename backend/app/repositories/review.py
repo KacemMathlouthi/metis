@@ -37,7 +37,9 @@ class ReviewRepository:
         return result.scalar_one_or_none()
 
     @staticmethod
-    async def get_by_pr(db: AsyncSession, repository: str, pr_number: int) -> list[Review]:
+    async def get_by_pr(
+        db: AsyncSession, repository: str, pr_number: int
+    ) -> list[Review]:
         """Get all reviews for a specific pull request.
 
         A PR may have multiple reviews if it's updated multiple times.
@@ -165,7 +167,9 @@ class ReviewRepository:
         return review
 
     @staticmethod
-    async def add_review_text(db: AsyncSession, review: Review, review_text: str) -> Review:
+    async def add_review_text(
+        db: AsyncSession, review: Review, review_text: str
+    ) -> Review:
         """Add review summary text after AI generation.
 
         Args:
@@ -203,6 +207,48 @@ class ReviewRepository:
             .limit(limit)
         )
         return list(result.scalars().all())
+
+    @staticmethod
+    async def create_pending_review(
+        db: AsyncSession,
+        installation_id: UUID | str,
+        repository: str,
+        pr_number: int,
+        commit_sha: str,
+        pr_metadata: dict,
+        celery_task_id: str,
+    ) -> Review:
+        """Create Review record in PENDING state with Celery task ID.
+
+        Used by webhook handler to create review before queueing async task.
+
+        Args:
+            db: Database session
+            installation_id: Installation UUID
+            repository: Repository in format 'owner/repo'
+            pr_number: Pull request number
+            commit_sha: Git commit SHA being reviewed
+            pr_metadata: PR metadata (title, author, url, etc.)
+            celery_task_id: Celery task ID for tracking
+
+        Returns:
+            Created Review object with PENDING status
+        """
+        review = Review(
+            installation_id=installation_id,
+            repository=repository,
+            pr_number=pr_number,
+            commit_sha=commit_sha,
+            pr_metadata=pr_metadata,
+            status="PENDING",
+            celery_task_id=celery_task_id,
+        )
+
+        db.add(review)
+        await db.flush()
+        await db.refresh(review)
+
+        return review
 
 
 class ReviewCommentRepository:
@@ -256,7 +302,9 @@ class ReviewCommentRepository:
         return comment
 
     @staticmethod
-    async def get_by_review(db: AsyncSession, review_id: UUID | str) -> list[ReviewComment]:
+    async def get_by_review(
+        db: AsyncSession, review_id: UUID | str
+    ) -> list[ReviewComment]:
         """Get all comments for a review.
 
         Args:
@@ -289,7 +337,10 @@ class ReviewCommentRepository:
         """
         result = await db.execute(
             select(ReviewComment).where(
-                and_(ReviewComment.review_id == review_id, ReviewComment.severity == severity)
+                and_(
+                    ReviewComment.review_id == review_id,
+                    ReviewComment.severity == severity,
+                )
             )
         )
         return list(result.scalars().all())
@@ -319,7 +370,9 @@ class ReviewCommentRepository:
         return comment
 
     @staticmethod
-    async def count_by_severity(db: AsyncSession, review_id: UUID | str) -> dict[str, int]:
+    async def count_by_severity(
+        db: AsyncSession, review_id: UUID | str
+    ) -> dict[str, int]:
         """Count comments by severity for a review.
 
         Useful for displaying review summary statistics.

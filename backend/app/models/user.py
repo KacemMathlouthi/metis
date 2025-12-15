@@ -35,8 +35,12 @@ class User(Base, BaseModel):
     avatar_url = Column(String(500), nullable=True)
 
     # OAuth tokens
-    access_token = Column(String(500), nullable=False, comment="Encrypted GitHub OAuth token")
-    refresh_token = Column(String(500), nullable=True, comment="Encrypted refresh token")
+    access_token = Column(
+        String(500), nullable=False, comment="Encrypted GitHub OAuth token"
+    )
+    refresh_token = Column(
+        String(500), nullable=True, comment="Encrypted refresh token"
+    )
 
     # Account status
     is_active = Column(Boolean, default=True, nullable=False, index=True)
