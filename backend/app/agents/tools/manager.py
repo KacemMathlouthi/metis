@@ -26,6 +26,10 @@ from app.agents.tools.process_tools import (
     RunTestsTool,
     RunLinterTool,
 )
+from app.agents.tools.completion_tools import (
+    FinishReviewTool,
+    FinishTaskTool,
+)
 
 
 class ToolManager:
@@ -126,6 +130,7 @@ def get_reviewer_tools(sandbox) -> ToolManager:
     - File: read, list, search
     - Git: status, branches
     - Process: run tests, run linter, run command
+    - Completion: finish_review
 
     Args:
         sandbox: Daytona Sandbox instance
@@ -146,6 +151,8 @@ def get_reviewer_tools(sandbox) -> ToolManager:
         RunTestsTool,
         RunLinterTool,
         RunCommandTool,
+        # Completion
+        FinishReviewTool,
     ])
     return manager
 
@@ -159,6 +166,7 @@ def get_coder_tools(sandbox) -> ToolManager:
     - File: read, list, search, replace, create, delete
     - Git: full workflow (branch, checkout, add, commit, push)
     - Process: run code, run tests, run linter, run command
+    - Completion: finish_task
 
     Args:
         sandbox: Daytona Sandbox instance
@@ -189,6 +197,8 @@ def get_coder_tools(sandbox) -> ToolManager:
         RunTestsTool,
         RunLinterTool,
         RunCommandTool,
+        # Completion
+        FinishTaskTool,
     ])
     return manager
 
