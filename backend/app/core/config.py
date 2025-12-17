@@ -69,6 +69,12 @@ class Settings(BaseSettings):
     DAYTONA_API_URL: str
     DAYTONA_TARGET: str
 
+    # LangSmith Configuration
+    LANGSMITH_TRACING: bool = True
+    LANGSMITH_API_KEY: str | None = None
+    LANGSMITH_ENDPOINT: str | None = None
+    LANGSMITH_PROJECT: str | None = None
+
     model_config = SettingsConfigDict(
         env_file=".env", env_file_encoding="utf-8", case_sensitive=False, extra="ignore"
     )
