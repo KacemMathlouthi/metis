@@ -26,8 +26,12 @@ class ReadFileTool(BaseTool):
     async def execute(self, file_path: str, **kwargs) -> ToolResult:
         """Execute file read using Daytona fs.download_file()."""
         try:
+            # Auto-prefix relative paths with workspace/repo
+            if not file_path.startswith("/") and not file_path.startswith("workspace/"):
+                file_path = f"workspace/repo/{file_path}"
+
             # Download file content from sandbox
-            content = self.sandbox.fs.download_file(f"workspace/repo/{file_path}")
+            content = self.sandbox.fs.download_file(file_path)
 
             # Convert bytes to string
             if isinstance(content, bytes):
@@ -65,6 +69,10 @@ class ListFilesTool(BaseTool):
     async def execute(self, directory: str = "workspace/repo", **kwargs) -> ToolResult:
         """Execute directory listing using Daytona fs.list_files()."""
         try:
+            # Auto-prefix relative paths with workspace/repo
+            if not directory.startswith("/") and not directory.startswith("workspace/"):
+                directory = f"workspace/repo/{directory}"
+
             files = self.sandbox.fs.list_files(directory)
 
             # Convert to simple list format
@@ -114,6 +122,10 @@ class SearchFilesTool(BaseTool):
     async def execute(self, pattern: str, path: str = "workspace/repo", **kwargs) -> ToolResult:
         """Execute search using Daytona fs.find_files()."""
         try:
+            # Auto-prefix relative paths
+            if not path.startswith("/") and not path.startswith("workspace/"):
+                path = f"workspace/repo/{path}"
+
             # Use Daytona's built-in search
             results = self.sandbox.fs.find_files(path=path, pattern=pattern)
 
