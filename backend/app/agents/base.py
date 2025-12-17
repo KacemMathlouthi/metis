@@ -112,6 +112,14 @@ class BaseAgent(ABC):
 
             message = response.choices[0].message
 
+            # Count actual tokens from OpenAI response
+            if hasattr(response, 'usage') and response.usage:
+                tokens_this_call = response.usage.total_tokens
+                self.state.tokens_used += tokens_this_call
+                self.agent_logger.debug(
+                    f"Tokens: {tokens_this_call} | this call, {self.state.tokens_used} total "
+                )
+
             # Extract content and tool calls
             content = message.content or ""
             tool_calls_data = self._extract_tool_calls(response)
@@ -119,7 +127,6 @@ class BaseAgent(ABC):
             # Log content
             if content:
                 self.agent_logger.debug(f"Agent Response Content: {content[:200]}")
-                self.state.tokens_used += self._count_tokens(content)
 
             # Execute tools if any
             if tool_calls_data:
@@ -274,13 +281,3 @@ class BaseAgent(ABC):
                 "content": content,
             })
 
-    def _count_tokens(self, text: str) -> int:
-        """Estimate token count (simple approximation).
-
-        Args:
-            text: Text to count
-
-        Returns:
-            Estimated tokens
-        """
-        return len(text) // 4
