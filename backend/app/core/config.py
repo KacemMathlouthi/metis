@@ -6,7 +6,7 @@ validation and type checking.
 """
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
-
+import os
 
 class Settings(BaseSettings):
     """Application settings loaded from environment variables."""
@@ -64,9 +64,30 @@ class Settings(BaseSettings):
     CELERY_TASK_TIME_LIMIT: int = 600
     CELERY_TASK_SOFT_TIME_LIMIT: int = 540
 
+    # Daytona Configuration
+    DAYTONA_API_KEY: str
+    DAYTONA_API_URL: str
+    DAYTONA_TARGET: str
+
+    # LangSmith Configuration
+    LANGSMITH_TRACING: bool = True
+    LANGSMITH_API_KEY: str | None = None
+    LANGSMITH_ENDPOINT: str | None = None
+    LANGSMITH_PROJECT: str | None = None
+
     model_config = SettingsConfigDict(
         env_file=".env", env_file_encoding="utf-8", case_sensitive=False, extra="ignore"
     )
 
 
 settings = Settings()
+
+# Export LangSmith settings to os.environ for LangSmith SDK
+if settings.LANGSMITH_TRACING:
+    os.environ["LANGSMITH_TRACING"] = "true"
+if settings.LANGSMITH_API_KEY:
+    os.environ["LANGSMITH_API_KEY"] = settings.LANGSMITH_API_KEY
+if settings.LANGSMITH_PROJECT:
+    os.environ["LANGSMITH_PROJECT"] = settings.LANGSMITH_PROJECT
+if settings.LANGSMITH_ENDPOINT:
+    os.environ["LANGSMITH_ENDPOINT"] = settings.LANGSMITH_ENDPOINT

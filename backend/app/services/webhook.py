@@ -13,7 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.config import settings
 from app.models.installation import Installation
 from app.repositories.review import ReviewRepository
-from app.tasks.review_task import process_pr_review
+from app.tasks.agent_review_task import process_pr_review_with_agent
 
 
 def verify_github_signature(payload: bytes, signature: str | None) -> bool:
@@ -92,11 +92,14 @@ async def handle_pull_request(
             "title": pull_request["title"],
             "author": pull_request["user"]["login"],
             "url": pull_request["html_url"],
+            "head_branch": pull_request["head"]["ref"],
+            "base_branch": pull_request["base"]["ref"],
+            "language": pull_request["head"]["repo"]["language"],
         },
     )
 
-    # Queue Celery task (returns immediately)
-    task = process_pr_review.delay(
+    # Queue Celery task with AI agent (returns immediately)
+    task = process_pr_review_with_agent.delay(
         review_id=str(review.id),
         installation_id=github_installation_id,  # Pass GitHub's integer ID to worker
         repository=repo_full_name,
