@@ -117,7 +117,7 @@ class BaseAgent(ABC):
                 tokens_this_call = response.usage.total_tokens
                 self.state.tokens_used += tokens_this_call
                 self.agent_logger.debug(
-                    f"Tokens: {tokens_this_call} | this call, {self.state.tokens_used} total "
+                    f"Tokens: {tokens_this_call} - this call, {self.state.tokens_used} total"
                 )
 
             # Extract content and tool calls

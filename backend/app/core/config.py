@@ -6,7 +6,7 @@ validation and type checking.
 """
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
-
+import os
 
 class Settings(BaseSettings):
     """Application settings loaded from environment variables."""
@@ -83,7 +83,6 @@ class Settings(BaseSettings):
 settings = Settings()
 
 # Export LangSmith settings to os.environ for LangSmith SDK
-import os
 if settings.LANGSMITH_TRACING:
     os.environ["LANGSMITH_TRACING"] = "true"
 if settings.LANGSMITH_API_KEY:
