@@ -28,6 +28,7 @@ class DaytonaClient:
         self,
         agent_id: str,
         repository_url: str | None = None,
+        branch: str | None = None,
         language: str = "python",
         snapshot: str | None = None,
     ):
@@ -61,21 +62,23 @@ class DaytonaClient:
 
         # Clone repository if provided
         if repository_url:
-            self._clone_repository(sandbox, repository_url)
+            self._clone_repository(sandbox, repository_url, branch)
 
         return sandbox
 
-    def _clone_repository(self, sandbox, repository_url: str) -> None:
+    def _clone_repository(self, sandbox, repository_url: str, branch: str | None = None) -> None:
         """Clone a Git repository into the sandbox.
 
         Args:
             sandbox: Daytona Sandbox instance
             repository_url: Git repository URL to clone
+            branch: Specific branch to clone
         """
         # Use Daytona's built-in git clone with authentication
         sandbox.git.clone(
             url=repository_url,
             path="workspace/repo",
+            branch=branch,  # Clone PR's branch
             username=self.git_username,
             password=self.git_token,
         )

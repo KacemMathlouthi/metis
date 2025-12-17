@@ -92,6 +92,9 @@ async def handle_pull_request(
             "title": pull_request["title"],
             "author": pull_request["user"]["login"],
             "url": pull_request["html_url"],
+            "head_branch": pull_request["head"]["ref"],
+            "base_branch": pull_request["base"]["ref"],
+            "language": pull_request["head"]["repo"]["language"],
         },
     )
 

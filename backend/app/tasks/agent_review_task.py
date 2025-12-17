@@ -94,11 +94,18 @@ async def _process_pr_review_with_agent_async(
             review.status = "PROCESSING"
             await db.commit()
 
-            # 2. Get PR diff from GitHub
+            # 2. Get PR diff and extract metadata
             logger.info(f"Fetching PR #{pr_number} diff from {repository}")
 
             owner, repo = repository.split("/")
             diff = await github.get_pr_diff(owner, repo, pr_number, installation_id)
+
+            # Extract branch and language from stored metadata (from webhook)
+            head_branch = review.pr_metadata.get("head_branch", "main")
+            base_branch = review.pr_metadata.get("base_branch", "main")
+            pr_language = review.pr_metadata.get("language", "Python")
+
+            logger.info(f"PR: {head_branch} → {base_branch}, language: {pr_language}")
 
             # 3. Get GitHub installation token for git auth
             logger.info("Getting installation token for git authentication")
@@ -120,12 +127,27 @@ async def _process_pr_review_with_agent_async(
                 git_token=installation_token
             )
 
-            # Clone repository in sandbox
+            # Clone repository in sandbox (PR branch)
             repo_url = f"https://github.com/{repository}.git"
+
+            # Determine sandbox language
+            sandbox_language = "python"  # Default
+            if pr_language:
+                # Map GitHub languages to Daytona languages
+                language_map = {
+                    "Python": "python",
+                    "TypeScript": "typescript",
+                    "JavaScript": "javascript",
+                }
+                sandbox_language = language_map.get(pr_language, "python")
+
+            logger.info(f"Creating sandbox with language: {sandbox_language}")
+
             sandbox = sandbox_manager.acquire(
                 agent_id=review_id,
                 repository_url=repo_url,
-                language="python",  # TODO: Detect from repo
+                branch=head_branch,  # Clone PR branch directly
+                language=sandbox_language,
             )
 
             logger.info(f"Sandbox created: {sandbox.id}")

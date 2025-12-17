@@ -21,6 +21,7 @@ class SandboxManager:
         self,
         agent_id: str,
         repository_url: str | None = None,
+        branch: str | None = None,
         language: str = "python",
     ):
         """Acquire a sandbox for an agent.
@@ -48,6 +49,7 @@ class SandboxManager:
         sandbox = self.client.create_sandbox(
             agent_id=agent_id,
             repository_url=repository_url,
+            branch=branch,
             language=language,
         )
 
