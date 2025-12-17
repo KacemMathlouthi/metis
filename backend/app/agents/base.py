@@ -2,6 +2,7 @@
 
 from abc import ABC
 from enum import Enum
+from langsmith.wrappers import wrap_openai
 from pydantic import BaseModel, Field
 from typing import Any, Dict
 import time
@@ -72,7 +73,7 @@ class BaseAgent(ABC):
         self.system_prompt = system_prompt
         self.initial_user_message = initial_user_message
         self.tools = tools
-        self.llm = llm_client
+        self.llm = wrap_openai(llm_client)
         self.max_iterations = max_iterations
         self.max_tokens = max_tokens
         self.max_tool_calls = max_tool_calls
