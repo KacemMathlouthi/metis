@@ -89,12 +89,6 @@ class BaseAgent(ABC):
         # Setup file logging
         self.agent_logger = setup_agent_logger(agent_id)
 
-        # Log tool definitions
-        self.agent_logger.debug(
-            f"Tool Definitions:\n{json.dumps(self.tools.get_all_schemas(), indent=2)}"
-        )
-
-
     async def run(self) -> bool:
         """Execute one iteration.
 
@@ -108,12 +102,6 @@ class BaseAgent(ABC):
         self.agent_logger.debug(f"Agent {self.agent_id} - Iteration {self.state.iteration}")
 
         try:
-            # Log conversation history
-            self.agent_logger.debug(
-                f"Iteration {self.state.iteration} - Conversation History:\n"
-                f"{json.dumps(self.state.messages, indent=2)}"
-            )
-
             # Call LLM with function calling
             response = self.llm.chat.completions.create(
                 model=settings.MODEL_NAME,
@@ -135,7 +123,7 @@ class BaseAgent(ABC):
 
             # Execute tools if any
             if tool_calls_data:
-                self.agent_logger.debug(f"Agent Tool Calls: {tool_calls_data}")
+                self.agent_logger.debug(f"Agent made {len(tool_calls_data)} Tool Calls: {[tc['name'] for tc in tool_calls_data]}")
                 results = await self.tools.execute_batch(tool_calls_data)
                 self.state.tool_calls_made += len(tool_calls_data)
 
@@ -151,7 +139,7 @@ class BaseAgent(ABC):
 
             else:
                 # No tool calls
-                logger.warning(f"Agent {self.agent_id} made no tool calls")
+                self.agent_logger.debug(f"Agent {self.agent_id} made no tool calls")
                 # Add assistant message to continue conversation
                 if content:
                     self.state.messages.append({"role": "assistant", "content": content})
