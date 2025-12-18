@@ -88,3 +88,92 @@ export interface ReviewComment {
   category: 'BUG' | 'SECURITY' | 'PERFORMANCE' | 'STYLE' | 'MAINTAINABILITY' | 'DOCUMENTATION' | 'TESTING';
   created_at: string;
 }
+
+/**
+ * GitHub Issue
+ */
+export interface Issue {
+  id: string;  // Our UUID
+  github_issue_id: number;
+  repository: string;  // "owner/repo"
+  issue_number: number;
+  title: string;
+  body: string | null;
+  status: 'OPEN' | 'CLOSED';
+  labels: string[];  // Array of label names
+  assignees: string[];  // Array of GitHub usernames
+  author: string;  // GitHub username
+  created_at: string;  // ISO date
+  updated_at: string | null;
+  closed_at: string | null;
+  comments_count: number;
+}
+
+/**
+ * Issue comment
+ */
+export interface IssueComment {
+  id: string;
+  issue_id: string;
+  github_comment_id: number;
+  author: string;
+  avatar_url: string | null;
+  body: string;
+  created_at: string;
+}
+
+/**
+ * Agent run tracking
+ */
+export interface AgentRun {
+  id: string;  // Agent execution ID
+  issue_id: string;
+  repository: string;
+  issue_number: number;
+  status: 'PENDING' | 'RUNNING' | 'COMPLETED' | 'FAILED';
+  custom_instructions: string | null;
+
+  // Execution metrics
+  iteration: number;
+  tokens_used: number;
+  tool_calls_made: number;
+  started_at: string | null;
+  completed_at: string | null;
+  elapsed_seconds: number | null;
+
+  // Results
+  pr_url: string | null;  // GitHub PR URL
+  pr_number: number | null;
+  branch_name: string | null;
+  files_changed: string[];  // Array of file paths
+  error: string | null;
+
+  // Metadata
+  celery_task_id: string | null;
+  created_at: string;
+}
+
+/**
+ * Issue with latest agent run (denormalized for list view)
+ */
+export interface IssueWithAgent extends Issue {
+  latest_agent_run: AgentRun | null;
+}
+
+/**
+ * Launch agent request
+ */
+export interface LaunchAgentRequest {
+  issue_number: number;
+  repository: string;
+  custom_instructions: string | null;
+}
+
+/**
+ * Launch agent response
+ */
+export interface LaunchAgentResponse {
+  agent_run_id: string;
+  celery_task_id: string;
+  message: string;
+}
