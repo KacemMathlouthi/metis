@@ -2,7 +2,6 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard,
-  Bot,
   BarChart3,
   LogOut,
   GitPullRequest,
@@ -11,6 +10,7 @@ import {
   Plus,
   Code2,
   FileDiff,
+  CircleDot,
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/contexts/AuthContext';
@@ -46,8 +46,9 @@ export const AppSidebar: React.FC = () => {
 
   const navItems = [
     { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard' },
-    { icon: BarChart3, label: 'Analytics', href: '/dashboard/analytics' },
-    { icon: Bot, label: 'AI Review', href: '/dashboard/ai-review' },
+    { icon: GitPullRequest, label: 'AI Review', href: '/dashboard/ai-review' },
+    { icon: CircleDot, label: 'Issues', href: '/dashboard/issues' },
+    { icon: BarChart3, label: 'Analytics', href: '/dashboard/analytics' }
   ];
 
   return (

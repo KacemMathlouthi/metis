@@ -6,8 +6,7 @@ import {
   Github,
   GitPullRequest,
   CheckCircle2,
-  AlertCircle,
-  ExternalLink,
+  AlertCircle
 } from 'lucide-react';
 import { Area, AreaChart, ResponsiveContainer, XAxis, CartesianGrid } from 'recharts';
 import { Badge } from '@/components/ui/badge';
@@ -82,46 +81,6 @@ export const DashboardPage: React.FC = () => {
       <div className="flex-1">
         <h2 className="mb-6 text-2xl font-black">Quick Actions</h2>
         <div className="grid h-full gap-6 md:grid-cols-3">
-          {/* Analytics Card */}
-          <Card
-            className="group flex cursor-pointer flex-col border-2 border-black bg-white transition-all hover:-translate-y-1 hover:shadow-[8px_8px_0px_0px_#FCD34D]"
-            onClick={() => navigate('/dashboard/analytics')}
-          >
-            <CardContent className="flex flex-1 flex-col p-6">
-              <div className="relative mb-4 min-h-[200px] flex-1 overflow-hidden rounded border-2 border-black bg-white p-2">
-                <div className="absolute inset-0 pt-4 pr-2">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={miniChartData}>
-                      <defs>
-                        <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#FCD34D" stopOpacity={0.8} />
-                          <stop offset="95%" stopColor="#FCD34D" stopOpacity={0} />
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
-                      <XAxis dataKey="name" hide />
-                      <Area
-                        type="monotone"
-                        dataKey="value"
-                        stroke="#000"
-                        strokeWidth={3}
-                        fillOpacity={1}
-                        fill="url(#colorValue)"
-                      />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-              <h3 className="mb-2 flex items-center gap-2 text-lg font-black">
-                Analytics
-                <ArrowRight className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100" />
-              </h3>
-              <p className="text-muted-foreground text-sm">
-                Deep dive into your team's velocity and code quality metrics.
-              </p>
-            </CardContent>
-          </Card>
-
           {/* AI Review Settings Card */}
           <Card
             className="group flex cursor-pointer flex-col border-2 border-black bg-white transition-all hover:-translate-y-1 hover:shadow-[8px_8px_0px_0px_#F472B6]"
@@ -183,26 +142,65 @@ export const DashboardPage: React.FC = () => {
             </CardContent>
           </Card>
 
-          {/* Contribute Card */}
+          {/* Issues Card */}
           <Card
-            className="group flex cursor-pointer flex-col border-2 border-black bg-white transition-all hover:-translate-y-1 hover:shadow-[8px_8px_0px_0px_#4ADE80]"
-            onClick={() => window.open('https://github.com/KacemMathlouthi/metis', '_blank')}
+            className="group flex cursor-pointer flex-col border-2 border-black bg-white transition-all hover:-translate-y-1 hover:shadow-[8px_8px_0px_0px_#A78BFA]"
+            onClick={() => navigate('/dashboard/issues')}
           >
             <CardContent className="flex flex-1 flex-col p-6">
-              <div className="relative mb-4 flex min-h-[200px] flex-1 flex-col items-center justify-center gap-3 overflow-hidden rounded border-2 border-black bg-gray-50">
-                <div className="absolute inset-0 bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:8px_8px] opacity-10"></div>
-                <Github className="z-10 h-16 w-16" />
-                <div className="z-10 flex items-center gap-1 rounded border-2 border-black bg-white px-3 py-1.5 text-sm font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-y-[1px] hover:shadow-none">
-                  <ExternalLink className="h-3 w-3" />
-                  KacemMathlouthi/metis
+              <div className="relative mb-4 flex min-h-[200px] flex-1 flex-col items-center justify-center gap-3 overflow-hidden rounded border-2 border-black bg-purple-50">
+                <div className="absolute inset-0 bg-[radial-gradient(#A78BFA_1px,transparent_1px)] [background-size:12px_12px] opacity-20"></div>
+                <Github className="z-10 h-16 w-16 text-dark-600" />
+                <div className="z-10 flex items-center gap-2 rounded border-2 border-black bg-[#A78BFA] px-4 py-2 text-sm font-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                  <span className="text-black">Launch AI Agents</span>
                 </div>
               </div>
               <h3 className="mb-2 flex items-center gap-2 text-lg font-black">
-                Contribute to Metis
+                Manage Issues
                 <ArrowRight className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100" />
               </h3>
               <p className="text-muted-foreground text-sm">
-                Check out the source code, report issues, or contribute to the project.
+                View GitHub issues and launch AI agents to solve them automatically.
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* Analytics Card */}
+          <Card
+            className="group flex cursor-pointer flex-col border-2 border-black bg-white transition-all hover:-translate-y-1 hover:shadow-[8px_8px_0px_0px_#FCD34D]"
+            onClick={() => navigate('/dashboard/analytics')}
+          >
+            <CardContent className="flex flex-1 flex-col p-6">
+              <div className="relative mb-4 min-h-[200px] flex-1 overflow-hidden rounded border-2 border-black bg-white p-2">
+                <div className="absolute inset-0 pt-4 pr-2">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={miniChartData}>
+                      <defs>
+                        <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#FCD34D" stopOpacity={0.8} />
+                          <stop offset="95%" stopColor="#FCD34D" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
+                      <XAxis dataKey="name" hide />
+                      <Area
+                        type="monotone"
+                        dataKey="value"
+                        stroke="#000"
+                        strokeWidth={3}
+                        fillOpacity={1}
+                        fill="url(#colorValue)"
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+              <h3 className="mb-2 flex items-center gap-2 text-lg font-black">
+                Analytics
+                <ArrowRight className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100" />
+              </h3>
+              <p className="text-muted-foreground text-sm">
+                Deep dive into your team's velocity and code quality metrics.
               </p>
             </CardContent>
           </Card>
