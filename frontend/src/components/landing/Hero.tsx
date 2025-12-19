@@ -5,9 +5,9 @@ import { Github } from 'lucide-react';
 
 export const Hero: React.FC = () => {
   return (
-    <header className="relative flex min-h-[calc(100vh-156px)] flex-1 flex-col items-center justify-center overflow-hidden px-4 py-20 text-center">
+    <header className="relative flex min-h-[calc(100vh-156px)] flex-col items-center justify-center overflow-hidden border-b-4 border-black bg-[#fad35f] px-4 py-20 text-center">
       {/* Decorative Grid Background */}
-      <div className="pointer-events-none absolute inset-0 grid grid-cols-[repeat(20,minmax(0,1fr))] opacity-10">
+      <div className="pointer-events-none absolute inset-0 grid grid-cols-[repeat(20,minmax(0,1fr))] opacity-[0.1]">
         {Array.from({ length: 400 }).map((_, i) => (
           <div key={i} className="h-full w-full border border-black"></div>
         ))}
