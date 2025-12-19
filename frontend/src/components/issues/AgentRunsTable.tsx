@@ -133,10 +133,10 @@ export const AgentRunsTable: React.FC<AgentRunsTableProps> = ({
 
   return (
     <div className="flex flex-col h-full gap-4">
-      <div className="flex-1 flex flex-col min-h-0 rounded-md border border-gray-200 bg-white shadow-sm overflow-hidden">
+      <div className="flex-1 flex flex-col min-h-0 rounded-lg border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
         {/* Header */}
-        <div className="flex-none flex items-center justify-between border-b border-gray-200 bg-gray-50/50 px-4 py-3">
-          <div className="flex items-center gap-4 text-sm font-semibold text-gray-900">
+        <div className="flex-none flex items-center justify-between border-b-2 border-black bg-gray-50 px-4 py-3">
+          <div className="flex items-center gap-4 text-sm font-black text-black">
             <div className="flex items-center gap-2">
               <Bot className="h-4 w-4" />
               {agentRuns.length} Runs
@@ -150,19 +150,19 @@ export const AgentRunsTable: React.FC<AgentRunsTableProps> = ({
             <div
               key={run.id}
               onClick={() => onRowClick(run.id)}
-              className="group flex items-start gap-3 border-b border-gray-100 p-4 last:border-0 hover:bg-gray-50 cursor-pointer transition-colors"
+              className="group flex items-start gap-3 border-b-2 border-black p-4 last:border-0 hover:bg-gray-50 cursor-pointer transition-colors"
             >
               <div className="pt-1">
                 {getStatusIcon(run.status)}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap mb-1">
-                  <h3 className="font-semibold text-base text-gray-900 group-hover:text-blue-600 transition-colors">
+                  <h3 className="font-black text-base text-black group-hover:text-blue-600 transition-colors">
                     Agent Run for Issue #{run.issue_number}
                   </h3>
                   <AgentStatusBadge status={run.status} className="text-[10px] px-1.5 py-0" />
                 </div>
-                <div className="text-xs text-gray-500 flex items-center gap-3 flex-wrap">
+                <div className="text-xs text-gray-500 flex items-center gap-3 flex-wrap font-medium">
                   <span>started {formatRelativeTime(run.started_at)}</span>
                   <div className="flex items-center gap-1">
                     <Clock className="h-3 w-3" />
@@ -178,7 +178,7 @@ export const AgentRunsTable: React.FC<AgentRunsTableProps> = ({
                   </div>
                 </div>
                 {run.custom_instructions && (
-                  <div className="mt-1 text-xs text-gray-500 italic truncate max-w-2xl">
+                  <div className="mt-1 text-xs text-gray-500 italic truncate max-w-2xl border-l-2 border-gray-300 pl-2">
                     "{run.custom_instructions}"
                   </div>
                 )}
@@ -190,12 +190,12 @@ export const AgentRunsTable: React.FC<AgentRunsTableProps> = ({
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
-                    className="text-xs text-blue-600 hover:underline font-medium border border-blue-200 bg-blue-50 px-2 py-1 rounded-md"
+                    className="text-xs text-blue-600 hover:underline font-bold border-2 border-blue-200 bg-blue-50 px-2 py-1 rounded-md"
                   >
                     PR #{run.pr_number}
                   </a>
                 ) : run.error ? (
-                  <span className="text-xs text-red-600 font-medium bg-red-50 px-2 py-1 rounded-md border border-red-200">
+                  <span className="text-xs text-red-600 font-bold bg-red-50 px-2 py-1 rounded-md border-2 border-red-200">
                     Error
                   </span>
                 ) : null}
@@ -203,7 +203,7 @@ export const AgentRunsTable: React.FC<AgentRunsTableProps> = ({
             </div>
           ))}
           {paginatedRuns.length === 0 && (
-            <div className="p-8 text-center text-gray-500">
+            <div className="p-8 text-center text-gray-500 font-bold">
               No agent runs found.
             </div>
           )}

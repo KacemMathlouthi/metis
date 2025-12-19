@@ -34,7 +34,7 @@ export const LabelBadge: React.FC<LabelBadgeProps> = ({
     <Badge
       variant="neutral"
       className={cn(
-        'border font-medium text-xs',
+        'border-2 font-bold text-xs',
         color.border,
         color.bg,
         color.text,

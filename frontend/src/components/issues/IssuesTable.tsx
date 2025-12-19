@@ -125,15 +125,15 @@ export const IssuesTable: React.FC<IssuesTableProps> = ({
 
   return (
     <div className="flex flex-col h-full gap-4">
-      <div className="flex-1 flex flex-col min-h-0 rounded-md border border-gray-200 bg-white shadow-sm overflow-hidden">
+      <div className="flex-1 flex flex-col min-h-0 rounded-lg border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
         {/* Header */}
-        <div className="flex-none flex items-center justify-between border-b border-gray-200 bg-gray-50/50 px-4 py-3">
+        <div className="flex-none flex items-center justify-between border-b-2 border-black bg-gray-50 px-4 py-3">
           <div className="flex items-center gap-4">
             <button
               onClick={() => setStatusFilter('OPEN')}
               className={cn(
-                'flex items-center gap-2 text-sm font-semibold transition-colors hover:text-gray-900',
-                statusFilter === 'OPEN' ? 'text-gray-900' : 'text-gray-500'
+                'flex items-center gap-2 text-sm font-black transition-colors hover:text-black',
+                statusFilter === 'OPEN' ? 'text-black' : 'text-gray-500'
               )}
             >
               <CircleDot className="h-4 w-4" />
@@ -142,8 +142,8 @@ export const IssuesTable: React.FC<IssuesTableProps> = ({
             <button
               onClick={() => setStatusFilter('CLOSED')}
               className={cn(
-                'flex items-center gap-2 text-sm font-semibold transition-colors hover:text-gray-900',
-                statusFilter === 'CLOSED' ? 'text-gray-900' : 'text-gray-500'
+                'flex items-center gap-2 text-sm font-black transition-colors hover:text-black',
+                statusFilter === 'CLOSED' ? 'text-black' : 'text-gray-500'
               )}
             >
               <CheckCircle2 className="h-4 w-4" />
@@ -158,7 +158,7 @@ export const IssuesTable: React.FC<IssuesTableProps> = ({
             <div
               key={issue.id}
               onClick={() => onRowClick(issue.issue_number)}
-              className="group flex items-start gap-3 border-b border-gray-100 p-4 last:border-0 hover:bg-gray-50 cursor-pointer transition-colors"
+              className="group flex items-start gap-3 border-b-2 border-black p-4 last:border-0 hover:bg-gray-50 cursor-pointer transition-colors"
             >
               <div className="pt-1">
                 {issue.status === 'OPEN' ? (
@@ -169,7 +169,7 @@ export const IssuesTable: React.FC<IssuesTableProps> = ({
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap mb-1">
-                  <h3 className="font-semibold text-base text-gray-900 group-hover:text-blue-600 transition-colors">
+                  <h3 className="font-black text-base text-black group-hover:text-blue-600 transition-colors">
                     {issue.title}
                   </h3>
                   <div className="flex gap-1 flex-wrap">
@@ -178,17 +178,17 @@ export const IssuesTable: React.FC<IssuesTableProps> = ({
                     ))}
                   </div>
                 </div>
-                <div className="text-xs text-gray-500 flex items-center gap-1">
-                  <span>#{issue.issue_number}</span>
+                <div className="text-xs text-gray-500 flex items-center gap-1 font-medium">
+                  <span className="font-bold text-black">#{issue.issue_number}</span>
                   <span>opened {formatRelativeTime(issue.created_at)}</span>
                   <span>by</span>
-                  <span className="font-medium text-gray-700 hover:text-blue-600 hover:underline cursor-pointer">
+                  <span className="font-bold text-black hover:text-blue-600 hover:underline cursor-pointer">
                     {issue.author}
                   </span>
                 </div>
               </div>
               {issue.comments_count > 0 && (
-                <div className="flex items-center gap-1 text-xs text-gray-500 pt-1">
+                <div className="flex items-center gap-1 text-xs font-bold text-gray-500 pt-1">
                   <MessageSquare className="h-3.5 w-3.5" />
                   <span>{issue.comments_count}</span>
                 </div>
@@ -196,7 +196,7 @@ export const IssuesTable: React.FC<IssuesTableProps> = ({
             </div>
           ))}
           {paginatedIssues.length === 0 && (
-            <div className="p-8 text-center text-gray-500">
+            <div className="p-8 text-center text-gray-500 font-bold">
               No {statusFilter.toLowerCase()} issues found.
             </div>
           )}
