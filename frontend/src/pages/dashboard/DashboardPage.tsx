@@ -27,12 +27,12 @@ export const DashboardPage: React.FC = () => {
   const { selectedRepo } = useRepository();
 
   return (
-    <div className="space-y-8 p-2">
-      <div className="flex items-center justify-between">
+    <div className="space-y-8 p-4 max-w-6xl mx-auto">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-4xl font-black">Dashboard</h1>
           <div className="mt-2 flex items-center gap-2">
-            <p className="text-muted-foreground text-lg">Repository:</p>
+            <p className="text-muted-foreground text-lg font-bold">Repository:</p>
             <Badge
               variant="neutral"
               className="border-2 border-black bg-[#FCD34D] px-3 py-1 text-lg font-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"

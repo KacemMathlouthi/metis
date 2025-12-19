@@ -113,10 +113,10 @@ export const AIReviewPage: React.FC = () => {
   };
 
   return (
-    <div className="mx-auto max-w-5xl space-y-6 p-2">
+    <div className="mx-auto max-w-6xl space-y-6 p-4">
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-black">Review Configuration</h1>
-        <p className="text-muted-foreground">
+        <p className="text-muted-foreground font-medium">
           Customize Metis's code review behavior and preferences.
         </p>
       </div>
@@ -126,22 +126,22 @@ export const AIReviewPage: React.FC = () => {
         <CardHeader>
           <div className="flex items-center gap-2">
             <Bot className="h-6 w-6" />
-            <CardTitle>Metis Agent Capabilities</CardTitle>
+            <CardTitle className="font-black">Metis Agent Capabilities</CardTitle>
           </div>
-          <CardDescription>
+          <CardDescription className="font-medium">
             Automated feedback on pull requests with actionable insights.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-start gap-3 rounded-md border-2 border-black bg-blue-50 p-4">
-            <div className="mt-1 rounded-full bg-blue-200 p-1">
+            <div className="mt-1 rounded-full bg-blue-200 p-1 border-2 border-blue-300">
               <Sparkles className="h-4 w-4 text-blue-700" />
             </div>
             <div>
-              <p className="text-sm font-bold">On-Demand Reviews</p>
-              <p className="text-muted-foreground mt-1 text-sm">
+              <p className="text-sm font-black text-blue-900">On-Demand Reviews</p>
+              <p className="text-blue-800 mt-1 text-sm font-medium">
                 Mention{' '}
-                <Badge variant="neutral" className="border-black bg-white text-xs">
+                <Badge variant="neutral" className="border-2 border-black bg-white text-xs font-bold">
                   @metis-ai
                 </Badge>{' '}
                 in any pull request to trigger a fresh review, ask for clarification, or request
@@ -157,9 +157,9 @@ export const AIReviewPage: React.FC = () => {
         <CardHeader>
           <div className="flex items-center gap-2">
             <Zap className="h-6 w-6" />
-            <CardTitle>Review Depth</CardTitle>
+            <CardTitle className="font-black">Review Depth</CardTitle>
           </div>
-          <CardDescription>Adjust the granularity and strictness of the analysis.</CardDescription>
+          <CardDescription className="font-medium">Adjust the granularity and strictness of the analysis.</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -185,15 +185,15 @@ export const AIReviewPage: React.FC = () => {
                 onClick={() => setSensitivity(option.id as 'LOW' | 'MEDIUM' | 'HIGH')}
                 className={`cursor-pointer rounded-md border-2 p-4 transition-all ${
                   sensitivity === option.id
-                    ? 'border-black bg-[#FCD34D] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]'
-                    : 'border-gray-200 hover:border-black hover:bg-gray-50'
+                    ? 'border-black bg-[#FCD34D] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]'
+                    : 'border-gray-200 hover:border-black hover:bg-gray-50 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]'
                 } `}
               >
                 <div className="mb-2 flex items-center justify-between">
-                  <span className="font-bold">{option.label}</span>
-                  {sensitivity === option.id && <div className="h-3 w-3 rounded-full bg-black" />}
+                  <span className="font-black text-lg">{option.label}</span>
+                  {sensitivity === option.id && <div className="h-3 w-3 rounded-full bg-black border border-black" />}
                 </div>
-                <p className="text-muted-foreground text-xs">{option.desc}</p>
+                <p className={`text-xs font-medium ${sensitivity === option.id ? 'text-black' : 'text-gray-500'}`}>{option.desc}</p>
               </div>
             ))}
           </div>
@@ -205,9 +205,9 @@ export const AIReviewPage: React.FC = () => {
         <CardHeader>
           <div className="flex items-center gap-2">
             <FileText className="h-6 w-6" />
-            <CardTitle>Tailored Instructions</CardTitle>
+            <CardTitle className="font-black">Tailored Instructions</CardTitle>
           </div>
-          <CardDescription>
+          <CardDescription className="font-medium">
             Provide specific guidelines for Metis to follow. Repository context files (e.g.,
             AGENTS.md) are automatically detected.
           </CardDescription>
@@ -217,7 +217,7 @@ export const AIReviewPage: React.FC = () => {
             value={customInstructions}
             onChange={(e) => setCustomInstructions(e.target.value)}
             placeholder="Enter specific coding standards, architectural patterns, or focus areas for Metis..."
-            className="min-h-[120px] resize-none border-2 border-black focus-visible:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus-visible:ring-0"
+            className="min-h-[120px] resize-none border-2 border-black focus-visible:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] focus-visible:ring-0 font-medium placeholder:text-gray-400"
           />
         </CardContent>
       </Card>
@@ -229,18 +229,18 @@ export const AIReviewPage: React.FC = () => {
             <div className="space-y-1">
               <div className="flex items-center gap-2">
                 <GitCommit className="h-6 w-6" />
-                <CardTitle>Continuous Review</CardTitle>
+                <CardTitle className="font-black">Continuous Review</CardTitle>
               </div>
-              <CardDescription>
+              <CardDescription className="font-medium">
                 Analyze new commits pushed to existing PRs. If disabled, Metis only reviews the
                 initial pull request.
               </CardDescription>
             </div>
-            <Switch checked={autoReview} onCheckedChange={setAutoReview} className="scale-125" />
+            <Switch checked={autoReview} onCheckedChange={setAutoReview} className="scale-125 border-2 border-black" />
           </div>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground rounded border border-gray-200 bg-gray-50 p-3 text-sm">
+          <p className="text-gray-600 font-medium rounded border-2 border-gray-200 bg-gray-50 p-3 text-sm">
             Metis will only comment on new issues introduced in subsequent commits to minimize
             noise.
           </p>
@@ -252,9 +252,9 @@ export const AIReviewPage: React.FC = () => {
         <CardHeader>
           <div className="flex items-center gap-2">
             <Ban className="h-6 w-6" />
-            <CardTitle>Exclusion Rules</CardTitle>
+            <CardTitle className="font-black">Exclusion Rules</CardTitle>
           </div>
-          <CardDescription>
+          <CardDescription className="font-medium">
             Specify file patterns that Metis should skip during reviews.
           </CardDescription>
         </CardHeader>
@@ -264,11 +264,11 @@ export const AIReviewPage: React.FC = () => {
               placeholder="e.g., *.test.ts, vendor/*"
               value={newPattern}
               onChange={(e) => setNewPattern(e.target.value)}
-              className="border-2 border-black focus-visible:ring-0"
+              className="border-2 border-black focus-visible:ring-0 font-medium"
             />
             <Button
               onClick={addPattern}
-              className="border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-y-[1px] hover:shadow-none"
+              className="border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-y-[1px] hover:shadow-none font-bold"
             >
               <Plus className="mr-2 h-4 w-4" /> Add
             </Button>
@@ -279,7 +279,7 @@ export const AIReviewPage: React.FC = () => {
               <Badge
                 key={pattern}
                 variant="neutral"
-                className="flex h-8 items-center gap-2 border-2 border-black bg-gray-100 py-1 pr-1 pl-3 text-sm"
+                className="flex h-8 items-center gap-2 border-2 border-black bg-gray-100 py-1 pr-1 pl-3 text-sm font-bold"
               >
                 {pattern}
                 <Button

@@ -164,12 +164,12 @@ export const RepositoriesPage = () => {
   };
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6 p-4 max-w-6xl mx-auto">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-black">Repository Management</h1>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-600 mt-1">
             Enable code reviews for your GitHub repositories
           </p>
         </div>
@@ -178,7 +178,7 @@ export const RepositoriesPage = () => {
             onClick={handleSync}
             disabled={syncing}
             variant="neutral"
-            className="border-2 border-black font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
+            className="border-2 border-black font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all"
           >
             <RefreshCw className={`mr-2 h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
             {syncing ? 'Syncing...' : 'Sync from GitHub'}
@@ -190,7 +190,7 @@ export const RepositoriesPage = () => {
                 '_blank'
               )
             }
-            className="border-2 border-black bg-[#4ADE80] font-bold text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
+            className="border-2 border-black bg-[#4ADE80] font-bold text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all"
           >
             <ExternalLink className="mr-2 h-4 w-4" />
             Install on GitHub

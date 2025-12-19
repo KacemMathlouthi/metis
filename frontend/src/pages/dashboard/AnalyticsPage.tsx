@@ -135,11 +135,11 @@ export const AnalyticsPage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 p-2">
+    <div className="space-y-6 p-4 max-w-6xl mx-auto">
       {/* Header */}
       <div className="flex flex-col gap-1">
         <h1 className="text-3xl font-black text-black">Analytics</h1>
-        <p className="text-muted-foreground">Overview of your code quality and team velocity.</p>
+        <p className="text-muted-foreground font-medium">Overview of your code quality and team velocity.</p>
       </div>
 
       {/* Stats Row */}
@@ -202,8 +202,8 @@ export const AnalyticsPage: React.FC = () => {
         {/* Chart 1: AI Issues Trend */}
         <Card className="flex flex-col border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
           <CardHeader>
-            <CardTitle>AI Issues Detected</CardTitle>
-            <CardDescription>Breakdown by severity over the last 6 months</CardDescription>
+            <CardTitle className="font-black">AI Issues Detected</CardTitle>
+            <CardDescription className="font-medium">Breakdown by severity over the last 6 months</CardDescription>
           </CardHeader>
           <CardContent className="flex-1 pb-4">
             <ChartContainer config={areaChartConfig} className="mx-auto h-[300px] w-full">
@@ -258,8 +258,8 @@ export const AnalyticsPage: React.FC = () => {
         {/* Chart 2: PR Velocity */}
         <Card className="flex flex-col border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
           <CardHeader>
-            <CardTitle>PR Velocity</CardTitle>
-            <CardDescription>Weekly pull request activity</CardDescription>
+            <CardTitle className="font-black">PR Velocity</CardTitle>
+            <CardDescription className="font-medium">Weekly pull request activity</CardDescription>
           </CardHeader>
           <CardContent className="flex-1 pb-4">
             <ChartContainer config={barChartConfig} className="mx-auto h-[300px] w-full">
@@ -285,25 +285,25 @@ export const AnalyticsPage: React.FC = () => {
       {/* Recent Issues List */}
       <Card className="border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
         <CardHeader>
-          <CardTitle>Recent AI Detected Issues</CardTitle>
-          <CardDescription>Latest code quality and security findings.</CardDescription>
+          <CardTitle className="font-black">Recent AI Detected Issues</CardTitle>
+          <CardDescription className="font-medium">Latest code quality and security findings.</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow className="border-b-2 border-black bg-white hover:bg-transparent">
-                <TableHead className="font-bold text-black">Severity</TableHead>
-                <TableHead className="font-bold text-black">Issue</TableHead>
-                <TableHead className="font-bold text-black">File</TableHead>
-                <TableHead className="font-bold text-black">Time</TableHead>
-                <TableHead className="text-right font-bold text-black">Status</TableHead>
+                <TableHead className="font-black text-black">Severity</TableHead>
+                <TableHead className="font-black text-black">Issue</TableHead>
+                <TableHead className="font-black text-black">File</TableHead>
+                <TableHead className="font-black text-black">Time</TableHead>
+                <TableHead className="text-right font-black text-black">Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {recentIssues.map((issue) => (
                 <React.Fragment key={issue.id}>
                   <TableRow
-                    className="cursor-pointer border-b border-gray-200 bg-white transition-colors hover:bg-[#FCD34D]"
+                    className="cursor-pointer border-b-2 border-gray-100 bg-white transition-colors hover:bg-[#FCD34D]"
                     onClick={() => toggleIssue(issue.id)}
                   >
                     <TableCell>
@@ -314,17 +314,17 @@ export const AnalyticsPage: React.FC = () => {
                         {issue.severity.toUpperCase()}
                       </Badge>
                     </TableCell>
-                    <TableCell className="font-medium">{issue.message}</TableCell>
-                    <TableCell className="text-muted-foreground flex items-center gap-2">
+                    <TableCell className="font-bold text-gray-800">{issue.message}</TableCell>
+                    <TableCell className="text-gray-600 font-mono text-xs flex items-center gap-2">
                       <FileCode className="h-4 w-4" />
                       {issue.file}
                     </TableCell>
-                    <TableCell className="text-muted-foreground">{issue.time}</TableCell>
+                    <TableCell className="text-gray-500 font-medium">{issue.time}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-2">
                         <Badge
                           variant="neutral"
-                          className="border-2 border-black bg-white text-black"
+                          className="border-2 border-black bg-white text-black font-bold"
                         >
                           {issue.status}
                         </Badge>
@@ -341,12 +341,12 @@ export const AnalyticsPage: React.FC = () => {
                       <TableCell colSpan={5} className="p-4">
                         <div className="rounded-md border-2 border-black bg-white p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                           <div className="mb-4 flex items-center justify-between">
-                            <h4 className="text-lg font-bold">Issue Details</h4>
+                            <h4 className="text-lg font-black">Issue Details</h4>
                             <div className="flex gap-2">
                               <Button
                                 size="sm"
                                 variant="neutral"
-                                className="gap-2 border-2 border-black"
+                                className="gap-2 border-2 border-black font-bold"
                               >
                                 <Github className="h-4 w-4" />
                                 View on GitHub
@@ -354,7 +354,7 @@ export const AnalyticsPage: React.FC = () => {
                               <Button
                                 size="sm"
                                 variant="neutral"
-                                className="gap-2 border-2 border-black"
+                                className="gap-2 border-2 border-black font-bold"
                               >
                                 <ExternalLink className="h-4 w-4" />
                                 Open File
@@ -364,8 +364,8 @@ export const AnalyticsPage: React.FC = () => {
 
                           <div className="space-y-4">
                             <div>
-                              <h5 className="mb-2 text-sm font-bold">Description</h5>
-                              <p className="text-muted-foreground text-sm">
+                              <h5 className="mb-2 text-sm font-black uppercase tracking-wider">Description</h5>
+                              <p className="text-gray-700 text-sm font-medium leading-relaxed">
                                 This issue was detected by the AI review engine. It indicates a
                                 potential security vulnerability or code quality issue that should
                                 be addressed before merging.
@@ -373,16 +373,16 @@ export const AnalyticsPage: React.FC = () => {
                             </div>
 
                             <div>
-                              <h5 className="mb-2 text-sm font-bold">Suggested Fix</h5>
-                              <div className="overflow-x-auto rounded-md bg-gray-900 p-4 font-mono text-sm text-white">
+                              <h5 className="mb-2 text-sm font-black uppercase tracking-wider">Suggested Fix</h5>
+                              <div className="overflow-x-auto rounded-md border-2 border-black bg-gray-900 p-4 font-mono text-sm text-white shadow-sm">
                                 <div className="flex flex-col gap-1">
-                                  <div className="text-red-400">
+                                  <div className="text-red-400 font-bold">
                                     - const query = "SELECT * FROM users WHERE id = " + userId;
                                   </div>
-                                  <div className="text-green-400">
+                                  <div className="text-green-400 font-bold">
                                     + const query = "SELECT * FROM users WHERE id = ?";
                                   </div>
-                                  <div className="text-green-400">
+                                  <div className="text-green-400 font-bold">
                                     + db.execute(query, [userId]);
                                   </div>
                                 </div>
