@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
+@import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap');
 
 @custom-variant dark (&:is(.dark *));
 
@@ -57,10 +58,12 @@
   --spacing-boxShadowY: 2px;
   --spacing-reverseBoxShadowX: -2px;
   --spacing-reverseBoxShadowY: -2px;
-  --radius-base: 15px;
+  --radius-base: 0px;
   --shadow-shadow: var(--shadow);
-  --font-weight-base: 500;
-  --font-weight-heading: 800;
+  --font-weight-base: 600;
+  --font-weight-heading: 1100;
+  --font-base: "Source Code Pro", monospace;
+  --font-heading: "Source Code Pro", monospace;
 }
 
 @layer base {
@@ -74,7 +77,7 @@
   h4,
   h5,
   h6 {
-    @apply font-heading;
+    @apply font-heading font-black uppercase;
   }
 }
 
