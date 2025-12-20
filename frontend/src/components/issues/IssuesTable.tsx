@@ -15,7 +15,6 @@ import { cn } from '@/lib/utils';
 
 interface IssuesTableProps {
   issues: IssueWithAgent[];
-  onLaunchAgent: (issue: IssueWithAgent) => void;
   onRowClick: (issueNumber: number) => void;
 }
 
