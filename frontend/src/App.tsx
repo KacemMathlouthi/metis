@@ -11,6 +11,9 @@ import { DashboardPage } from './pages/dashboard/DashboardPage';
 import { AnalyticsPage } from './pages/dashboard/AnalyticsPage';
 import { AIReviewPage } from './pages/dashboard/AIReviewPage';
 import { RepositoriesPage } from './pages/dashboard/RepositoriesPage';
+import { IssuesPage } from './pages/dashboard/IssuesPage';
+import { IssueDetailPage } from './pages/dashboard/IssueDetailPage';
+import { AgentProgressPage } from './pages/dashboard/AgentProgressPage';
 import { ToastProvider } from './contexts/ToastContext';
 import './App.css';
 
@@ -40,6 +43,9 @@ function App() {
               <Route path="analytics" element={<AnalyticsPage />} />
               <Route path="ai-review" element={<AIReviewPage />} />
               <Route path="repositories" element={<RepositoriesPage />} />
+              <Route path="issues" element={<IssuesPage />} />
+              <Route path="issues/:issueNumber" element={<IssueDetailPage />} />
+              <Route path="agents/:agentId" element={<AgentProgressPage />} />
             </Route>
 
             {/* 404 Page */}
