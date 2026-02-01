@@ -34,12 +34,10 @@ export const IssuesPage: React.FC = () => {
 
     setLoading(true);
     try {
-      const [issuesData, agentsData] = await Promise.all([
-        apiClient.listIssues(selectedRepo.id, true),
-        apiClient.listAgentRuns(selectedRepo.id),
-      ]);
-      setIssues(issuesData);
-      setAgentRuns(agentsData);
+      const issuesData = await apiClient.listIssues(selectedRepo.repository);
+      setIssues(issuesData as IssueWithAgent[]); // Cast since agent runs not implemented yet
+      // Agent runs not yet implemented
+      setAgentRuns([]);
     } catch (err) {
       toast.error('Failed to load data', err instanceof Error ? err.message : 'Unknown error');
     } finally {

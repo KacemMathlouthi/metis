@@ -31,24 +31,17 @@ export const IssueDetailPage: React.FC = () => {
 
     setLoading(true);
     try {
-      const allIssues = await apiClient.listIssues(selectedRepo.id, false);
-      const foundIssue = allIssues.find(
-        (i) => i.issue_number === parseInt(issueNumber)
-      );
+      const issueNum = parseInt(issueNumber);
 
-      if (!foundIssue) {
-        toast.error('Issue not found', `Issue #${issueNumber} not found`);
-        return;
-      }
-
-      const [commentsData, agentsData] = await Promise.all([
-        apiClient.getIssueComments(foundIssue.id),
-        apiClient.getIssueAgentRuns(foundIssue.id),
+      const [issueData, commentsData] = await Promise.all([
+        apiClient.getIssue(issueNum, selectedRepo.repository),
+        apiClient.getIssueComments(issueNum, selectedRepo.repository),
       ]);
 
-      setIssue(foundIssue);
+      setIssue(issueData);
       setComments(commentsData);
-      setAgentRuns(agentsData);
+      // Agent runs not yet implemented
+      setAgentRuns([]);
     } catch (err) {
       toast.error(
         'Failed to load issue',
@@ -73,8 +66,8 @@ export const IssueDetailPage: React.FC = () => {
       toast.dismiss(loadingId);
       toast.success('Agent launched!', `Task ID: ${response.celery_task_id}`);
 
-      const agentsData = await apiClient.getIssueAgentRuns(issue.id);
-      setAgentRuns(agentsData);
+      // Agent runs will be implemented later
+      // Refresh would happen here
     } catch (err) {
       toast.dismiss(loadingId);
       toast.error(
