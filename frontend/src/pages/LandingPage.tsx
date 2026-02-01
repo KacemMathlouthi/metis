@@ -8,7 +8,7 @@ import { Footer } from '@/components/landing/Footer';
 
 export const LandingPage: React.FC = () => {
   return (
-    <div className="flex min-h-screen flex-col bg-[#FCD34D]">
+    <div className="landing flex min-h-screen flex-col bg-[var(--metis-cream)] text-black">
       <Navbar />
       <Hero />
       <Marquee />

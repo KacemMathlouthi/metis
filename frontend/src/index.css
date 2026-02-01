@@ -4,6 +4,21 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
+  --metis-black: #000000;
+  --metis-white: #ffffff;
+  --metis-red: #e10500;
+  --metis-orange-dark: #fa500f;
+  --metis-orange: #ff8205;
+  --metis-orange-light: #ffaf00;
+  --metis-yellow: #ffd800;
+  --metis-cream: #fff7f2;
+  --metis-pastel-1: #fff1e6;
+  --metis-pastel-2: #fff6cc;
+  --metis-pastel-3: #ffe0cc;
+  --metis-pastel-4: #fff3e0;
+  --metis-pastel-red: #ffe2df;
+  --metis-pastel-orange: #ffe6d9;
+
   --background: oklch(96.79% 0.0654 102.26);
   --secondary-background: oklch(100% 0 0);
   --foreground: oklch(0% 0 0);
@@ -77,6 +92,21 @@
   h5,
   h6 {
     @apply font-heading font-black uppercase;
+  }
+
+  .landing {
+    font-family: "Sora", "Source Code Pro", monospace;
+    color: #000;
+  }
+
+  .landing .landing-display {
+    font-family: "Space Grotesk", "Sora", sans-serif;
+    letter-spacing: -0.04em;
+  }
+
+  .landing .landing-display-tight {
+    font-family: "Space Grotesk", "Sora", sans-serif;
+    letter-spacing: -0.06em;
   }
 }
 
