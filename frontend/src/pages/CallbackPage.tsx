@@ -53,20 +53,23 @@ export const CallbackPage = () => {
 
   if (error) {
     return (
-      <div className="relative flex min-h-screen items-center justify-center p-4" style={{ backgroundColor: '#FFFBEB' }}>
+      <div
+        className="landing relative flex min-h-screen items-center justify-center p-4"
+        style={{ backgroundColor: 'var(--metis-cream)' }}
+      >
         <div className="fixed inset-0 z-0" style={{ width: '100vw', height: '100vh' }}>
           <PixelBlast
             variant="square"
             pixelSize={5}
-            color="#A16207"
+            color="#2A0E06"
             patternScale={2.5}
             patternDensity={0.9}
             enableRipples
             transparent
           />
         </div>
-        <div className="relative z-10 rounded border-2 border-black bg-white p-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-          <h2 className="mb-4 text-2xl font-black text-red-600">
+        <div className="relative z-10 rounded border-2 border-black bg-white p-8 shadow-[4px_4px_0px_0px_#000]">
+          <h2 className="landing-display mb-4 text-2xl font-black text-[var(--metis-red)]">
             Authentication Error
           </h2>
           <p className="mb-4">{error}</p>
@@ -82,23 +85,26 @@ export const CallbackPage = () => {
   }
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center p-4" style={{ backgroundColor: '#FFFBEB' }}>
+    <div
+      className="landing relative flex min-h-screen items-center justify-center p-4"
+      style={{ backgroundColor: 'var(--metis-cream)' }}
+    >
       <div className="fixed inset-0 z-0" style={{ width: '100vw', height: '100vh' }}>
         <PixelBlast
           variant="square"
           pixelSize={5}
-          color="#A16207"
+          color="#2A0E06"
           patternScale={2.5}
           patternDensity={0.9}
           enableRipples
           transparent
         />
       </div>
-      <div className="relative z-10 rounded border-2 border-black bg-white p-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-        <h2 className="mb-4 text-2xl font-black">Completing login...</h2>
+      <div className="relative z-10 rounded border-2 border-black bg-white p-8 shadow-[4px_4px_0px_0px_#000]">
+        <h2 className="landing-display mb-4 text-2xl font-black">Completing login...</h2>
         <div className="flex items-center gap-3">
           <div className="h-6 w-6 animate-spin rounded-full border-4 border-black border-t-transparent"></div>
-          <p className="font-bold">Please wait</p>
+          <p className="font-semibold">Please wait</p>
         </div>
       </div>
     </div>

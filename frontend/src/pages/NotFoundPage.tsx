@@ -13,15 +13,15 @@ export const NotFoundPage = () => {
 
   return (
     <div
-      className="relative flex min-h-screen items-center justify-center p-4"
-      style={{ backgroundColor: '#FEF3F2' }}
+      className="landing relative flex min-h-screen items-center justify-center p-4"
+      style={{ backgroundColor: 'var(--metis-cream)' }}
     >
       {/* Animated background */}
       <div className="fixed inset-0 z-0" style={{ width: '100vw', height: '100vh' }}>
         <PixelBlast
           variant="triangle"
           pixelSize={6}
-          color="#F472B6"
+          color="#2A0E06"
           patternScale={3}
           patternDensity={0.7}
           pixelSizeJitter={0.4}
@@ -40,20 +40,22 @@ export const NotFoundPage = () => {
       </div>
 
       {/* 404 Card */}
-      <Card className="relative z-10 w-full max-w-lg border-4 border-black bg-[#F472B6] shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
+      <Card className="relative z-10 w-full max-w-lg border-4 border-black bg-[var(--metis-pastel-1)] shadow-[12px_12px_0px_0px_var(--metis-red)]">
         <CardContent className="p-10">
           {/* Giant 404 */}
           <div className="mb-6 text-center">
-            <div className="mb-4 inline-flex items-center justify-center rounded-lg border-4 border-black bg-white p-4 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+            <div className="mb-4 inline-flex items-center justify-center rounded-lg border-4 border-black bg-white p-4 shadow-[6px_6px_0px_0px_#000]">
               <Zap className="h-12 w-12" />
             </div>
-            <h1 className="mb-2 text-8xl font-black tracking-tighter">404</h1>
-            <h2 className="text-2xl font-black">PAGE NOT FOUND</h2>
+            <h1 className="landing-display mb-2 text-8xl font-black tracking-tighter text-[var(--metis-red)]">
+              404
+            </h1>
+            <h2 className="landing-display text-2xl font-black">PAGE NOT FOUND</h2>
           </div>
 
           {/* Message */}
-          <div className="mb-6 rounded border-2 border-black bg-white p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <p className="text-center font-bold">
+          <div className="mb-6 rounded border-2 border-black bg-white p-4 shadow-[4px_4px_0px_0px_#000]">
+            <p className="text-center font-semibold">
               Oops! Looks like this page got lost in the code review.
             </p>
           </div>
@@ -62,7 +64,7 @@ export const NotFoundPage = () => {
           <div className="flex gap-3">
             <Button
               onClick={() => navigate(-1)}
-              className="flex-1 border-2 border-black bg-white text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
+              className="flex-1 border-2 border-black bg-white text-black shadow-[4px_4px_0px_0px_#000] transition-all hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#000]"
               size="lg"
             >
               <ArrowLeft className="mr-2 h-5 w-5" />
@@ -70,7 +72,7 @@ export const NotFoundPage = () => {
             </Button>
             <Button
               onClick={() => navigate('/')}
-              className="flex-1 border-2 border-black bg-black text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
+              className="flex-1 border-2 border-black bg-[var(--metis-orange)] text-white shadow-[4px_4px_0px_0px_#000] transition-all hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#000]"
               size="lg"
             >
               <Home className="mr-2 h-5 w-5" />
