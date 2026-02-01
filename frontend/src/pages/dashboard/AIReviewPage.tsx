@@ -115,8 +115,8 @@ export const AIReviewPage: React.FC = () => {
   return (
     <div className="mx-auto max-w-6xl space-y-6 p-4">
       <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-black">Review Configuration</h1>
-        <p className="text-muted-foreground font-medium">
+        <h1 className="landing-display text-3xl font-black">Review Configuration</h1>
+        <p className="text-black/60 font-medium">
           Customize Metis's code review behavior and preferences.
         </p>
       </div>
@@ -133,13 +133,13 @@ export const AIReviewPage: React.FC = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex items-start gap-3 rounded-md border-2 border-black bg-blue-50 p-4">
-            <div className="mt-1 rounded-full bg-blue-200 p-1 border-2 border-blue-300">
-              <Sparkles className="h-4 w-4 text-blue-700" />
+          <div className="flex items-start gap-4 rounded-md border-2 border-black bg-[var(--metis-pastel-4)] p-5">
+            <div className="mt-0.5 rounded-full bg-[var(--metis-orange-dark)] p-2.5 border-2 border-black shadow-[2px_2px_0px_0px_#000]">
+              <Sparkles className="h-6 w-6 text-white" />
             </div>
             <div>
-              <p className="text-sm font-black text-blue-900">On-Demand Reviews</p>
-              <p className="text-blue-800 mt-1 text-sm font-medium">
+              <p className="text-sm font-black text-black">On-Demand Reviews</p>
+              <p className="text-black/70 mt-1 text-sm font-medium">
                 Mention{' '}
                 <Badge variant="neutral" className="border-2 border-black bg-white text-xs font-bold">
                   @metis-ai
@@ -185,8 +185,8 @@ export const AIReviewPage: React.FC = () => {
                 onClick={() => setSensitivity(option.id as 'LOW' | 'MEDIUM' | 'HIGH')}
                 className={`cursor-pointer rounded-md border-2 p-4 transition-all ${
                   sensitivity === option.id
-                    ? 'border-black bg-[#FCD34D] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]'
-                    : 'border-gray-200 hover:border-black hover:bg-gray-50 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]'
+                    ? 'border-black bg-[var(--metis-pastel-2)] shadow-[4px_4px_0px_0px_#000]'
+                    : 'border-black/20 hover:border-black hover:bg-[var(--metis-pastel-1)] hover:shadow-[2px_2px_0px_0px_#000]'
                 } `}
               >
                 <div className="mb-2 flex items-center justify-between">

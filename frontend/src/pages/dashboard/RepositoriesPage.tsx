@@ -168,8 +168,8 @@ export const RepositoriesPage = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-black">Repository Management</h1>
-          <p className="text-sm text-gray-600 mt-1">
+          <h1 className="landing-display text-3xl font-black">Repository Management</h1>
+          <p className="text-sm text-black/60 mt-1">
             Enable code reviews for your GitHub repositories
           </p>
         </div>
@@ -190,7 +190,7 @@ export const RepositoriesPage = () => {
                 '_blank'
               )
             }
-            className="border-2 border-black bg-[#4ADE80] font-bold text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all"
+            className="border-2 border-black bg-[var(--metis-orange)] font-bold text-white shadow-[4px_4px_0px_0px_#000] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#000] transition-all"
           >
             <ExternalLink className="mr-2 h-4 w-4" />
             Install on GitHub
@@ -207,7 +207,7 @@ export const RepositoriesPage = () => {
       )}
 
       {loading ? (
-        <Card className="border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+        <Card className="border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
           <CardContent className="flex items-center justify-center py-12">
             <RefreshCw className="h-8 w-8 animate-spin" />
             <span className="ml-3 font-bold">Loading repositories...</span>
@@ -219,7 +219,7 @@ export const RepositoriesPage = () => {
           {githubInstallations.map((installation) => (
             <Card
               key={installation.id}
-              className="border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+              className="border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
             >
               <CardHeader>
                 <div className="flex items-center justify-between">
@@ -260,7 +260,7 @@ export const RepositoriesPage = () => {
                         key={repo.id}
                         className={`flex items-center justify-between rounded border-2 p-3 ${
                           enabled
-                            ? 'border-green-600 bg-green-50'
+                            ? 'border-[var(--metis-orange-dark)] bg-[var(--metis-pastel-4)]'
                             : 'border-black bg-white'
                         }`}
                       >
@@ -273,9 +273,9 @@ export const RepositoriesPage = () => {
                           {/* Status Icon */}
                           <div className="flex-shrink-0">
                             {enabled ? (
-                              <CheckCircle2 className="h-5 w-5 text-green-600" />
+                              <CheckCircle2 className="h-5 w-5 text-[var(--metis-orange-dark)]" />
                             ) : (
-                              <XCircle className="h-5 w-5 text-gray-400" />
+                              <XCircle className="h-5 w-5 text-black/40" />
                             )}
                           </div>
 
@@ -292,8 +292,8 @@ export const RepositoriesPage = () => {
                                 </Badge>
                               )}
                               {/* Description - truncated to 40 chars */}
-                              <span className="text-xs text-gray-500">•</span>
-                              <p className="text-xs text-gray-600 truncate">
+                              <span className="text-xs text-black/40">•</span>
+                              <p className="text-xs text-black/60 truncate">
                                 {truncateText(repo.description, 60)}
                               </p>
                             </div>
@@ -315,7 +315,7 @@ export const RepositoriesPage = () => {
                               <Button
                                 size="sm"
                                 variant="neutral"
-                                className="border-2 border-red-600 bg-red-50 font-bold text-red-600 hover:bg-red-100"
+                                className="border-2 border-[var(--metis-red)] bg-[var(--metis-pastel-red)] font-bold text-[var(--metis-red)] hover:bg-[var(--metis-pastel-1)]"
                                 onClick={() => setConfirmDisable({ open: true, id: enabledInst.id })}
                               >
                                 Disable
@@ -324,7 +324,7 @@ export const RepositoriesPage = () => {
                           ) : (
                             <Button
                               size="sm"
-                              className="border-2 border-black bg-[#4ADE80] font-bold text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-0.5 hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]"
+                              className="border-2 border-black bg-[var(--metis-orange)] font-bold text-white shadow-[2px_2px_0px_0px_#000] hover:-translate-y-0.5 hover:shadow-[3px_3px_0px_0px_#000]"
                               onClick={() =>
                                 handleEnable(
                                   installation.id,
@@ -350,19 +350,19 @@ export const RepositoriesPage = () => {
           ))}
 
           {githubInstallations.length === 0 && !loading && (
-            <Card className="border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <Card className="border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
               <CardContent className="py-12 text-center">
                 <div className="mb-4 flex justify-center">
-                  <div className="flex h-16 w-16 items-center justify-center rounded-lg border-4 border-black bg-[#F472B6] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-lg border-4 border-black bg-[var(--metis-pastel-1)] shadow-[4px_4px_0px_0px_#000]">
                     <Code2 className="h-8 w-8" />
                   </div>
                 </div>
                 <h3 className="mb-2 text-xl font-black">No GitHub Installations Found</h3>
-                <p className="mb-6 text-sm text-gray-600">
+                <p className="mb-6 text-sm text-black/60">
                   Install the Metis GitHub App on your repositories to get started
                 </p>
                 <Button
-                  className="border-2 border-black bg-[#FCD34D] font-bold text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+                  className="border-2 border-black bg-[var(--metis-orange)] font-bold text-white shadow-[4px_4px_0px_0px_#000]"
                   onClick={() =>
                     window.open(
                       'https://github.com/apps/metis-ai-testing/installations/new',
