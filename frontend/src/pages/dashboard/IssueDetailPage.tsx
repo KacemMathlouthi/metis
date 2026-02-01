@@ -80,8 +80,8 @@ export const IssueDetailPage: React.FC = () => {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin mb-4" />
-        <p className="text-sm text-muted-foreground">Loading issue...</p>
+        <Loader2 className="h-8 w-8 animate-spin mb-4 text-[var(--metis-orange-dark)]" />
+        <p className="text-sm text-black/60">Loading issue...</p>
       </div>
     );
   }
@@ -132,10 +132,10 @@ export const IssueDetailPage: React.FC = () => {
         {/* Left: Main Content */}
         <div className="flex-1 space-y-4 min-w-0 order-2 lg:order-1">
           {/* Title Section */}
-          <div className="space-y-2 border-b border-gray-200 pb-4 mb-6">
-            <h1 className="text-2xl md:text-3xl font-black text-black break-words mb-2">
+          <div className="space-y-2 border-b border-black/10 pb-4 mb-6">
+            <h1 className="landing-display text-2xl md:text-3xl font-black text-black break-words mb-2">
               {issue.title}
-              <span className="text-muted-foreground font-normal ml-2">#{issue.issue_number}</span>
+              <span className="text-black/60 font-normal ml-2">#{issue.issue_number}</span>
             </h1>
 
             <div className="flex flex-wrap items-center gap-2 text-sm">
@@ -151,11 +151,11 @@ export const IssueDetailPage: React.FC = () => {
                 </div>
               )}
 
-              <span className="text-sm text-gray-600 ml-1">
+              <span className="text-sm text-black/60 ml-1">
                 <span className="font-semibold text-black">{issue.author}</span> opened this issue on {formatDate(issue.created_at)}
               </span>
 
-              <span className="text-sm text-gray-600">
+              <span className="text-sm text-black/60">
                 • {issue.comments_count} comments
               </span>
             </div>
@@ -187,14 +187,14 @@ export const IssueDetailPage: React.FC = () => {
         </div>
 
         {/* Right: Sidebar */}
-        <div className="w-full lg:w-72 flex-shrink-0 space-y-6 order-1 lg:order-2 lg:pl-8 lg:border-l lg:border-gray-200">
+        <div className="w-full lg:w-72 flex-shrink-0 space-y-6 order-1 lg:order-2 lg:pl-8 lg:border-l lg:border-black/10">
           {/* Assignees */}
-          <div className="border-b border-gray-200 pb-4">
+          <div className="border-b border-black/10 pb-4">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-xs font-bold text-gray-500">Assignees</h3>
+              <h3 className="text-xs font-bold text-black/60">Assignees</h3>
             </div>
             {issue.assignees.length === 0 ? (
-              <p className="text-xs text-gray-500 italic">No one assigned</p>
+              <p className="text-xs text-black/60 italic">No one assigned</p>
             ) : (
               <div className="space-y-2">
                 {issue.assignees.map((assignee) => (
@@ -202,9 +202,9 @@ export const IssueDetailPage: React.FC = () => {
                     <img 
                       src={`https://github.com/${assignee}.png`} 
                       alt={assignee}
-                      className="h-5 w-5 rounded-full border border-gray-300"
+                      className="h-5 w-5 rounded-full border border-black/20"
                     />
-                    <span className="text-sm font-medium text-gray-700 group-hover:text-blue-600">{assignee}</span>
+                    <span className="text-sm font-medium text-black/70 group-hover:text-[var(--metis-orange)]">{assignee}</span>
                   </div>
                 ))}
               </div>
@@ -212,12 +212,12 @@ export const IssueDetailPage: React.FC = () => {
           </div>
 
           {/* Labels */}
-          <div className="border-b border-gray-200 pb-4">
+          <div className="border-b border-black/10 pb-4">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-xs font-bold text-gray-500">Labels</h3>
+              <h3 className="text-xs font-bold text-black/60">Labels</h3>
             </div>
             {issue.labels.length === 0 ? (
-              <p className="text-xs text-gray-500 italic">None yet</p>
+              <p className="text-xs text-black/60 italic">None yet</p>
             ) : (
               <div className="flex flex-wrap gap-1.5">
                 {issue.labels.map((label) => (
@@ -228,8 +228,8 @@ export const IssueDetailPage: React.FC = () => {
           </div>
 
           {/* Development Section */}
-          <div className="border-b border-gray-200 pb-4">
-            <h3 className="text-xs font-bold text-gray-500 mb-3">Development</h3>
+          <div className="border-b border-black/10 pb-4">
+            <h3 className="text-xs font-bold text-black/60 mb-3">Development</h3>
 
             {/* Launch Agent Button */}
             <LaunchAgentDialog
@@ -238,7 +238,7 @@ export const IssueDetailPage: React.FC = () => {
               repository={selectedRepo?.repository || ''}
               onLaunch={handleLaunchAgent}
               triggerButton={
-                <Button className="w-full border-2 border-black bg-[#A78BFA] font-bold text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-0.5 hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all mb-3">
+                <Button className="w-full border-2 border-black bg-[var(--metis-orange)] text-white font-bold text-sm shadow-[2px_2px_0px_0px_#000] hover:-translate-y-0.5 hover:shadow-[3px_3px_0px_0px_#000] transition-all mb-3">
                   Code with agent mode
                 </Button>
               }
@@ -255,8 +255,8 @@ export const IssueDetailPage: React.FC = () => {
                       className="flex items-center gap-2 text-sm group cursor-pointer"
                       onClick={() => navigate(`/dashboard/agents/${run.id}`)}
                     >
-                      <GitPullRequest className="h-4 w-4 text-green-600" />
-                      <span className="font-medium text-gray-900 group-hover:text-blue-600">
+                      <GitPullRequest className="h-4 w-4 text-[var(--metis-orange-dark)]" />
+                      <span className="font-medium text-black group-hover:text-[var(--metis-orange)]">
                         #{run.pr_number}
                       </span>
                       <AgentStatusBadge status={run.status} className="text-[10px] px-1.5 py-0 ml-auto" />
@@ -264,7 +264,7 @@ export const IssueDetailPage: React.FC = () => {
                   ))}
               </div>
             ) : (
-              <p className="text-xs text-gray-500 italic">
+              <p className="text-xs text-black/60 italic">
                 No pull requests yet
               </p>
             )}
@@ -276,7 +276,7 @@ export const IssueDetailPage: React.FC = () => {
               href={`https://github.com/${issue.repository}/issues/${issue.issue_number}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs font-medium text-gray-500 hover:text-blue-600 flex items-center gap-1"
+              className="text-xs font-medium text-black/60 hover:text-[var(--metis-orange)] flex items-center gap-1"
             >
               <Github className="h-3.5 w-3.5" />
               View on GitHub

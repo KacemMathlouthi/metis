@@ -51,15 +51,15 @@ const areaChartData = [
 const areaChartConfig = {
   critical: {
     label: 'Critical',
-    color: '#ef4444', // Red-500
+    color: 'var(--metis-red)',
   },
   warning: {
     label: 'Warning',
-    color: '#FCD34D', // Yellow-400 (Project Color)
+    color: 'var(--metis-orange-light)',
   },
   info: {
     label: 'Info',
-    color: '#3b82f6', // Blue-500
+    color: 'var(--metis-orange)',
   },
 } satisfies ChartConfig;
 
@@ -76,11 +76,11 @@ const barChartData = [
 const barChartConfig = {
   merged: {
     label: 'Merged',
-    color: '#4ADE80', // Green-400 (Project Color)
+    color: 'var(--metis-orange-dark)',
   },
   opened: {
     label: 'Opened',
-    color: '#000000', // Black
+    color: 'var(--metis-black)',
   },
 } satisfies ChartConfig;
 
@@ -138,61 +138,61 @@ export const AnalyticsPage: React.FC = () => {
     <div className="space-y-6 p-4 max-w-6xl mx-auto">
       {/* Header */}
       <div className="flex flex-col gap-1">
-        <h1 className="text-3xl font-black text-black">Analytics</h1>
-        <p className="text-muted-foreground font-medium">Overview of your code quality and team velocity.</p>
+        <h1 className="landing-display text-3xl font-black text-black">Analytics</h1>
+        <p className="text-black/60 font-medium">Overview of your code quality and team velocity.</p>
       </div>
 
       {/* Stats Row */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card className="border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-muted-foreground text-sm font-bold">Total PRs</CardTitle>
+            <CardTitle className="text-black/60 text-sm font-bold">Total PRs</CardTitle>
             <GitPullRequest className="h-4 w-4 text-black" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-black text-black">1,284</div>
-            <p className="text-muted-foreground flex items-center gap-1 text-xs font-bold">
-              <TrendingUp className="h-3 w-3 text-green-600" />
-              <span className="text-green-600">+12%</span> from last month
+            <p className="text-black/60 flex items-center gap-1 text-xs font-bold">
+              <TrendingUp className="h-3 w-3 text-[var(--metis-orange-dark)]" />
+              <span className="text-[var(--metis-orange-dark)]">+12%</span> from last month
             </p>
           </CardContent>
         </Card>
         <Card className="border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-muted-foreground text-sm font-bold">
+            <CardTitle className="text-black/60 text-sm font-bold">
               Avg. Merge Time
             </CardTitle>
             <Clock className="h-4 w-4 text-black" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-black text-black">4h 12m</div>
-            <p className="text-muted-foreground flex items-center gap-1 text-xs font-bold">
-              <TrendingDown className="h-3 w-3 text-green-600" />
-              <span className="text-green-600">-18%</span> faster than avg
+            <p className="text-black/60 flex items-center gap-1 text-xs font-bold">
+              <TrendingDown className="h-3 w-3 text-[var(--metis-orange-dark)]" />
+              <span className="text-[var(--metis-orange-dark)]">-18%</span> faster than avg
             </p>
           </CardContent>
         </Card>
         <Card className="border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-muted-foreground text-sm font-bold">Issues Found</CardTitle>
+            <CardTitle className="text-black/60 text-sm font-bold">Issues Found</CardTitle>
             <Bug className="h-4 w-4 text-black" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-black text-black">24</div>
-            <p className="text-muted-foreground flex items-center gap-1 text-xs font-bold">
-              <AlertCircle className="h-3 w-3 text-red-600" />
-              <span className="text-red-600">+4</span> new critical
+            <p className="text-black/60 flex items-center gap-1 text-xs font-bold">
+              <AlertCircle className="h-3 w-3 text-[var(--metis-red)]" />
+              <span className="text-[var(--metis-red)]">+4</span> new critical
             </p>
           </CardContent>
         </Card>
         <Card className="border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-muted-foreground text-sm font-bold">Code Quality</CardTitle>
+            <CardTitle className="text-black/60 text-sm font-bold">Code Quality</CardTitle>
             <CheckCircle2 className="h-4 w-4 text-black" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-black text-black">A+</div>
-            <p className="text-muted-foreground text-xs font-bold">Top 5% of repositories</p>
+            <p className="text-black/60 text-xs font-bold">Top 5% of repositories</p>
           </CardContent>
         </Card>
       </div>
@@ -203,7 +203,7 @@ export const AnalyticsPage: React.FC = () => {
         <Card className="flex flex-col border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
           <CardHeader>
             <CardTitle className="font-black">AI Issues Detected</CardTitle>
-            <CardDescription className="font-medium">Breakdown by severity over the last 6 months</CardDescription>
+            <CardDescription className="font-medium text-black/60">Breakdown by severity over the last 6 months</CardDescription>
           </CardHeader>
           <CardContent className="flex-1 pb-4">
             <ChartContainer config={areaChartConfig} className="mx-auto h-[300px] w-full">
@@ -286,7 +286,7 @@ export const AnalyticsPage: React.FC = () => {
       <Card className="border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
         <CardHeader>
           <CardTitle className="font-black">Recent AI Detected Issues</CardTitle>
-          <CardDescription className="font-medium">Latest code quality and security findings.</CardDescription>
+          <CardDescription className="font-medium text-black/60">Latest code quality and security findings.</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
@@ -303,23 +303,23 @@ export const AnalyticsPage: React.FC = () => {
               {recentIssues.map((issue) => (
                 <React.Fragment key={issue.id}>
                   <TableRow
-                    className="cursor-pointer border-b-2 border-gray-100 bg-white transition-colors hover:bg-[#FCD34D]"
+                    className="cursor-pointer border-b-2 border-black/10 bg-white transition-colors hover:bg-[var(--metis-pastel-2)]"
                     onClick={() => toggleIssue(issue.id)}
                   >
                     <TableCell>
                       <Badge
                         variant="neutral"
-                        className={`border-2 font-bold ${issue.severity === 'critical' ? 'border-red-500 bg-red-100 text-red-700' : ''} ${issue.severity === 'warning' ? 'border-yellow-500 bg-yellow-100 text-yellow-700' : ''} ${issue.severity === 'info' ? 'border-blue-500 bg-blue-100 text-blue-700' : ''} `}
+                        className={`border-2 font-bold ${issue.severity === 'critical' ? 'border-[var(--metis-red)] bg-[var(--metis-pastel-red)] text-[var(--metis-red)]' : ''} ${issue.severity === 'warning' ? 'border-[var(--metis-orange-light)] bg-[var(--metis-pastel-2)] text-[var(--metis-orange-dark)]' : ''} ${issue.severity === 'info' ? 'border-[var(--metis-orange)] bg-[var(--metis-pastel-1)] text-[var(--metis-orange)]' : ''} `}
                       >
                         {issue.severity.toUpperCase()}
                       </Badge>
                     </TableCell>
-                    <TableCell className="font-bold text-gray-800">{issue.message}</TableCell>
-                    <TableCell className="text-gray-600 font-mono text-xs flex items-center gap-2">
+                    <TableCell className="font-bold text-black">{issue.message}</TableCell>
+                    <TableCell className="text-black/70 font-mono text-xs flex items-center gap-2">
                       <FileCode className="h-4 w-4" />
                       {issue.file}
                     </TableCell>
-                    <TableCell className="text-gray-500 font-medium">{issue.time}</TableCell>
+                    <TableCell className="text-black/60 font-medium">{issue.time}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-2">
                         <Badge
@@ -337,7 +337,7 @@ export const AnalyticsPage: React.FC = () => {
                     </TableCell>
                   </TableRow>
                   {expandedIssue === issue.id && (
-                    <TableRow className="bg-gray-50 hover:bg-gray-50">
+                    <TableRow className="bg-[var(--metis-pastel-1)] hover:bg-[var(--metis-pastel-1)]">
                       <TableCell colSpan={5} className="p-4">
                         <div className="rounded-md border-2 border-black bg-white p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                           <div className="mb-4 flex items-center justify-between">
@@ -365,7 +365,7 @@ export const AnalyticsPage: React.FC = () => {
                           <div className="space-y-4">
                             <div>
                               <h5 className="mb-2 text-sm font-black uppercase tracking-wider">Description</h5>
-                              <p className="text-gray-700 text-sm font-medium leading-relaxed">
+                              <p className="text-black/70 text-sm font-medium leading-relaxed">
                                 This issue was detected by the AI review engine. It indicates a
                                 potential security vulnerability or code quality issue that should
                                 be addressed before merging.
@@ -374,7 +374,7 @@ export const AnalyticsPage: React.FC = () => {
 
                             <div>
                               <h5 className="mb-2 text-sm font-black uppercase tracking-wider">Suggested Fix</h5>
-                              <div className="overflow-x-auto rounded-md border-2 border-black bg-gray-900 p-4 font-mono text-sm text-white shadow-sm">
+                              <div className="overflow-x-auto rounded-md border-2 border-black bg-black p-4 font-mono text-sm text-white shadow-sm">
                                 <div className="flex flex-col gap-1">
                                   <div className="text-red-400 font-bold">
                                     - const query = "SELECT * FROM users WHERE id = " + userId;
