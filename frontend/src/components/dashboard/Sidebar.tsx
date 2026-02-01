@@ -55,7 +55,7 @@ export const AppSidebar: React.FC = () => {
     <Sidebar collapsible="icon" className="landing bg-[var(--metis-white)]">
       <SidebarHeader className="bg-[var(--metis-white)]">
         <div className="flex items-center gap-2 px-2 py-1 group-data-[collapsible=icon]:justify-center">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center border-2 border-black bg-[var(--metis-orange-dark)] text-lg font-black text-white shadow-[2px_2px_0px_0px_#000]">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center border-2 border-black bg-gradient-to-br from-[var(--metis-yellow)] via-[var(--metis-orange-light)] to-[var(--metis-red)] text-lg font-black text-white shadow-[2px_2px_0px_0px_#000]">
             M
           </div>
           <span className="landing-display text-xl font-black tracking-tighter group-data-[collapsible=icon]:hidden">
@@ -106,7 +106,7 @@ export const AppSidebar: React.FC = () => {
                   <DropdownMenuItem
                     key={installation.id}
                     onClick={() => setSelectedRepo(installation)}
-                    className={`gap-2 bg-white p-2 hover:bg-gray-100 ${
+                    className={`gap-2 bg-white p-2 hover:bg-[var(--metis-pastel-1)] ${
                       selectedRepo?.id === installation.id ? 'bg-[var(--metis-pastel-2)]' : ''
                     }`}
                   >
@@ -115,7 +115,7 @@ export const AppSidebar: React.FC = () => {
                     </div>
                     <div className="flex flex-1 flex-col">
                       <span className="text-sm font-semibold">{installation.repository}</span>
-                      <span className="text-xs text-gray-500">{installation.account_name}</span>
+                      <span className="text-xs text-black/60">{installation.account_name}</span>
                     </div>
                     {selectedRepo?.id === installation.id && (
                       <CheckCircle2 className="size-4 text-[var(--metis-orange-dark)]" />
@@ -125,7 +125,7 @@ export const AppSidebar: React.FC = () => {
                 {installations.length > 0 && (
                   <>
                     <DropdownMenuSeparator className="bg-black" />
-                    <DropdownMenuItem asChild className="gap-2 bg-white p-2 hover:bg-gray-100">
+                    <DropdownMenuItem asChild className="gap-2 bg-white p-2 hover:bg-[var(--metis-pastel-1)]">
                       <Link to="/dashboard/repositories">
                         <div className="bg-background flex size-6 items-center justify-center rounded-md border border-black">
                           <Plus className="size-4" />
@@ -246,7 +246,7 @@ export const AppSidebar: React.FC = () => {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator className="bg-black" />
                 {/* Manage Repositories Link */}
-                <DropdownMenuItem asChild className="gap-2 bg-white p-2 hover:bg-gray-100">
+                <DropdownMenuItem asChild className="gap-2 bg-white p-2 hover:bg-[var(--metis-pastel-1)]">
                   <Link to="/dashboard/repositories">
                     <Plus className="size-4" />
                     <span className="font-semibold">Manage repositories</span>

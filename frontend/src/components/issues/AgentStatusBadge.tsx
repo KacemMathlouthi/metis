@@ -11,10 +11,10 @@ export const AgentStatusBadge: React.FC<AgentStatusBadgeProps> = ({
   className,
 }) => {
   const colorMap = {
-    PENDING: 'border-gray-500 bg-gray-100 text-gray-700',
-    RUNNING: 'border-blue-500 bg-blue-100 text-blue-700',
-    COMPLETED: 'border-green-500 bg-green-100 text-green-700',
-    FAILED: 'border-red-500 bg-red-100 text-red-700',
+    PENDING: 'border-black/40 bg-white text-black/60',
+    RUNNING: 'border-[var(--metis-orange)] bg-[var(--metis-pastel-1)] text-[var(--metis-orange)]',
+    COMPLETED: 'border-[var(--metis-orange-dark)] bg-[var(--metis-pastel-2)] text-[var(--metis-orange-dark)]',
+    FAILED: 'border-[var(--metis-red)] bg-[var(--metis-pastel-red)] text-[var(--metis-red)]',
   };
 
   return (

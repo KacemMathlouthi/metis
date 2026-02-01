@@ -13,11 +13,31 @@ export const LabelBadge: React.FC<LabelBadgeProps> = ({
   // hash function to generate consistent colors for labels
   const getColorForLabel = (str: string) => {
     const colors = [
-      { border: 'border-blue-500', bg: 'bg-blue-100', text: 'text-blue-700' },
-      { border: 'border-purple-500', bg: 'bg-purple-100', text: 'text-purple-700' },
-      { border: 'border-pink-500', bg: 'bg-pink-100', text: 'text-pink-700' },
-      { border: 'border-orange-500', bg: 'bg-orange-100', text: 'text-orange-700' },
-      { border: 'border-teal-500', bg: 'bg-teal-100', text: 'text-teal-700' },
+      {
+        border: 'border-[var(--metis-red)]',
+        bg: 'bg-[var(--metis-pastel-red)]',
+        text: 'text-[var(--metis-red)]',
+      },
+      {
+        border: 'border-[var(--metis-orange-dark)]',
+        bg: 'bg-[var(--metis-pastel-3)]',
+        text: 'text-[var(--metis-orange-dark)]',
+      },
+      {
+        border: 'border-[var(--metis-orange)]',
+        bg: 'bg-[var(--metis-pastel-1)]',
+        text: 'text-[var(--metis-orange)]',
+      },
+      {
+        border: 'border-[var(--metis-yellow)]',
+        bg: 'bg-[var(--metis-yellow)]',
+        text: 'text-black',
+      },
+      {
+        border: 'border-black',
+        bg: 'bg-black',
+        text: 'text-white',
+      },
     ];
 
     let hash = 0;
