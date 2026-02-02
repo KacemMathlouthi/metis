@@ -222,6 +222,97 @@ class GitHubService:
 
         return installations_with_repos
 
+    async def get_repository_issues(
+        self,
+        owner: str,
+        repo: str,
+        installation_id: int,
+        state: str = "all",
+        per_page: int = 100,
+    ) -> list[dict[str, Any]]:
+        """Get issues for a repository.
+
+        Args:
+            owner: Repository owner
+            repo: Repository name
+            installation_id: GitHub App installation ID
+            state: Issue state filter (open, closed, all)
+            per_page: Number of issues per page (max 100)
+
+        Returns:
+            List of issue data from GitHub API
+        """
+        token = await self.get_installation_token(installation_id)
+
+        response = await self._client.get(
+            f"{self.base_url}/repos/{owner}/{repo}/issues",
+            headers={"Authorization": f"Bearer {token}"},
+            params={"state": state, "per_page": per_page},
+        )
+        response.raise_for_status()
+
+        issues: list[dict[str, Any]] = response.json()
+        # Filter out pull requests (GitHub API returns PRs as issues)
+        issues = [issue for issue in issues if "pull_request" not in issue]
+        return issues
+
+    async def get_issue(
+        self, owner: str, repo: str, issue_number: int, installation_id: int
+    ) -> dict[str, Any]:
+        """Get a single issue by number.
+
+        Args:
+            owner: Repository owner
+            repo: Repository name
+            issue_number: Issue number
+            installation_id: GitHub App installation ID
+
+        Returns:
+            Issue data from GitHub API
+        """
+        token = await self.get_installation_token(installation_id)
+
+        response = await self._client.get(
+            f"{self.base_url}/repos/{owner}/{repo}/issues/{issue_number}",
+            headers={"Authorization": f"Bearer {token}"},
+        )
+        response.raise_for_status()
+
+        issue: dict[str, Any] = response.json()
+        return issue
+
+    async def get_issue_comments(
+        self,
+        owner: str,
+        repo: str,
+        issue_number: int,
+        installation_id: int,
+        per_page: int = 100,
+    ) -> list[dict[str, Any]]:
+        """Get comments for an issue.
+
+        Args:
+            owner: Repository owner
+            repo: Repository name
+            issue_number: Issue number
+            installation_id: GitHub App installation ID
+            per_page: Number of comments per page (max 100)
+
+        Returns:
+            List of comment data from GitHub API
+        """
+        token = await self.get_installation_token(installation_id)
+
+        response = await self._client.get(
+            f"{self.base_url}/repos/{owner}/{repo}/issues/{issue_number}/comments",
+            headers={"Authorization": f"Bearer {token}"},
+            params={"per_page": per_page},
+        )
+        response.raise_for_status()
+
+        comments: list[dict[str, Any]] = response.json()
+        return comments
+
 
 # Global instance
 github_service = GitHubService()

@@ -155,12 +155,13 @@ app/
 **Key flows**:
 1. **Webhook Reception (Async)**: GitHub sends webhook → `api/webhooks.py` → signature verification → lookup Installation → create Review (PENDING) with PR metadata (head_branch, base_branch, language) → queue AI agent task → return 202 Accepted (<500ms)
 2. **AI Agent Review Processing**: Celery worker → pick task from Redis → update Review (PROCESSING) → create Daytona sandbox → clone PR branch → initialize ReviewAgent with tools → run autonomous loop (plan → execute → evaluate) → agent uses tools to read files, run tests, search code → agent calls finish_review() → post review to GitHub → update Review (COMPLETED) → cleanup sandbox
-3. **GitHub App Auth**: App generates JWT → exchanges for installation token → authenticated API calls
-4. **User OAuth**: User clicks login → GitHub OAuth → callback → create/update user in DB → set JWT cookies → redirect to dashboard
-5. **Protected Routes**: Request → `get_current_user()` dependency → verify JWT cookie → query user from DB → endpoint access
-6. **Repository Enrollment**: User → Repositories page → Sync from GitHub → Create Installation records → Enable repository → Webhooks start working
-7. **Workspace Context**: User selects repository → Saved to localStorage → Dashboard filters by selected repo → AI settings load repo config
-8. **Database Access**: FastAPI endpoint → `get_db()` dependency → async SQLAlchemy session → automatic commit/rollback
+3. **Issue → PR Workflow (PLANNED)**: User → Issues page → Launch agent with custom instructions → Create AgentRun (PENDING) → Queue BackgroundAgent task → Celery worker picks task → Create Daytona sandbox → Clone main branch → Initialize BackgroundAgent with coder tools → Run autonomous loop → Agent creates branch, writes code, runs tests, commits → Agent calls finish_task() with PR details → Create GitHub PR → Update AgentRun (COMPLETED) with PR URL → User redirected to AgentProgressPage
+4. **GitHub App Auth**: App generates JWT → exchanges for installation token → authenticated API calls
+5. **User OAuth**: User clicks login → GitHub OAuth → callback → create/update user in DB → set JWT cookies → redirect to dashboard
+6. **Protected Routes**: Request → `get_current_user()` dependency → verify JWT cookie → query user from DB → endpoint access
+7. **Repository Enrollment**: User → Repositories page → Sync from GitHub → Create Installation records → Enable repository → Webhooks start working
+8. **Workspace Context**: User selects repository → Saved to localStorage → Dashboard filters by selected repo → AI settings load repo config
+9. **Database Access**: FastAPI endpoint → `get_db()` dependency → async SQLAlchemy session → automatic commit/rollback
 
 ### Frontend Structure (`frontend/src/`)
 
@@ -171,22 +172,31 @@ src/
 ├── main.tsx                    # Application entry point with StrictMode
 ├── App.tsx                     # Root with AuthProvider, ToastProvider, RepositoryProvider (dashboard only)
 ├── assets/                     # Static assets
+│   └── lechat.gif              # LeChat AI agent animation for loading states
 ├── components/
 │   ├── ProtectedRoute.tsx      # Auth guard for dashboard routes
 │   ├── UnsavedChangesBar.tsx   # Floating glassmorphic save bar
 │   ├── dashboard/              # Dashboard layout components
 │   │   ├── DashboardLayout.tsx # Main dashboard wrapper with sidebar
-│   │   └── Sidebar.tsx         # Sidebar with repo selector in user dropdown
+│   │   └── Sidebar.tsx         # Sidebar with repo selector in user dropdown, Issues navigation
+│   ├── issues/                 # Issue & Agent Run components (NEW)
+│   │   ├── IssuesTable.tsx         # Table with pagination, status filtering, launch agent actions
+│   │   ├── AgentRunsTable.tsx      # Agent runs table with metrics, PR links, status badges
+│   │   ├── AgentStatusBadge.tsx    # Status badge (PENDING/RUNNING/COMPLETED/FAILED)
+│   │   ├── LaunchAgentDialog.tsx   # Dialog for launching agents with custom instructions
+│   │   ├── IssueCommentCard.tsx    # Card component for displaying issue comments
+│   │   └── LabelBadge.tsx          # GitHub label badge component
 │   ├── landing/                # Landing page sections
 │   │   ├── Navbar.tsx          # Top navigation
-│   │   ├── Hero.tsx            # Hero section
+│   │   ├── Hero.tsx            # Hero section with enhanced styling
 │   │   ├── Marquee.tsx         # Scrolling marquee
 │   │   ├── Features.tsx        # Feature highlights
 │   │   ├── CodeTerminal.tsx    # Code preview terminal
-│   │   └── Footer.tsx          # Page footer
+│   │   └── Footer.tsx          # Page footer with LinkedIn link
 │   └── ui/                     # shadcn/ui components (neo-brutalist styled)
 │       ├── *.tsx               # button, card, badge, chart, table, alert-dialog
 │       ├── alert.tsx           # Alert component for inline notifications
+│       ├── pagination.tsx      # Pagination component (NEW)
 │       └── PixelBlast.tsx      # Animated pixel background component
 ├── contexts/
 │   ├── AuthContext.tsx         # Auth state management (user, loading, logout, refetch)
@@ -195,21 +205,24 @@ src/
 ├── hooks/
 │   └── use-mobile.ts           # Mobile detection hook
 ├── lib/
-│   ├── api-client.ts           # API client with cookie auth, installation endpoints
+│   ├── api-client.ts           # API client with Issues & Agent Run endpoints (mock data)
 │   ├── language-icons.tsx      # Language logo utilities (17+ languages from react-icons)
 │   └── utils.ts                # Utility functions (cn, truncateText)
 ├── types/
-│   └── api.ts                  # TypeScript types (User, Installation, Review, etc.)
+│   └── api.ts                  # TypeScript types (User, Installation, Review, Issue, AgentRun, etc.)
 └── pages/
     ├── LandingPage.tsx         # Marketing landing page
     ├── LoginPage.tsx           # GitHub OAuth login with PixelBlast background
     ├── CallbackPage.tsx        # OAuth callback handler
     ├── NotFoundPage.tsx        # Creative 404 page with PixelBlast
     └── dashboard/
-        ├── DashboardPage.tsx   # Dashboard with selected repo badge, metrics cards
-        ├── AnalyticsPage.tsx   # Charts, stats, and issue tracking table
-        ├── AIReviewPage.tsx    # Live config editor with floating save bar
-        └── RepositoriesPage.tsx # Installation management (sync, enable, configure)
+        ├── DashboardPage.tsx       # Dashboard with enhanced layout, Issues card
+        ├── AnalyticsPage.tsx       # Charts, stats with enhanced styling
+        ├── AIReviewPage.tsx        # Live config editor with enhanced styling
+        ├── RepositoriesPage.tsx    # Installation management with enhanced styling
+        ├── IssuesPage.tsx          # Issues & Agent Runs management (NEW)
+        ├── IssueDetailPage.tsx     # Single issue view with comments & agent runs (NEW)
+        └── AgentProgressPage.tsx   # Agent run progress monitoring with LeChat animation (NEW)
 ```
 
 **Design System**: Neo-brutalist with:
@@ -474,7 +487,7 @@ Coverage report available at `htmlcov/index.html`.
 - **Graceful webhook handling** (ignores non-enrolled repositories)
 
 ### Frontend
-- **Complete UI** with landing, login, callback, dashboard, analytics, AI settings, repositories, 404
+- **Complete UI** with landing, login, callback, dashboard, analytics, AI settings, repositories, issues, 404
 - **Auth integration** with AuthContext and ProtectedRoute guard
 - **Workspace context** (RepositoryContext) for selected repository state
 - **Repository management page** with sync, enable/disable, language-specific icons (17+ languages)
@@ -487,6 +500,22 @@ Coverage report available at `htmlcov/index.html`.
 - **API client** with type-safe methods, 204 No Content handling, cookie-based auth
 - **No duplicate requests** (useRef guards in contexts to prevent StrictMode double-fetching)
 
+### Issues & Agent Runs UI
+- **IssuesPage** with tabs for Issues and Agent Runs
+- **IssuesTable** with pagination, status filtering, GitHub labels, launch agent actions
+- **AgentRunsTable** with metrics (iterations, tokens, tool calls), PR links, elapsed time
+- **IssueDetailPage** showing issue details, comments, and agent run history
+- **AgentProgressPage** with real-time status monitoring and LeChat animation
+- **LaunchAgentDialog** for triggering agents with custom instructions
+- **AgentStatusBadge** component (PENDING/RUNNING/COMPLETED/FAILED with color coding)
+- **IssueCommentCard** for displaying GitHub issue comments with avatars
+- **LabelBadge** component for GitHub labels with color variants
+- **Pagination component** for large datasets
+- **Enhanced dashboard styling** with improved layouts and visual consistency
+- **Issues navigation** added to sidebar
+- **Issues card** on dashboard replacing Contributors card
+- **API client mock data** for issues and agent runs (ready for backend integration)
+
 ### GitHub Integration
 - **GitHub App authentication** (installation tokens with 1-hour TTL)
 - **Webhook handling** with signature verification (HMAC-SHA256)
@@ -496,10 +525,24 @@ Coverage report available at `htmlcov/index.html`.
 
 ## Not Yet Implemented
 
+### Backend APIs Needed
+- **Issues API endpoints** (frontend UI ready with mock data):
+  - `GET /api/issues` - List issues for repository
+  - `GET /api/issues/{issue_id}` - Get single issue details
+  - `GET /api/issues/{issue_id}/comments` - Get issue comments
+  - `GET /api/issues/{issue_id}/agent-runs` - Get agent runs for issue
+- **Agent Runs API endpoints** (frontend UI ready with mock data):
+  - `POST /api/agents/launch` - Launch agent for an issue
+  - `GET /api/agents/{agent_id}` - Get agent run details
+  - `GET /api/agents` - List all agent runs for repository
+- **WebSocket for real-time agent progress updates** (AgentProgressPage ready)
+- **GitHub Issues sync** to database (Issue model needs to be created)
+- **BackgroundAgent task** for Issue → PR workflow (agent implementation exists)
+
+### Infrastructure & Monitoring
 - Line-by-line GitHub review comments (currently PR-level comments only)
 - Redis caching for PR diffs and GitHub tokens (infrastructure ready)
 - Priority queues for Celery (critical/default/low)
-- WebSocket for real-time review status updates
 - SummaryAgent implementation (prompts ready, implementation pending)
 - Docker containerization (multi-stage builds)
 - Kubernetes deployment with Helm charts
@@ -562,19 +605,24 @@ Coverage report available at `htmlcov/index.html`.
 - **Language detection**: 17+ programming language icons with official logos
 - **Configuration management**: Live editing with dirty tracking and floating save bar
 
-### Frontend (Completed)
-- **Landing Page**: Full marketing page with Navbar, Hero, Marquee, Features, CodeTerminal, Footer
+### Frontend ✅ (COMPLETED)
+- **Landing Page**: Full marketing page with Navbar, Hero (enhanced), Marquee, Features, CodeTerminal, Footer (LinkedIn link)
 - **Authentication Pages**: Login (PixelBlast), Callback, 404 (PixelBlast)
-- **Dashboard Layout**: Sidebar with repository selector in user account dropdown
-- **Dashboard Page**: Selected repository badge, metrics cards, quick action cards with charts
-- **Analytics Page**: Stats row, area/bar charts (Recharts), expandable issues table
-- **AI Review Page**: Live config editor, sensitivity selector, custom instructions, ignore patterns, floating save bar
-- **Repositories Page**: GitHub installation sync, enable/disable repos, language icons, configure buttons
+- **Dashboard Layout**: Sidebar with repository selector, Issues navigation
+- **Dashboard Page**: Enhanced layout, metrics cards, Issues card (replaces Contributors), quick actions
+- **Analytics Page**: Enhanced styling, stats row, area/bar charts (Recharts)
+- **AI Review Page**: Enhanced styling, live config editor, sensitivity selector, custom instructions, ignore patterns, floating save bar
+- **Repositories Page**: Enhanced styling, GitHub installation sync, enable/disable repos, language icons, configure buttons
+- **Issues Page** (NEW): Tabs for Issues and Agent Runs, pagination, status filtering, launch agent actions
+- **Issue Detail Page** (NEW): Issue details, GitHub comments with avatars, agent run history
+- **Agent Progress Page** (NEW): Real-time status monitoring, LeChat animation, metrics, PR links
 - **Workspace Context**: RepositoryContext for selected repository with persistence
 - **Custom Toast System**: Alert-based toasts (bottom-left, auto-dismiss, emerald/rose colors)
 - **Confirmation Dialogs**: AlertDialog for destructive actions (disable repos)
 - **Language Icons**: react-icons/simple-icons for 17+ languages (TypeScript, Python, Go, Rust, etc.)
-- **UI Components**: Complete shadcn/ui library with neo-brutalist styling
+- **UI Components**: Complete shadcn/ui library with neo-brutalist styling + Pagination component
+- **Issue Components**: IssuesTable, AgentRunsTable, LaunchAgentDialog, AgentStatusBadge, IssueCommentCard, LabelBadge
+- **Enhanced Font Loading**: Moved to index.html for better performance
 
 ### Infrastructure (Completed)
 - **Docker Compose**: PostgreSQL, Redis, pgAdmin, Redis Insight services

@@ -1,41 +1,57 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
+@source "../node_modules/streamdown/dist/*.js";
 
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: oklch(96.79% 0.0654 102.26);
-  --secondary-background: oklch(100% 0 0);
-  --foreground: oklch(0% 0 0);
-  --main-foreground: oklch(0% 0 0);
-  --main: oklch(86.03% 0.176 92.36);
-  --border: oklch(0% 0 0);
-  --ring: oklch(0% 0 0);
+  --metis-black: #000000;
+  --metis-white: #ffffff;
+  --metis-red: #e10500;
+  --metis-orange-dark: #fa500f;
+  --metis-orange: #ff8205;
+  --metis-orange-light: #ffaf00;
+  --metis-yellow: #ffd800;
+  --metis-cream: #fff7f2;
+  --metis-pastel-1: #fff1e6;
+  --metis-pastel-2: #fff6cc;
+  --metis-pastel-3: #ffe0cc;
+  --metis-pastel-4: #fff3e0;
+  --metis-pastel-red: #ffe2df;
+  --metis-pastel-orange: #ffe6d9;
+
+  --background: var(--metis-cream);
+  --secondary-background: var(--metis-white);
+  --foreground: var(--metis-black);
+  --main-foreground: var(--metis-black);
+  --main: var(--metis-orange);
+  --border: var(--metis-black);
+  --ring: var(--metis-black);
   --overlay: oklch(0% 0 0 / 0.8);
   --shadow: 2px 2px 0px 0px var(--border);
-  --chart-1: #facc00;
-  --chart-2: #7a83ff;
-  --chart-3: #ff4d50;
-  --chart-4: #00d696;
-  --chart-5: #0099ff;
-  --chart-active-dot: #000;
+  --chart-1: var(--metis-yellow);
+  --chart-2: var(--metis-orange-light);
+  --chart-3: var(--metis-orange);
+  --chart-4: var(--metis-orange-dark);
+  --chart-5: var(--metis-red);
+  --chart-active-dot: var(--metis-black);
 }
 
 .dark {
-  --background: oklch(29.28% 0.0373 94.38);
-  --secondary-background: oklch(23.93% 0 0);
-  --foreground: oklch(92.49% 0 0);
-  --main-foreground: oklch(0% 0 0);
-  --main: oklch(79.36% 0.1624 92.49);
-  --border: oklch(0% 0 0);
-  --ring: oklch(100% 0 0);
+  --background: #1b0f0a;
+  --secondary-background: #120a07;
+  --foreground: #f8f5f2;
+  --main-foreground: #000000;
+  --main: var(--metis-orange-dark);
+  --border: #000000;
+  --ring: #ffffff;
   --shadow: 2px 2px 0px 0px var(--border);
-  --chart-1: #e0b700;
-  --chart-2: #7a83ff;
-  --chart-3: #ff6669;
-  --chart-4: #00bd84;
-  --chart-5: #008ae5;
-  --chart-active-dot: #fff;
+  --chart-1: var(--metis-yellow);
+  --chart-2: var(--metis-orange-light);
+  --chart-3: var(--metis-orange);
+  --chart-4: var(--metis-orange-dark);
+  --chart-5: var(--metis-red);
+  --chart-active-dot: #ffffff;
 }
 
 @theme inline {
@@ -57,10 +73,12 @@
   --spacing-boxShadowY: 2px;
   --spacing-reverseBoxShadowX: -2px;
   --spacing-reverseBoxShadowY: -2px;
-  --radius-base: 15px;
+  --radius-base: 0px;
   --shadow-shadow: var(--shadow);
-  --font-weight-base: 500;
-  --font-weight-heading: 800;
+  --font-weight-base: 600;
+  --font-weight-heading: 1100;
+  --font-base: "Source Code Pro", monospace;
+  --font-heading: "Source Code Pro", monospace;
 }
 
 @layer base {
@@ -74,7 +92,22 @@
   h4,
   h5,
   h6 {
-    @apply font-heading;
+    @apply font-heading font-black uppercase;
+  }
+
+  .landing {
+    font-family: "Sora", "Source Code Pro", monospace;
+    color: #000;
+  }
+
+  .landing .landing-display {
+    font-family: "Space Grotesk", "Sora", sans-serif;
+    letter-spacing: -0.04em;
+  }
+
+  .landing .landing-display-tight {
+    font-family: "Space Grotesk", "Sora", sans-serif;
+    letter-spacing: -0.06em;
   }
 }
 
