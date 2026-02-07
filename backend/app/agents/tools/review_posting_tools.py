@@ -19,7 +19,6 @@ CATEGORY_VALUES = {
     "DOCUMENTATION",
     "TESTING",
 }
-INT32_MAX = 2_147_483_647
 
 
 def _see_more_footer_markdown() -> str:
@@ -52,13 +51,14 @@ def _normalize_category(category: str) -> str:
 
 
 def _build_finding_body(
+    title: str,
     issue: str,
     proposed_fix: str,
     severity: str,
     category: str,
 ) -> str:
     body = (
-        "## Finding\n"
+        f"# {title}\n"
         f"- **Severity:** `{severity}`\n"
         f"- **Category:** `{category}`\n\n"
         "### Issue\n"
@@ -72,17 +72,21 @@ def _build_finding_body(
     return body
 
 
-def _to_int32_or_none(value: object) -> int | None:
-    """Convert numeric values to int32 when possible."""
+def _to_int_or_none(value: object) -> int | None:
+    """Convert numeric values to int when possible."""
     if value is None:
         return None
     try:
-        int_value = int(value)
+        return int(value)
     except (TypeError, ValueError):
         return None
-    if 0 <= int_value <= INT32_MAX:
-        return int_value
-    return None
+
+
+def _normalize_title(title: str) -> str:
+    normalized = title.strip()
+    if not normalized:
+        raise ValueError("title must not be empty")
+    return normalized[:255]
 
 
 class PostInlineReviewFindingTool(BaseTool):
@@ -140,6 +144,13 @@ class PostInlineReviewFindingTool(BaseTool):
                         "type": "string",
                         "enum": sorted(SEVERITY_VALUES),
                     },
+                    "title": {
+                        "type": "string",
+                        "description": (
+                            "Short finding title (3-10 words), e.g. "
+                            "'Missing Token Type Validation'"
+                        ),
+                    },
                     "category": {
                         "type": "string",
                         "enum": sorted(CATEGORY_VALUES),
@@ -157,6 +168,7 @@ class PostInlineReviewFindingTool(BaseTool):
                     "file_path",
                     "line_number",
                     "severity",
+                    "title",
                     "category",
                     "issue",
                     "proposed_fix",
@@ -169,6 +181,7 @@ class PostInlineReviewFindingTool(BaseTool):
         file_path: str,
         line_number: int,
         severity: str,
+        title: str,
         category: str,
         issue: str,
         proposed_fix: str,
@@ -177,8 +190,10 @@ class PostInlineReviewFindingTool(BaseTool):
     ) -> ToolResult:
         try:
             normalized_severity = _normalize_severity(severity)
+            normalized_title = _normalize_title(title)
             normalized_category = _normalize_category(category)
             body = _build_finding_body(
+                title=normalized_title,
                 issue=issue,
                 proposed_fix=proposed_fix,
                 severity=normalized_severity,
@@ -200,13 +215,14 @@ class PostInlineReviewFindingTool(BaseTool):
             async with self.session_factory() as db:
                 comment = ReviewComment(
                     review_id=self.review_id,
+                    title=normalized_title,
                     file_path=file_path,
                     line_number=line_number,
                     line_end=line_end,
                     comment_text=body,
                     severity=normalized_severity,
                     category=normalized_category,
-                    github_comment_id=_to_int32_or_none(gh_comment.get("id")),
+                    github_comment_id=_to_int_or_none(gh_comment.get("id")),
                 )
                 db.add(comment)
                 await db.commit()
@@ -219,6 +235,7 @@ class PostInlineReviewFindingTool(BaseTool):
                     "file_path": file_path,
                     "line_number": line_number,
                     "line_end": line_end,
+                    "title": normalized_title,
                 },
             )
         except Exception as e:
@@ -269,6 +286,13 @@ class PostFileReviewFindingTool(BaseTool):
                         "type": "string",
                         "enum": sorted(SEVERITY_VALUES),
                     },
+                    "title": {
+                        "type": "string",
+                        "description": (
+                            "Short finding title (3-10 words), e.g. "
+                            "'Missing Input Validation'"
+                        ),
+                    },
                     "category": {
                         "type": "string",
                         "enum": sorted(CATEGORY_VALUES),
@@ -282,7 +306,14 @@ class PostFileReviewFindingTool(BaseTool):
                         "description": "Concrete proposed fix",
                     },
                 },
-                "required": ["file_path", "severity", "category", "issue", "proposed_fix"],
+                "required": [
+                    "file_path",
+                    "severity",
+                    "title",
+                    "category",
+                    "issue",
+                    "proposed_fix",
+                ],
             },
         )
 
@@ -290,6 +321,7 @@ class PostFileReviewFindingTool(BaseTool):
         self,
         file_path: str,
         severity: str,
+        title: str,
         category: str,
         issue: str,
         proposed_fix: str,
@@ -297,8 +329,10 @@ class PostFileReviewFindingTool(BaseTool):
     ) -> ToolResult:
         try:
             normalized_severity = _normalize_severity(severity)
+            normalized_title = _normalize_title(title)
             normalized_category = _normalize_category(category)
             body = _build_finding_body(
+                title=normalized_title,
                 issue=issue,
                 proposed_fix=proposed_fix,
                 severity=normalized_severity,
@@ -318,6 +352,7 @@ class PostFileReviewFindingTool(BaseTool):
             async with self.session_factory() as db:
                 comment = ReviewComment(
                     review_id=self.review_id,
+                    title=normalized_title,
                     file_path=file_path,
                     # No schema change requested; keep sentinel line for file-level findings.
                     line_number=1,
@@ -325,7 +360,7 @@ class PostFileReviewFindingTool(BaseTool):
                     comment_text=body,
                     severity=normalized_severity,
                     category=normalized_category,
-                    github_comment_id=_to_int32_or_none(gh_comment.get("id")),
+                    github_comment_id=_to_int_or_none(gh_comment.get("id")),
                 )
                 db.add(comment)
                 await db.commit()
@@ -337,6 +372,7 @@ class PostFileReviewFindingTool(BaseTool):
                     "github_comment_id": gh_comment.get("id"),
                     "file_path": file_path,
                     "level": "file",
+                    "title": normalized_title,
                 },
             )
         except Exception as e:
