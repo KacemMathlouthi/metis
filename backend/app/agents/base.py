@@ -106,7 +106,7 @@ class BaseAgent(ABC):
                 model=settings.MODEL_NAME,
                 messages=self.state.messages,
                 tools=self.tools.get_all_schemas(),
-                temperature=0.3,
+                temperature=1.0,
             )
 
             message = response.choices[0].message
