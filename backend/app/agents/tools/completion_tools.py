@@ -10,39 +10,66 @@ class FinishReviewTool(BaseTool):
     def definition(self) -> ToolDefinition:
         return ToolDefinition(
             name="finish_review",
-            description="Complete the code review and return final results. Call this when you have finished analyzing the PR.",
+            description="Complete the code review and return final summary/verdict. Call this after posting all the findings. This will signal the end of the review process, so only call this once you're done reviewing and posting findings.",
             parameters={
                 "type": "object",
                 "properties": {
-                    "review_text": {
+                    "summary": {
                         "type": "string",
-                        "description": "Complete review text in markdown format"
+                        "description": "Short final summary of the review and main issues detected"
                     },
-                    "severity": {
+                    "verdict": {
+                        "type": "string",
+                        "enum": ["APPROVE", "DISAPPROVE", "REQUEST_CHANGES"],
+                        "description": "Final review verdict for the pull request"
+                    },
+                    "overall_severity": {
                         "type": "string",
                         "enum": ["low", "medium", "high", "critical"],
-                        "description": "Overall severity of issues found"
+                        "description": "Overall severity level across findings"
                     }
                 },
-                "required": ["review_text"]
+                "required": ["summary", "verdict"]
             }
         )
 
-    async def execute(self, review_text: str, severity: str = "medium", **kwargs) -> ToolResult:
+    async def execute(
+        self,
+        summary: str,
+        verdict: str,
+        overall_severity: str = "medium",
+        **kwargs
+    ) -> ToolResult:
         """Mark review as complete.
 
         Args:
-            review_text: Final review text
-            severity: Issue severity level
+            summary: Final short review summary
+            verdict: Final PR verdict
+            overall_severity: Global issue severity
 
         Returns:
             ToolResult with review data
         """
+        normalized_verdict = verdict.strip().upper()
+        if normalized_verdict not in {"APPROVE", "DISAPPROVE", "REQUEST_CHANGES"}:
+            return ToolResult(
+                success=False,
+                error=f"Invalid verdict '{verdict}'. Use APPROVE, DISAPPROVE, or REQUEST_CHANGES.",
+            )
+
+        normalized_severity = overall_severity.strip().lower()
+        if normalized_severity not in {"low", "medium", "high", "critical"}:
+            return ToolResult(
+                success=False,
+                error=f"Invalid overall_severity '{overall_severity}'. Use low, medium, high, or critical.",
+            )
+
         return ToolResult(
             success=True,
             data={
-                "review_text": review_text,
-                "severity": severity,
+                "summary": summary,
+                "verdict": normalized_verdict,
+                "overall_severity": normalized_severity,
                 "completed": True
             },
             metadata={"type": "completion"}
