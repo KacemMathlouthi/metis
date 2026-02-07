@@ -6,7 +6,7 @@ from sqlalchemy import select, and_
 
 from app.core.celery_app import celery_app, BaseTask
 from app.core.client import get_llm_client
-from app.db.base import AsyncSessionLocal
+from app.db.base import AsyncSessionLocal, engine
 from app.models.installation import Installation
 from app.models.review import Review
 from app.repositories.review import ReviewRepository
@@ -17,6 +17,20 @@ from app.agents.implementation.review_agent import ReviewAgent
 from app.agents.loop import AgentLoop
 
 logger = logging.getLogger(__name__)
+INT32_MAX = 2_147_483_647
+
+
+def _to_int32_or_none(value: object) -> int | None:
+    """Convert numeric values to int32 when possible."""
+    if value is None:
+        return None
+    try:
+        int_value = int(value)
+    except (TypeError, ValueError):
+        return None
+    if 0 <= int_value <= INT32_MAX:
+        return int_value
+    return None
 
 
 @celery_app.task(bind=True, base=BaseTask, time_limit=3600)
@@ -227,11 +241,12 @@ async def _process_pr_review_with_agent_async(
                 # 12. Update Review status
                 review.status = "COMPLETED"
                 review.review_text = summary
-                review.github_review_id = gh_review.get("id")
+                review.github_review_id = _to_int32_or_none(gh_review.get("id"))
                 review.pr_metadata = {
                     **(review.pr_metadata or {}),
                     "overall_severity": overall_severity,
                     "verdict": verdict,
+                    "github_review_id_raw": gh_review.get("id"),
                     "iterations": final_state.iteration,
                     "tokens_used": final_state.tokens_used,
                     "tool_calls": final_state.tool_calls_made,
@@ -268,3 +283,9 @@ async def _process_pr_review_with_agent_async(
                     sandbox_manager.release(review_id)
                 except Exception as e:
                     logger.error(f"Sandbox cleanup failed: {e}")
+            # Celery retries can run in a new event loop in the same worker process.
+            # Dispose pooled async connections to avoid cross-loop reuse.
+            try:
+                await engine.dispose()
+            except Exception as e:
+                logger.error(f"Engine dispose failed: {e}")

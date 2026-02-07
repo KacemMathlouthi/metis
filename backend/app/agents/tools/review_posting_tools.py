@@ -2,9 +2,6 @@
 
 from __future__ import annotations
 
-from functools import lru_cache
-from pathlib import Path
-
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from app.agents.tools.base import BaseTool, ToolDefinition, ToolResult
@@ -22,15 +19,14 @@ CATEGORY_VALUES = {
     "DOCUMENTATION",
     "TESTING",
 }
+INT32_MAX = 2_147_483_647
 
 
-@lru_cache(maxsize=1)
-def _load_see_more_svg() -> str:
-    """Load SVG footer appended to each finding body."""
-    svg_path = Path(__file__).resolve().parents[4] / "static" / "metis-see-more.svg"
-    if not svg_path.exists():
-        return ""
-    return svg_path.read_text(encoding="utf-8").strip()
+def _see_more_footer_markdown() -> str:
+    """Build the See More footer in markdown form for GitHub rendering."""
+    target_url = "http://localhost:5173/dashboard/analytics"
+    badge_url = "https://i.imgur.com/j21PULe.png"
+    return f"[![METIS: SEE MORE DETAILS]({badge_url})]({target_url})"
 
 
 def _normalize_severity(severity: str) -> str:
@@ -58,13 +54,31 @@ def _build_finding_body(
     category: str,
 ) -> str:
     body = (
-        f"**[{severity}][{category}]** {issue}\n\n"
-        f"**Proposed fix:**\n{proposed_fix}"
+        "### Finding\n"
+        f"- **Severity:** `{severity}`\n"
+        f"- **Category:** `{category}`\n\n"
+        "**Issue**\n"
+        f"{issue}\n\n"
+        "**Suggested Fix**\n"
+        f"{proposed_fix}"
     )
-    svg_footer = _load_see_more_svg()
-    if svg_footer:
-        body = f"{body}\n\n{svg_footer}"
+    footer = _see_more_footer_markdown()
+    if footer:
+        body = f"{body}\n\n---\n{footer}"
     return body
+
+
+def _to_int32_or_none(value: object) -> int | None:
+    """Convert numeric values to int32 when possible."""
+    if value is None:
+        return None
+    try:
+        int_value = int(value)
+    except (TypeError, ValueError):
+        return None
+    if 0 <= int_value <= INT32_MAX:
+        return int_value
+    return None
 
 
 class PostInlineReviewFindingTool(BaseTool):
@@ -182,7 +196,7 @@ class PostInlineReviewFindingTool(BaseTool):
                     comment_text=body,
                     severity=normalized_severity,
                     category=normalized_category,
-                    github_comment_id=gh_comment.get("id"),
+                    github_comment_id=_to_int32_or_none(gh_comment.get("id")),
                 )
                 db.add(comment)
                 await db.commit()
@@ -301,7 +315,7 @@ class PostFileReviewFindingTool(BaseTool):
                     comment_text=body,
                     severity=normalized_severity,
                     category=normalized_category,
-                    github_comment_id=gh_comment.get("id"),
+                    github_comment_id=_to_int32_or_none(gh_comment.get("id")),
                 )
                 db.add(comment)
                 await db.commit()
