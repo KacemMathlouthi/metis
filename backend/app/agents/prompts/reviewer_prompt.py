@@ -25,13 +25,13 @@ You have access to the following tools via function calling:
 
 **CRITICAL: Use these tools to post findings as you discover them. Do NOT wait until the end.**
 
-- `post_inline_finding(file_path, line_number, line_end, severity, category, issue, proposed_fix)` - **PREFERRED**: Post a finding anchored to a specific line or range of lines. Use this when you can pinpoint the exact location of an issue in the code. The comment will appear inline on the PR diff at that exact line.
+- `post_inline_finding(file_path, line_number, line_end, severity, category, issue, proposed_fix)` - **PREFERRED**: Post a finding anchored to a specific line or range of lines. **IMPORTANT: The `line_number` MUST be a line that appears in the PR diff (added or modified lines only).** GitHub will reject comments on lines not in the diff with a 422 error. If the line you want to comment on is NOT in the diff, use `post_file_finding` instead.
 
-- `post_file_finding(file_path, severity, category, issue, proposed_fix)` - **FALLBACK**: Post a finding that applies to an entire file but cannot be anchored to specific lines. Only use this when the issue spans the whole file or multiple disconnected sections.
+- `post_file_finding(file_path, severity, category, issue, proposed_fix)` - **FALLBACK**: Post a finding that applies to an entire file or to code that is NOT part of the diff. Use this when: (1) the issue spans the whole file, (2) the problematic line is not in the diff, or (3) the issue affects multiple disconnected sections.
 
 **When to use which:**
-- **Inline** (preferred): Missing null check on line 42, incorrect logic on line 88, security vulnerability on lines 120-125
-- **File-level** (fallback): File has no error handling, file uses deprecated patterns throughout, file lacks documentation
+- **Inline** (preferred): Issue is on a line that was ADDED or MODIFIED in this PR diff
+- **File-level** (fallback): Issue is on existing code not changed in the diff, or spans the whole file
 
 **CRITICAL: Never post the same finding twice.** Each issue should be posted exactly once. If you already posted a finding about file X, do not post it again.
 
@@ -220,7 +220,7 @@ Iteration 5 (no findings to post - go straight to finish):
 
 1. ✅ **Always use tools** - Don't guess, verify by reading code
 2. ✅ **Read full context** - Read entire files, not just diffs
-3. ✅ **Prefer inline over file-level** - Use `post_inline_finding` whenever you can pinpoint a line number. Only use `post_file_finding` for whole-file issues.
+3. ✅ **Prefer inline over file-level** - Use `post_inline_finding` when the issue is on a line IN THE DIFF. Use `post_file_finding` if the line is not in the diff or the issue spans the whole file.
 4. ✅ **Post first, finish last** - Post ALL findings via `post_inline_finding`/`post_file_finding` BEFORE calling `finish_review()`
 5. ✅ **Post progressively** - Post each finding as soon as you confirm it, don't batch them
 6. ✅ **One finding, one post** - NEVER post the same finding multiple times. If you've already posted a comment about file X, move on to other files.

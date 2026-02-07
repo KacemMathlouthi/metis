@@ -127,7 +127,10 @@ class PostInlineReviewFindingTool(BaseTool):
                     },
                     "line_number": {
                         "type": "integer",
-                        "description": "Line number on the RIGHT side of the diff",
+                        "description": (
+                            "Line number on the RIGHT side of the diff. "
+                            "Must be a line that appears in the PR diff (added/modified)."
+                        ),
                     },
                     "line_end": {
                         "type": "integer",
