@@ -97,6 +97,8 @@ async def handle_pull_request(
             "language": pull_request["head"]["repo"]["language"],
         },
     )
+    # Commit review before queueing to prevent worker race on uncommitted row.
+    await db.commit()
 
     # Queue Celery task with AI agent (returns immediately)
     task = process_pr_review_with_agent.delay(

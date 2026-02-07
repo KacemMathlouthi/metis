@@ -89,7 +89,8 @@ async def _process_pr_review_with_agent_async(
             review = review_query.scalar_one_or_none()
 
             if not review:
-                raise ValueError(f"Review {review_id} not found")
+                logger.warning(f"Review {review_id} not found; skipping task without retry")
+                return {"status": "ignored", "reason": "review_not_found", "review_id": review_id}
 
             installation_query = await db.execute(
                 select(Installation).where(
@@ -102,7 +103,14 @@ async def _process_pr_review_with_agent_async(
             installation = installation_query.scalar_one_or_none()
 
             if not installation:
-                raise ValueError(f"Installation not found for {repository}")
+                review.status = "FAILED"
+                review.error = f"Installation not found for {repository}"
+                await db.commit()
+                return {
+                    "status": "failed",
+                    "reason": "installation_not_found",
+                    "review_id": review_id,
+                }
 
             # Update status to PROCESSING
             review.status = "PROCESSING"
@@ -220,7 +228,18 @@ async def _process_pr_review_with_agent_async(
                 overall_severity = final_state.result.get("overall_severity", "medium")
 
                 if not summary:
-                    raise ValueError("Agent completed but no summary in result")
+                    reason = final_state.result.get("reason") or "missing_summary"
+                    review.status = "FAILED"
+                    review.error = (
+                        f"Agent completed without finish_review output (reason={reason})"
+                    )
+                    await db.commit()
+                    logger.error(review.error)
+                    return {
+                        "status": "failed",
+                        "reason": "missing_summary",
+                        "review_id": review_id,
+                    }
 
                 logger.info(
                     f"Review summary generated: {len(summary)} chars, verdict={verdict}, severity={overall_severity}"
@@ -266,6 +285,7 @@ async def _process_pr_review_with_agent_async(
 
         except Exception as e:
             logger.error(f"Review task failed: {e}", exc_info=True)
+            await db.rollback()
 
             # Update review status
             if review:
