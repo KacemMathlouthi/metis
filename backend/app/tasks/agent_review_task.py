@@ -196,7 +196,7 @@ async def _process_pr_review_with_agent_async(
                 tools=tools,
                 llm_client=llm_client,
                 max_iterations=50,
-                max_tokens=200_000,
+                max_tokens=1_000_000,
                 max_tool_calls=100,
                 max_duration_seconds=6000,
             )
