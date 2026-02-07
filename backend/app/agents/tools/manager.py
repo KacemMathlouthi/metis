@@ -30,6 +30,12 @@ from app.agents.tools.completion_tools import (
     FinishReviewTool,
     FinishTaskTool,
 )
+from app.agents.tools.review_posting_tools import (
+    PostInlineReviewFindingTool,
+    PostFileReviewFindingTool,
+)
+from app.db.base import AsyncSessionLocal
+from app.services.github import GitHubService
 
 
 class ToolManager:
@@ -52,6 +58,11 @@ class ToolManager:
         """
         for tool_class in tool_classes:
             tool = tool_class(self.sandbox)
+            self._tools[tool.definition.name] = tool
+
+    def register_tool_instances(self, tools: list[BaseTool]) -> None:
+        """Register pre-built tool instances."""
+        for tool in tools:
             self._tools[tool.definition.name] = tool
 
     def get_tool(self, name: str) -> BaseTool | None:
@@ -121,7 +132,15 @@ class ToolManager:
 
 # Fine-Grained Tool Sets for Different Agent Types
 
-def get_reviewer_tools(sandbox) -> ToolManager:
+def get_reviewer_tools(
+    sandbox,
+    review_id: str,
+    installation_id: int,
+    owner: str,
+    repo: str,
+    pr_number: int,
+    commit_sha: str,
+) -> ToolManager:
     """Get tools for code review agent.
 
     Focus: Read-only operations + running tests/linters for verification.
@@ -153,6 +172,30 @@ def get_reviewer_tools(sandbox) -> ToolManager:
         RunCommandTool,
         # Completion
         FinishReviewTool,
+    ])
+    github = GitHubService()
+    manager.register_tool_instances([
+        PostInlineReviewFindingTool(
+            sandbox=sandbox,
+            github_service=github,
+            session_factory=AsyncSessionLocal,
+            review_id=review_id,
+            installation_id=installation_id,
+            owner=owner,
+            repo=repo,
+            pr_number=pr_number,
+        ),
+        PostFileReviewFindingTool(
+            sandbox=sandbox,
+            github_service=github,
+            session_factory=AsyncSessionLocal,
+            review_id=review_id,
+            installation_id=installation_id,
+            owner=owner,
+            repo=repo,
+            pr_number=pr_number,
+            commit_sha=commit_sha,
+        ),
     ])
     return manager
 
