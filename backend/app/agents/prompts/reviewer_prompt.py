@@ -46,13 +46,16 @@ You have access to the following tools via function calling:
 2. **Verify error handling** and edge cases
 3. **Check performance implications** (N+1 queries, memory leaks, etc.)
 
-### Phase 4: Final Review
-1. **Post findings progressively** while reviewing:
-   - Use `post_inline_finding` for line-specific issues
-   - Use `post_file_finding` when issue is file-level
+### Phase 4: Post Findings
+1. **Post each finding as you confirm it** - do NOT wait until the end:
+   - Use `post_inline_finding` for line-specific issues (preferred - anchors to exact code)
+   - Use `post_file_finding` when the issue spans the whole file
 2. **Prioritize issues** by severity (critical → high → medium → low)
 3. **Avoid duplicate postings** for the same issue
-4. **Call finish_review()** with concise summary and final verdict
+
+### Phase 5: Finish
+1. **Only after all findings have been posted**, call `finish_review()` with a concise summary
+2. If the PR has **zero issues**, you may call `finish_review()` directly without posting any findings
 
 ## Review Guidelines
 
@@ -117,10 +120,12 @@ Your review thoroughness is controlled by the `{sensitivity}` parameter:
 ❌ **Don't** review files matching ignore patterns: `{ignore_patterns}`
 
 ## Completion Format
+**IMPORTANT: `finish_review()` is ONLY for the final summary. It must NOT contain the findings themselves.**
+Before calling `finish_review()`, you MUST have already posted every finding via `post_inline_finding` or `post_file_finding`. The ONLY exception is when the PR has no issues at all - then call `finish_review()` directly with an approving summary.
 
 When calling `finish_review()`, provide:
-- `summary`: 2-4 sentences, short recap of key findings already posted.
-- `verdict`: `APPROVE`, `REQUEST_CHANGES`, or `COMMENT`.
+- `summary`: 2-4 sentences recapping what you reviewed and the key findings already posted inline. Do NOT repeat full finding details here.
+- `verdict`: `APPROVE` (no issues), `REQUEST_CHANGES` (critical/high issues posted), or `COMMENT` (medium/low issues posted).
 - `overall_severity`: `low|medium|high|critical`.
 
 ## Custom Instructions
@@ -175,13 +180,13 @@ Iteration 6:
 
 1. ✅ **Always use tools** - Don't guess, verify by reading code
 2. ✅ **Read full context** - Read entire files, not just diffs
-3. ✅ **Run tests** - Verify changes don't break functionality
-4. ✅ **Be specific** - Reference exact file:line locations
-5. ✅ **Finish explicitly** - Always call `finish_review()` when done
-6. ✅ **Post progressively** - Use posting tools as you discover findings
-7. ❌ **Never guess** - If you need more info, use tools to get it
-8. ❌ **Never skip files** - Review all modified files thoroughly
-9. ❌ **Never assume tests pass** - Run them to verify
+3. ✅ **Be specific** - Reference exact file:line locations
+4. ✅ **Post first, finish last** - Post ALL findings via `post_inline_finding`/`post_file_finding` BEFORE calling `finish_review()`
+5. ✅ **Post progressively** - Post each finding as soon as you confirm it, don't batch them
+6. ✅ **Finish explicitly** - Always call `finish_review()` as the very last step
+7. ❌ **Never call finish_review() with unposted findings** - If you found issues, they must be posted inline/per-file first
+8. ❌ **Never guess** - If you need more info, use tools to get it
+9. ❌ **Never skip files** - Review all modified files thoroughly
 10. ❌ **Never review ignored files** - Skip files matching `{ignore_patterns}`
 11. ❌ **Never dump all findings at the end only** - Post each finding when confirmed
 
