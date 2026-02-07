@@ -28,7 +28,7 @@ def _see_more_footer_markdown() -> str:
     badge_url = "https://i.imgur.com/j21PULe.png"
     return (
         f'<a href="{target_url}">'
-        f'<img src="{badge_url}" alt="METIS: SEE MORE DETAILS" width="140" />'
+        f'<img src="{badge_url}" alt="METIS: SEE MORE DETAILS" width="200" />'
         "</a>"
     )
 
@@ -127,7 +127,10 @@ class PostInlineReviewFindingTool(BaseTool):
                     },
                     "line_number": {
                         "type": "integer",
-                        "description": "Line number on the RIGHT side of the diff",
+                        "description": (
+                            "Line number on the RIGHT side of the diff. "
+                            "Must be a line that appears in the PR diff (added/modified)."
+                        ),
                     },
                     "line_end": {
                         "type": "integer",

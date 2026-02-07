@@ -5,8 +5,10 @@ in the .env file for the application. It uses Pydantic Settings for
 validation and type checking.
 """
 
-from pydantic_settings import BaseSettings, SettingsConfigDict
 import os
+
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
 
 class Settings(BaseSettings):
     """Application settings loaded from environment variables."""
@@ -29,10 +31,13 @@ class Settings(BaseSettings):
     GITHUB_WEBHOOK_SECRET: str | None = None
     GITHUB_INSTALLATION_ID: int | None = None
 
-    # LLM Provider settings
-    PROVIDER_API_KEY: str | None = None
-    PROVIDER_BASE_URL: str | None = None
-    MODEL_NAME: str | None = None
+    # LLM Provider settings (LiteLLM format: "vertex_ai/gemini-3-flash-preview", "gpt-4o", etc.)
+    # See: https://docs.litellm.ai/docs/providers
+    MODEL_NAME: str = "vertex_ai/gemini-3-flash-preview"
+
+    # Vertex AI settings (for Google Cloud models, uses ADC via gcloud CLI)
+    VERTEX_PROJECT: str | None = None
+    VERTEX_LOCATION: str | None = None
 
     # Database settings
     DATABASE_URL: str
@@ -81,6 +86,12 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+# Export Vertex AI settings for LiteLLM auto-detection
+if settings.VERTEX_PROJECT:
+    os.environ["VERTEXAI_PROJECT"] = settings.VERTEX_PROJECT
+if settings.VERTEX_LOCATION:
+    os.environ["VERTEXAI_LOCATION"] = settings.VERTEX_LOCATION
 
 # Export LangSmith settings to os.environ for LangSmith SDK
 if settings.LANGSMITH_TRACING:
