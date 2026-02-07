@@ -6,7 +6,7 @@ from sqlalchemy import select, and_
 
 from app.core.celery_app import celery_app, BaseTask
 from app.core.client import get_llm_client
-from app.db.base import AsyncSessionLocal
+from app.db.base import AsyncSessionLocal, engine
 from app.models.installation import Installation
 from app.models.review import Review
 from app.repositories.review import ReviewRepository
@@ -17,6 +17,20 @@ from app.agents.implementation.review_agent import ReviewAgent
 from app.agents.loop import AgentLoop
 
 logger = logging.getLogger(__name__)
+INT32_MAX = 2_147_483_647
+
+
+def _to_int32_or_none(value: object) -> int | None:
+    """Convert numeric values to int32 when possible."""
+    if value is None:
+        return None
+    try:
+        int_value = int(value)
+    except (TypeError, ValueError):
+        return None
+    if 0 <= int_value <= INT32_MAX:
+        return int_value
+    return None
 
 
 @celery_app.task(bind=True, base=BaseTask, time_limit=3600)
@@ -75,7 +89,8 @@ async def _process_pr_review_with_agent_async(
             review = review_query.scalar_one_or_none()
 
             if not review:
-                raise ValueError(f"Review {review_id} not found")
+                logger.warning(f"Review {review_id} not found; skipping task without retry")
+                return {"status": "ignored", "reason": "review_not_found", "review_id": review_id}
 
             installation_query = await db.execute(
                 select(Installation).where(
@@ -88,7 +103,14 @@ async def _process_pr_review_with_agent_async(
             installation = installation_query.scalar_one_or_none()
 
             if not installation:
-                raise ValueError(f"Installation not found for {repository}")
+                review.status = "FAILED"
+                review.error = f"Installation not found for {repository}"
+                await db.commit()
+                return {
+                    "status": "failed",
+                    "reason": "installation_not_found",
+                    "review_id": review_id,
+                }
 
             # Update status to PROCESSING
             review.status = "PROCESSING"
@@ -153,7 +175,15 @@ async def _process_pr_review_with_agent_async(
             logger.info(f"Sandbox created: {sandbox.id}")
 
             # 6. Initialize tools for reviewer
-            tools = get_reviewer_tools(sandbox)
+            tools = get_reviewer_tools(
+                sandbox=sandbox,
+                review_id=review_id,
+                installation_token=installation_token,
+                owner=owner,
+                repo=repo,
+                pr_number=pr_number,
+                commit_sha=review.commit_sha,
+            )
 
             logger.info(f"Registered {len(tools.list_tool_names())} tools for reviewer")
 
@@ -174,7 +204,7 @@ async def _process_pr_review_with_agent_async(
                 tools=tools,
                 llm_client=llm_client,
                 max_iterations=50,
-                max_tokens=200_000,
+                max_tokens=1_000_000,
                 max_tool_calls=100,
                 max_duration_seconds=6000,
             )
@@ -191,33 +221,51 @@ async def _process_pr_review_with_agent_async(
                 f"tokens={final_state.tokens_used}"
             )
 
-            # 10. Extract review from result
+            # 10. Extract final summary/verdict from result
             if final_state.status == "completed" and final_state.result:
-                review_text = final_state.result.get("review_text")
-                severity = final_state.result.get("severity", "medium")
+                summary = final_state.result.get("summary")
+                verdict = final_state.result.get("verdict", "COMMENT")
+                overall_severity = final_state.result.get("overall_severity", "medium")
 
-                if not review_text:
-                    raise ValueError("Agent completed but no review_text in result")
+                if not summary:
+                    reason = final_state.result.get("reason") or "missing_summary"
+                    review.status = "FAILED"
+                    review.error = (
+                        f"Agent completed without finish_review output (reason={reason})"
+                    )
+                    await db.commit()
+                    logger.error(review.error)
+                    return {
+                        "status": "failed",
+                        "reason": "missing_summary",
+                        "review_id": review_id,
+                    }
 
-                logger.info(f"Review generated: {len(review_text)} chars, severity={severity}")
+                logger.info(
+                    f"Review summary generated: {len(summary)} chars, verdict={verdict}, severity={overall_severity}"
+                )
 
-                # 11. Post review to GitHub
+                # 11. Post final summary review to GitHub
                 logger.info("Posting review to GitHub")
 
-                await github.create_pr_review(
+                gh_review = await github.create_pr_review(
                     owner=owner,
                     repo=repo,
                     pr_number=pr_number,
-                    review_body=review_text,
-                    event="COMMENT",
+                    review_body=summary,
+                    event=verdict,
                     installation_id=installation_id,
                 )
 
                 # 12. Update Review status
                 review.status = "COMPLETED"
-                review.review_text = review_text
-                review.metadata = {
-                    "severity": severity,
+                review.review_text = summary
+                review.github_review_id = _to_int32_or_none(gh_review.get("id"))
+                review.pr_metadata = {
+                    **(review.pr_metadata or {}),
+                    "overall_severity": overall_severity,
+                    "verdict": verdict,
+                    "github_review_id_raw": gh_review.get("id"),
                     "iterations": final_state.iteration,
                     "tokens_used": final_state.tokens_used,
                     "tool_calls": final_state.tool_calls_made,
@@ -237,6 +285,7 @@ async def _process_pr_review_with_agent_async(
 
         except Exception as e:
             logger.error(f"Review task failed: {e}", exc_info=True)
+            await db.rollback()
 
             # Update review status
             if review:
@@ -254,3 +303,9 @@ async def _process_pr_review_with_agent_async(
                     sandbox_manager.release(review_id)
                 except Exception as e:
                     logger.error(f"Sandbox cleanup failed: {e}")
+            # Celery retries can run in a new event loop in the same worker process.
+            # Dispose pooled async connections to avoid cross-loop reuse.
+            try:
+                await engine.dispose()
+            except Exception as e:
+                logger.error(f"Engine dispose failed: {e}")

@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="240" height="28"
+     role="img"
+     aria-label="METIS: SEE MORE DETAILS">
+
+  <title>METIS: SEE MORE DETAILS</title>
+
+  <defs>
+    <linearGradient id="mistralGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#E10500"/>
+      <stop offset="30%" stop-color="#FA500F"/>
+      <stop offset="60%" stop-color="#FF8205"/>
+      <stop offset="85%" stop-color="#FFAF00"/>
+      <stop offset="100%" stop-color="#FFD800"/>
+    </linearGradient>
+    <clipPath id="badgeClip">
+      <rect width="240" height="28" rx="0"/>
+    </clipPath>
+  </defs>
+
+  <!-- Backgrounds -->
+  <g clip-path="url(#badgeClip)">
+    <rect width="72" height="28" fill="#1E1E1E"/>
+    <rect x="72" width="168" height="28" fill="url(#mistralGradient)"/>
+  </g>
+
+  <!-- Text -->
+    <g font-family="Segoe UI Black,Arial Black,Impact,Haettenschweiler,Arial,sans-serif"
+     text-rendering="geometricPrecision"
+     font-size="100">
+
+    <text transform="scale(.1)"
+       x="360" y="180"
+          textLength="320"
+       text-anchor="middle"
+          fill="#FFFAEB">
+      METIS
+    </text>
+
+    <text transform="scale(.1)"
+          x="1560" y="180"
+          textLength="1200"
+       text-anchor="middle"
+          font-weight="bold"
+          fill="#000000">
+      SEE MORE DETAILS
+    </text>
+  </g>
+</svg>

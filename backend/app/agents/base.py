@@ -133,6 +133,7 @@ class BaseAgent(ABC):
                 self.agent_logger.debug(f"Agent made {len(tool_calls_data)} Tool Calls: {[tc['name'] for tc in tool_calls_data]}")
                 results = await self.tools.execute_batch(tool_calls_data)
                 self.state.tool_calls_made += len(tool_calls_data)
+                self._log_tool_execution_details(tool_calls_data, results)
 
                 # Check for completion signal
                 if self._is_complete(results):
@@ -281,3 +282,27 @@ class BaseAgent(ABC):
                 "content": content,
             })
 
+    def _log_tool_execution_details(self, tool_calls: list, results: dict) -> None:
+        """Log detailed per-tool execution diagnostics for debugging."""
+        for tc in tool_calls:
+            result = results.get(tc["id"])
+            if not result:
+                self.agent_logger.error(
+                    f"Tool result missing for call_id={tc['id']} tool={tc['name']}"
+                )
+                continue
+
+            metadata = result.metadata or {}
+            tool_args = metadata.get("tool_args", tc.get("arguments", {}))
+            status = "SUCCESS" if result.success else "FAILED"
+
+            if result.success:
+                self.agent_logger.debug(
+                    f"Tool {status}: {tc['name']} args={json.dumps(tool_args, default=str)[:1200]} "
+                    f"metadata={json.dumps(metadata, default=str)[:1200]}"
+                )
+            else:
+                self.agent_logger.error(
+                    f"Tool {status}: {tc['name']} args={json.dumps(tool_args, default=str)[:1200]} "
+                    f"error={result.error} metadata={json.dumps(metadata, default=str)[:1200]}"
+                )

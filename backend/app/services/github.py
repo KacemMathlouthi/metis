@@ -138,6 +138,70 @@ class GitHubService:
         result: dict[str, Any] = response.json()
         return result
 
+    async def create_pr_inline_comment(
+        self,
+        owner: str,
+        repo: str,
+        pr_number: int,
+        token: str,
+        body: str,
+        path: str,
+        line: int,
+        commit_id: str,
+        side: str = "RIGHT",
+        start_line: int | None = None,
+        start_side: str = "RIGHT",
+    ) -> dict[str, Any]:
+        """Create one inline review comment on a pull request."""
+
+        payload: dict[str, Any] = {
+            "body": body,
+            "path": path,
+            "line": line,
+            "side": side,
+            "commit_id": commit_id,
+        }
+        if start_line is not None:
+            payload["start_line"] = start_line
+            payload["start_side"] = start_side
+
+        response = await self._client.post(
+            f"{self.base_url}/repos/{owner}/{repo}/pulls/{pr_number}/comments",
+            headers={"Authorization": f"Bearer {token}"},
+            json=payload,
+        )
+        response.raise_for_status()
+        result: dict[str, Any] = response.json()
+        return result
+
+    async def create_pr_file_comment(
+        self,
+        owner: str,
+        repo: str,
+        pr_number: int,
+        token: str,
+        body: str,
+        path: str,
+        commit_id: str,
+    ) -> dict[str, Any]:
+        """Create one file-level review comment on a pull request."""
+
+        payload = {
+            "body": body,
+            "path": path,
+            "subject_type": "file",
+            "commit_id": commit_id,
+        }
+
+        response = await self._client.post(
+            f"{self.base_url}/repos/{owner}/{repo}/pulls/{pr_number}/comments",
+            headers={"Authorization": f"Bearer {token}"},
+            json=payload,
+        )
+        response.raise_for_status()
+        result: dict[str, Any] = response.json()
+        return result
+
     async def get_installation_repositories(
         self, installation_id: int
     ) -> list[dict[str, Any]]:
