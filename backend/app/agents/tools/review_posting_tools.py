@@ -26,7 +26,11 @@ def _see_more_footer_markdown() -> str:
     """Build the See More footer in markdown form for GitHub rendering."""
     target_url = "http://localhost:5173/dashboard/analytics"
     badge_url = "https://i.imgur.com/j21PULe.png"
-    return f"[![METIS: SEE MORE DETAILS]({badge_url})]({target_url})"
+    return (
+        f'<a href="{target_url}">'
+        f'<img src="{badge_url}" alt="METIS: SEE MORE DETAILS" width="92" />'
+        "</a>"
+    )
 
 
 def _normalize_severity(severity: str) -> str:
@@ -54,12 +58,12 @@ def _build_finding_body(
     category: str,
 ) -> str:
     body = (
-        "### Finding\n"
+        "## Finding\n"
         f"- **Severity:** `{severity}`\n"
         f"- **Category:** `{category}`\n\n"
-        "**Issue**\n"
+        "### Issue\n"
         f"{issue}\n\n"
-        "**Suggested Fix**\n"
+        "### Suggested Fix\n"
         f"{proposed_fix}"
     )
     footer = _see_more_footer_markdown()
