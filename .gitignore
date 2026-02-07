@@ -208,6 +208,5 @@ __marimo__/
 # Docs
 docs/
 *.pem
-gcp-service-account.json
 
 /daytona
