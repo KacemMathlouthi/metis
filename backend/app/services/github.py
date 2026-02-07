@@ -143,7 +143,7 @@ class GitHubService:
         owner: str,
         repo: str,
         pr_number: int,
-        installation_id: int,
+        token: str,
         body: str,
         path: str,
         line: int,
@@ -153,7 +153,6 @@ class GitHubService:
         start_side: str = "RIGHT",
     ) -> dict[str, Any]:
         """Create one inline review comment on a pull request."""
-        token = await self.get_installation_token(installation_id)
 
         payload: dict[str, Any] = {
             "body": body,
@@ -180,13 +179,12 @@ class GitHubService:
         owner: str,
         repo: str,
         pr_number: int,
-        installation_id: int,
+        token: str,
         body: str,
         path: str,
         commit_id: str,
     ) -> dict[str, Any]:
         """Create one file-level review comment on a pull request."""
-        token = await self.get_installation_token(installation_id)
 
         payload = {
             "body": body,

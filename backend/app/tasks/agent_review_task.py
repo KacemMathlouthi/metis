@@ -178,7 +178,7 @@ async def _process_pr_review_with_agent_async(
             tools = get_reviewer_tools(
                 sandbox=sandbox,
                 review_id=review_id,
-                installation_id=installation_id,
+                installation_token=installation_token,
                 owner=owner,
                 repo=repo,
                 pr_number=pr_number,

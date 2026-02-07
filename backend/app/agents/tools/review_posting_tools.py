@@ -94,7 +94,7 @@ class PostInlineReviewFindingTool(BaseTool):
         github_service: GitHubService,
         session_factory: async_sessionmaker,
         review_id: str,
-        installation_id: int,
+        installation_token: str,
         owner: str,
         repo: str,
         pr_number: int,
@@ -104,7 +104,7 @@ class PostInlineReviewFindingTool(BaseTool):
         self.github_service = github_service
         self.session_factory = session_factory
         self.review_id = review_id
-        self.installation_id = installation_id
+        self.installation_token = installation_token
         self.owner = owner
         self.repo = repo
         self.pr_number = pr_number
@@ -186,7 +186,7 @@ class PostInlineReviewFindingTool(BaseTool):
                 owner=self.owner,
                 repo=self.repo,
                 pr_number=self.pr_number,
-                installation_id=self.installation_id,
+                token=self.installation_token,
                 body=body,
                 path=file_path,
                 line=line_end or line_number,
@@ -231,7 +231,7 @@ class PostFileReviewFindingTool(BaseTool):
         github_service: GitHubService,
         session_factory: async_sessionmaker,
         review_id: str,
-        installation_id: int,
+        installation_token: str,
         owner: str,
         repo: str,
         pr_number: int,
@@ -241,7 +241,7 @@ class PostFileReviewFindingTool(BaseTool):
         self.github_service = github_service
         self.session_factory = session_factory
         self.review_id = review_id
-        self.installation_id = installation_id
+        self.installation_token = installation_token
         self.owner = owner
         self.repo = repo
         self.pr_number = pr_number
@@ -306,7 +306,7 @@ class PostFileReviewFindingTool(BaseTool):
                 owner=self.owner,
                 repo=self.repo,
                 pr_number=self.pr_number,
-                installation_id=self.installation_id,
+                token=self.installation_token,
                 body=body,
                 path=file_path,
                 commit_id=self.commit_sha,
