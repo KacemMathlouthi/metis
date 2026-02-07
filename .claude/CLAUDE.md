@@ -1,6 +1,18 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to any coding agent working on this repository.
+
+## Standards
+
+This is a **production-grade codebase**. All contributions must meet the following bar:
+
+- **Code quality**: Clean, readable, well-structured code. No shortcuts, no hacks, no "good enough" solutions. Every function should be purposeful and every abstraction justified.
+- **Performance**: Optimized by default. Async where it matters, efficient data structures, minimal allocations, no N+1 queries, no unnecessary re-renders.
+- **Security**: Zero tolerance for vulnerabilities. Input validation at boundaries, parameterized queries, proper auth checks, no secrets in code, OWASP top 10 awareness at all times.
+- **Error handling**: Graceful degradation, meaningful error messages, proper logging. No silent failures, no bare excepts, no swallowed errors.
+- **Type safety**: Full type hints (Python) and strict TypeScript. No `Any` unless absolutely unavoidable. Types are documentation.
+- **Testing mindset**: Write code that is testable. Dependency injection, clear interfaces, no hidden side effects.
+- **Consistency**: Follow existing patterns in the codebase. Match naming conventions, file organization, and architectural patterns already established.
 
 ## Project Overview
 
@@ -97,7 +109,7 @@ app/
 │   └── webhooks.py      # GitHub webhook endpoint (/webhooks/github) with async task queueing
 ├── core/                # Core configuration
 │   ├── config.py        # Pydantic Settings for env vars, JWT, Redis, Celery, Daytona, LangSmith
-│   ├── client.py        # LLM client factory with LangSmith wrapper
+│   ├── client.py        # LiteLLM client factory (multi-provider: Vertex AI, OpenAI, Mistral, etc.)
 │   ├── security.py      # JWT generation/verification, token encryption (Fernet)
 │   ├── auth_deps.py     # get_current_user() dependency for protected routes
 │   ├── redis_client.py  # Redis singleton with connection pooling
@@ -133,12 +145,13 @@ app/
 │   ├── sandbox/         # Daytona sandbox integration
 │   │   ├── client.py    # DaytonaClient wrapper with git auth
 │   │   └── manager.py   # SandboxManager for lifecycle
-│   └── tools/           # Tool system (20 tools)
+│   └── tools/           # Tool system (22 tools)
 │       ├── base.py              # BaseTool interface
 │       ├── file_tools.py        # 6 file operations (read, list, search, replace, create, delete)
 │       ├── git_tools.py         # 8 git operations (status, branch, add, commit, push, pull)
 │       ├── process_tools.py     # 4 execution tools (command, code, tests, linter)
 │       ├── completion_tools.py  # 2 completion tools (finish_review, finish_task)
+│       ├── review_posting_tools.py  # 2 review posting tools (post_inline_finding, post_file_finding)
 │       └── manager.py           # ToolManager with fine-grained tool sets
 ├── schemas/             # Pydantic models for request/response validation
 │   ├── metis_config.py  # ReviewerConfig, SummaryConfig with sensitivity levels
@@ -154,7 +167,7 @@ app/
 
 **Key flows**:
 1. **Webhook Reception (Async)**: GitHub sends webhook → `api/webhooks.py` → signature verification → lookup Installation → create Review (PENDING) with PR metadata (head_branch, base_branch, language) → queue AI agent task → return 202 Accepted (<500ms)
-2. **AI Agent Review Processing**: Celery worker → pick task from Redis → update Review (PROCESSING) → create Daytona sandbox → clone PR branch → initialize ReviewAgent with tools → run autonomous loop (plan → execute → evaluate) → agent uses tools to read files, run tests, search code → agent calls finish_review() → post review to GitHub → update Review (COMPLETED) → cleanup sandbox
+2. **AI Agent Review Processing**: Celery worker → pick task from Redis → update Review (PROCESSING) → create Daytona sandbox → clone PR branch → initialize ReviewAgent with tools (including review posting tools) → run autonomous loop (plan → execute → evaluate) → agent uses tools to read files, search code, and **progressively posts inline/file-level findings** via `post_inline_finding`/`post_file_finding` → agent calls `finish_review()` with summary → post final review to GitHub → update Review (COMPLETED) → cleanup sandbox
 3. **Issue → PR Workflow (PLANNED)**: User → Issues page → Launch agent with custom instructions → Create AgentRun (PENDING) → Queue BackgroundAgent task → Celery worker picks task → Create Daytona sandbox → Clone main branch → Initialize BackgroundAgent with coder tools → Run autonomous loop → Agent creates branch, writes code, runs tests, commits → Agent calls finish_task() with PR details → Create GitHub PR → Update AgentRun (COMPLETED) with PR URL → User redirected to AgentProgressPage
 4. **GitHub App Auth**: App generates JWT → exchanges for installation token → authenticated API calls
 5. **User OAuth**: User clicks login → GitHub OAuth → callback → create/update user in DB → set JWT cookies → redirect to dashboard
@@ -248,35 +261,53 @@ The backend authenticates as a GitHub App using:
 
 See `docs/GITHUB_APP_SETUP.md` for complete setup instructions.
 
-### Event-Driven Architecture (Planned)
+### Multi-Provider LLM Integration (LiteLLM)
+
+The backend uses **LiteLLM** for model-agnostic LLM access. Switching providers is a 1-line `.env` change:
+
+- **Current**: `MODEL_NAME=vertex_ai/gemini-3-flash-preview` (Google Vertex AI)
+- **Architecture**: `app/core/client.py` provides `LiteLLMClient` with `chat.completions.create()` interface
+- **Auth**: Vertex AI uses Application Default Credentials (`gcloud auth application-default login`)
+- **LangSmith**: Integrated via LiteLLM native callbacks (no `wrap_openai` needed)
+- **Provider switching**: Change `MODEL_NAME` prefix to switch providers:
+  - `vertex_ai/` → Google Vertex AI (ADC auth)
+  - `gpt-4o` → OpenAI (`OPENAI_API_KEY`)
+  - `mistral/` → Mistral (`MISTRAL_API_KEY`)
+  - `azure/` → Azure OpenAI (`AZURE_API_KEY`, `AZURE_API_BASE`)
+
+**Configuration** (backend/.env):
+- `MODEL_NAME`: LiteLLM model identifier (e.g., `vertex_ai/gemini-3-flash-preview`)
+- `VERTEX_PROJECT`: GCP project ID (for Vertex AI models)
+- `VERTEX_LOCATION`: GCP region (use `global` for Gemini 3 models)
+
+### Event-Driven Architecture
 
 From `docs/TECHNICAL_ARCHITECTURE.md`, the system is designed for:
-- **Asynchronous processing**: Redis queue for webhook jobs
-- **Background workers**: Separate processes for code analysis
-- **Multi-model AI**: Claude 3 (primary), GPT-4 (fallback), specialized models for security/performance
+- **Asynchronous processing**: Redis queue for webhook jobs (implemented)
+- **Background workers**: Celery workers for code analysis (implemented)
+- **Multi-model AI**: LiteLLM supports 100+ providers (Vertex AI, OpenAI, Anthropic, Mistral, etc.)
 - **Context management**: Smart truncation to fit LLM context windows (150k tokens)
 - **Caching**: Redis for PR diffs (5 min TTL), file analysis (24 hr TTL), GitHub tokens (55 min TTL)
-
-**Current state**: Basic synchronous webhook handling. Queue/worker infrastructure not yet implemented.
 
 ### AI Agent System Architecture (Phase 4)
 
 **Agent System** (`backend/app/agents/`):
 - **BaseAgent** (`base.py`): Core agent with `run()` method (plan → execute → evaluate in one iteration) and `should_stop()` for limit checking
 - **AgentLoop** (`loop.py`): Simple orchestrator that calls `agent.run()` until `agent.should_stop()` returns True
-- **ReviewAgent** (`implementation/review_agent.py`): Autonomous code reviewer with 9 tools (read-only + verification)
+- **ReviewAgent** (`implementation/review_agent.py`): Autonomous code reviewer with 11 tools (read-only + verification + review posting)
 - **BackgroundAgent** (`implementation/background_agent.py`): Autonomous coder for Issue → PR workflow with 19 tools (full CRUD + git)
-- **Tool System** (`tools/`): 20 Daytona-powered tools organized by category:
+- **Tool System** (`tools/`): 22 Daytona-powered tools organized by category:
   - File Tools (6): read_file, list_files, search_files, replace_in_files, create_file, delete_file
   - Git Tools (8): git_status, git_branches, git_create_branch, git_checkout_branch, git_add, git_commit, git_push, git_pull
   - Process Tools (4): run_command, run_code, run_tests, run_linter
+  - Review Posting Tools (2): post_inline_finding, post_file_finding
   - Completion Tools (2): finish_review, finish_task
 - **Daytona Sandbox** (`sandbox/`): Safe code execution with git auth, branch cloning, auto-cleanup
 - **Prompts** (`prompts/`): Comprehensive system prompts with workflows, examples, and guidelines
 
 **Agent Execution Flow**:
 1. Celery task creates Daytona sandbox with PR branch cloned
-2. Initializes agent with appropriate tool set (reviewer: 9 tools, coder: 19 tools)
+2. Initializes agent with appropriate tool set (reviewer: 11 tools, coder: 19 tools)
 3. Agent runs autonomous loop:
    - **Plan**: LLM decides what tools to call based on context
    - **Execute**: Tools run in parallel via Daytona SDK
@@ -290,8 +321,8 @@ From `docs/TECHNICAL_ARCHITECTURE.md`, the system is designed for:
 - Soft limits: 50 iterations, 200K tokens, 100 tool calls, 5 minutes
 - Circuit breaker: Stops after 3 consecutive tool failures
 - Path auto-prefixing: Relative paths automatically prefixed with `workspace/repo/`
-- Token counting: Uses actual OpenAI `response.usage.total_tokens`
-- LangSmith tracing: Full conversation tracking for debugging
+- Token counting: Uses `response.usage.total_tokens` from LiteLLM response
+- LangSmith tracing: Full conversation tracking via LiteLLM native callbacks
 
 **Configuration**:
 - `DAYTONA_API_KEY`: Daytona API key for sandbox creation
@@ -340,8 +371,9 @@ From `docs/TECHNICAL_ARCHITECTURE.md`, the system is designed for:
 
 3. **Agent Task** (`app/tasks/agent_review_task.py`):
    - `process_pr_review_with_agent()`: Main Celery task for AI-powered reviews
-   - Workflow: Load config → Create sandbox → Clone PR branch → Initialize agent → Run loop → Post review → Cleanup
+   - Workflow: Load config → Create sandbox → Clone PR branch → Initialize agent with review posting tools → Run loop → Agent posts inline findings progressively → Post final review summary → Cleanup
    - Uses `x-access-token` for GitHub token auth (standard for installation tokens)
+   - Fetches installation token ONCE and passes it to posting tools (avoids duplicate JWT exchanges)
    - Clones PR's head branch directly (from webhook metadata)
    - Detects language from `pull_request.head.repo.language` (webhook payload)
    - Maps to Daytona runtime: Python, TypeScript, or JavaScript
@@ -352,6 +384,11 @@ From `docs/TECHNICAL_ARCHITECTURE.md`, the system is designed for:
    - Parallel execution: Multiple tools run concurrently via `asyncio.gather()`
    - Error handling: Each tool returns `ToolResult(success, data, error)`
    - Fine-grained sets: Different tool sets for different agent types
+   - **Review Posting Tools** (`review_posting_tools.py`):
+     - `PostInlineReviewFindingTool`: Posts inline comments at specific diff lines (requires `commit_sha`, `installation_token`)
+     - `PostFileReviewFindingTool`: Posts file-level comments for whole-file issues
+     - Both persist `ReviewComment` to database and post to GitHub API
+     - IMPORTANT: Inline comments must target lines IN the PR diff (GitHub returns 422 for non-diff lines)
 
 5. **Agent Loop** (`app/agents/loop.py` + `app/agents/base.py`):
    - **BaseAgent.run()**: Executes one iteration (LLM call → tool execution → result handling)
@@ -387,7 +424,7 @@ From `docs/TECHNICAL_ARCHITECTURE.md`, the system is designed for:
 
 ### Backend
 
-1. **Configuration**: All settings in `app/core/config.py` load from `.env` via Pydantic Settings
+1. **Configuration**: All settings in `app/core/config.py` load from `.env` via Pydantic Settings. Vertex AI settings are exported to `os.environ` for LiteLLM auto-detection.
 2. **Celery Tasks** (`app/tasks/review_task.py`):
    - `process_pr_review()`: Sync wrapper that calls `asyncio.run()` for Celery compatibility
    - Task must be imported in `celery_app.py` to register with worker
@@ -522,6 +559,9 @@ Coverage report available at `htmlcov/index.html`.
 - **Async task queueing** (webhooks don't block, return immediately)
 - **AI code review** with configurable sensitivity and custom instructions
 - **Installation lookup** by github_installation_id + repository (handles multi-repo installs)
+- **Structured inline review comments** posted directly on PR diff lines via GitHub API
+- **File-level review comments** for issues spanning entire files
+- **Progressive finding posting** - agent posts findings as it discovers them, not batched at the end
 
 ## Not Yet Implemented
 
@@ -540,7 +580,6 @@ Coverage report available at `htmlcov/index.html`.
 - **BackgroundAgent task** for Issue → PR workflow (agent implementation exists)
 
 ### Infrastructure & Monitoring
-- Line-by-line GitHub review comments (currently PR-level comments only)
 - Redis caching for PR diffs and GitHub tokens (infrastructure ready)
 - Priority queues for Celery (critical/default/low)
 - SummaryAgent implementation (prompts ready, implementation pending)
@@ -585,17 +624,28 @@ Coverage report available at `htmlcov/index.html`.
 
 ### Phase 4: AI Agent System ✅ (COMPLETED)
 - **Daytona Sandbox Integration**: Safe code execution in isolated environments with git auth
-- **20 Tools**: File ops (6), Git ops (8), Process execution (4), Completion (2)
-- **Fine-grained tool sets**: Reviewer (9 tools), Coder (19 tools), Summary (3 tools)
+- **22 Tools**: File ops (6), Git ops (8), Process execution (4), Review posting (2), Completion (2)
+- **Fine-grained tool sets**: Reviewer (11 tools), Coder (19 tools), Summary (3 tools)
 - **BaseAgent & AgentLoop**: Autonomous plan → execute → evaluate loop with soft limits
-- **ReviewAgent**: Production-ready code review agent with 3-iteration avg completion
+- **ReviewAgent**: Production-ready code review agent with progressive inline finding posting
 - **BackgroundAgent**: Autonomous coder for Issue → PR workflow (implementation ready)
 - **Comprehensive prompts**: 500+ line prompts with workflows, examples, guidelines
-- **LangSmith tracing**: Full LLM observability with conversation tracking
-- **GitHub integration**: Clones PR branch, uses webhook metadata, posts reviews
+- **LangSmith tracing**: Full LLM observability via LiteLLM native callbacks
+- **GitHub integration**: Clones PR branch, posts inline/file-level review comments
 - **Multi-language support**: Python, TypeScript, JavaScript sandbox runtimes
 - **Production features**: Circuit breaker, error handling, token counting, file logging
-- **Performance**: ~37s end-to-end (sandbox 2s, agent 3 iterations, review posted)
+- **Performance**: ~42s end-to-end (sandbox 2s, agent 5-7 iterations with inline posting)
+
+### Phase 5: Multi-Provider LLM Support ✅ (COMPLETED)
+- **LiteLLM integration**: Model-agnostic LLM client supporting 100+ providers
+- **Vertex AI**: Primary provider (Gemini 3 Flash Preview) with ADC authentication
+- **Provider switching**: Change `MODEL_NAME` in `.env` to switch (no code changes)
+- **Supported providers**: Vertex AI (Google), OpenAI, Anthropic, Mistral, Azure OpenAI
+- **LiteLLMClient wrapper**: Drop-in replacement for OpenAI client with `chat.completions.create()` interface
+- **LangSmith callbacks**: Native LiteLLM callback integration (replaces `wrap_openai`)
+- **Structured review findings**: Inline comments on PR diff lines + file-level comments
+- **Review posting tools**: `post_inline_finding` (diff-anchored) and `post_file_finding` (whole-file)
+- **Token pre-fetching**: Installation token fetched once and passed to posting tools (avoids 401s)
 
 ### Repository Enrollment System ✅ (COMPLETED)
 - **Installation API**: List from GitHub, sync to DB, enable/disable, update config
@@ -632,13 +682,15 @@ Coverage report available at `htmlcov/index.html`.
 - **Flower**: http://localhost:5555 for Celery task monitoring (when running)
 
 ### AI Agent System ✅ (COMPLETED)
-- **Autonomous code review agent** with tool-augmented analysis
+- **Autonomous code review agent** with tool-augmented analysis and progressive inline posting
 - **Daytona sandbox integration** for safe code execution
-- **20 tools** across file ops, git ops, process execution
-- **Fine-grained tool sets** (9 reviewer, 19 coder, 3 summary tools)
+- **22 tools** across file ops, git ops, process execution, review posting
+- **Fine-grained tool sets** (11 reviewer, 19 coder, 3 summary tools)
 - **Multi-iteration agent loop** with soft limits and circuit breaker
-- **LangSmith tracing** for LLM observability
+- **LiteLLM integration** for model-agnostic LLM access (Vertex AI, OpenAI, Mistral, etc.)
+- **LangSmith tracing** via LiteLLM native callbacks
 - **Comprehensive prompts** for reviewer, coder, and summary agents
 - **GitHub branch integration** (clones PR branch directly)
+- **Structured review findings** (inline on diff lines + file-level comments)
 - **Multi-language support** (Python, TypeScript, JavaScript sandboxes)
 - **Production-ready** with error handling, logging, and cleanup
