@@ -28,7 +28,7 @@ def _see_more_footer_markdown() -> str:
     badge_url = "https://i.imgur.com/j21PULe.png"
     return (
         f'<a href="{target_url}">'
-        f'<img src="{badge_url}" alt="METIS: SEE MORE DETAILS" width="92" />'
+        f'<img src="{badge_url}" alt="METIS: SEE MORE DETAILS" width="140" />'
         "</a>"
     )
 
