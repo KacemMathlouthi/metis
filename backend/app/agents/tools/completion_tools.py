@@ -20,7 +20,7 @@ class FinishReviewTool(BaseTool):
                     },
                     "verdict": {
                         "type": "string",
-                        "enum": ["APPROVE", "DISAPPROVE", "REQUEST_CHANGES"],
+                        "enum": ["APPROVE", "REQUEST_CHANGES", "COMMENT"],
                         "description": "Final review verdict for the pull request"
                     },
                     "overall_severity": {
@@ -51,10 +51,10 @@ class FinishReviewTool(BaseTool):
             ToolResult with review data
         """
         normalized_verdict = verdict.strip().upper()
-        if normalized_verdict not in {"APPROVE", "DISAPPROVE", "REQUEST_CHANGES"}:
+        if normalized_verdict not in {"APPROVE", "REQUEST_CHANGES", "COMMENT"}:
             return ToolResult(
                 success=False,
-                error=f"Invalid verdict '{verdict}'. Use APPROVE, DISAPPROVE, or REQUEST_CHANGES.",
+                error=f"Invalid verdict '{verdict}'. Use APPROVE, REQUEST_CHANGES, or COMMENT.",
             )
 
         normalized_severity = overall_severity.strip().lower()
