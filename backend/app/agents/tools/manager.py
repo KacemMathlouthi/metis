@@ -184,6 +184,7 @@ def get_reviewer_tools(
             owner=owner,
             repo=repo,
             pr_number=pr_number,
+            commit_sha=commit_sha,
         ),
         PostFileReviewFindingTool(
             sandbox=sandbox,

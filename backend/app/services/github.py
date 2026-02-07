@@ -147,6 +147,7 @@ class GitHubService:
         body: str,
         path: str,
         line: int,
+        commit_id: str,
         side: str = "RIGHT",
         start_line: int | None = None,
         start_side: str = "RIGHT",
@@ -159,6 +160,7 @@ class GitHubService:
             "path": path,
             "line": line,
             "side": side,
+            "commit_id": commit_id,
         }
         if start_line is not None:
             payload["start_line"] = start_line

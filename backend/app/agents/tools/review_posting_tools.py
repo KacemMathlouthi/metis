@@ -98,6 +98,7 @@ class PostInlineReviewFindingTool(BaseTool):
         owner: str,
         repo: str,
         pr_number: int,
+        commit_sha: str,
     ):
         super().__init__(sandbox)
         self.github_service = github_service
@@ -107,6 +108,7 @@ class PostInlineReviewFindingTool(BaseTool):
         self.owner = owner
         self.repo = repo
         self.pr_number = pr_number
+        self.commit_sha = commit_sha
 
     @property
     def definition(self) -> ToolDefinition:
@@ -188,6 +190,7 @@ class PostInlineReviewFindingTool(BaseTool):
                 body=body,
                 path=file_path,
                 line=line_end or line_number,
+                commit_id=self.commit_sha,
                 start_line=line_number if line_end else None,
             )
 
