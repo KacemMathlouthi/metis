@@ -12,6 +12,7 @@ dependencies = [
     "daytona>=0.125.0",
     "fastapi>=0.121.3",
     "flower>=2.0.1",
+    "google-cloud-aiplatform>=1.136.0",
     "httpx>=0.28.1",
     "langsmith>=0.5.0",
     "litellm>=1.55.0",
