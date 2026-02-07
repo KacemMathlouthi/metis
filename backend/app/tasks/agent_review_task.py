@@ -153,7 +153,15 @@ async def _process_pr_review_with_agent_async(
             logger.info(f"Sandbox created: {sandbox.id}")
 
             # 6. Initialize tools for reviewer
-            tools = get_reviewer_tools(sandbox)
+            tools = get_reviewer_tools(
+                sandbox=sandbox,
+                review_id=review_id,
+                installation_id=installation_id,
+                owner=owner,
+                repo=repo,
+                pr_number=pr_number,
+                commit_sha=review.commit_sha,
+            )
 
             logger.info(f"Registered {len(tools.list_tool_names())} tools for reviewer")
 
@@ -191,33 +199,39 @@ async def _process_pr_review_with_agent_async(
                 f"tokens={final_state.tokens_used}"
             )
 
-            # 10. Extract review from result
+            # 10. Extract final summary/verdict from result
             if final_state.status == "completed" and final_state.result:
-                review_text = final_state.result.get("review_text")
-                severity = final_state.result.get("severity", "medium")
+                summary = final_state.result.get("summary")
+                verdict = final_state.result.get("verdict", "COMMENT")
+                overall_severity = final_state.result.get("overall_severity", "medium")
 
-                if not review_text:
-                    raise ValueError("Agent completed but no review_text in result")
+                if not summary:
+                    raise ValueError("Agent completed but no summary in result")
 
-                logger.info(f"Review generated: {len(review_text)} chars, severity={severity}")
+                logger.info(
+                    f"Review summary generated: {len(summary)} chars, verdict={verdict}, severity={overall_severity}"
+                )
 
-                # 11. Post review to GitHub
+                # 11. Post final summary review to GitHub
                 logger.info("Posting review to GitHub")
 
-                await github.create_pr_review(
+                gh_review = await github.create_pr_review(
                     owner=owner,
                     repo=repo,
                     pr_number=pr_number,
-                    review_body=review_text,
-                    event="COMMENT",
+                    review_body=summary,
+                    event=verdict,
                     installation_id=installation_id,
                 )
 
                 # 12. Update Review status
                 review.status = "COMPLETED"
-                review.review_text = review_text
-                review.metadata = {
-                    "severity": severity,
+                review.review_text = summary
+                review.github_review_id = gh_review.get("id")
+                review.pr_metadata = {
+                    **(review.pr_metadata or {}),
+                    "overall_severity": overall_severity,
+                    "verdict": verdict,
                     "iterations": final_state.iteration,
                     "tokens_used": final_state.tokens_used,
                     "tool_calls": final_state.tool_calls_made,
