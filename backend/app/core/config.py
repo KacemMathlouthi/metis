@@ -33,7 +33,7 @@ class Settings(BaseSettings):
 
     # LLM Provider settings (LiteLLM format: "vertex_ai/gemini-3-flash-preview", "gpt-4o", etc.)
     # See: https://docs.litellm.ai/docs/providers
-    MODEL_NAME: str = "vertex_ai/gemini-3-flash-preview"
+    MODEL_NAME: str = "vertex_ai/zai-org/glm-4.7-maas"
 
     # Vertex AI settings (for Google Cloud models, uses ADC via gcloud CLI)
     VERTEX_PROJECT: str | None = None
