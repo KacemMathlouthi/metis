@@ -13,11 +13,11 @@ import type {
   GitHubInstallation,
   SyncInstallationsResponse,
   Issue,
-  IssueWithAgent,
   IssueComment,
   AgentRun,
   LaunchAgentRequest,
   LaunchAgentResponse,
+  ReviewCommentsListResponse,
 } from '@/types/api';
 
 const API_BASE_URL =
@@ -180,6 +180,35 @@ class ApiClient {
   }
 
   /**
+   * List review comments with pagination and filters.
+   */
+  async listReviewComments(params: {
+    repository?: string;
+    review_id?: string;
+    severity?: 'INFO' | 'WARNING' | 'ERROR' | 'CRITICAL';
+    category?: 'BUG' | 'SECURITY' | 'PERFORMANCE' | 'STYLE' | 'MAINTAINABILITY' | 'DOCUMENTATION' | 'TESTING';
+    review_status?: 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
+    created_from?: string;
+    created_to?: string;
+    page?: number;
+    page_size?: number;
+  }): Promise<ReviewCommentsListResponse> {
+    const query = new URLSearchParams();
+
+    if (params.repository) query.set('repository', params.repository);
+    if (params.review_id) query.set('review_id', params.review_id);
+    if (params.severity) query.set('severity', params.severity);
+    if (params.category) query.set('category', params.category);
+    if (params.review_status) query.set('review_status', params.review_status);
+    if (params.created_from) query.set('created_from', params.created_from);
+    if (params.created_to) query.set('created_to', params.created_to);
+    query.set('page', String(params.page ?? 1));
+    query.set('page_size', String(params.page_size ?? 20));
+
+    return this.request<ReviewCommentsListResponse>(`/api/review-comments?${query.toString()}`);
+  }
+
+  /**
    * Get all agent runs for a specific issue
    */
   async getIssueAgentRuns(issueId: string): Promise<AgentRun[]> {
@@ -250,7 +279,7 @@ class ApiClient {
   /**
    * List all agent runs for a repository
    */
-  async listAgentRuns(repositoryId: string): Promise<AgentRun[]> {
+  async listAgentRuns(_repositoryId: string): Promise<AgentRun[]> {
     await new Promise(resolve => setTimeout(resolve, 400));
 
     return [
