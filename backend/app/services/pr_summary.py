@@ -18,17 +18,6 @@ class SummaryComposeResult:
     replaced_existing_block: bool
 
 
-def build_summary_block(summary_markdown: str) -> str:
-    """Build managed summary block wrapped in marker comments."""
-    content = summary_markdown.strip()
-    return (
-        f"{SUMMARY_START_MARKER}\n"
-        "## Metis AI Summary\n\n"
-        f"{content}\n"
-        f"{SUMMARY_END_MARKER}"
-    )
-
-
 def compose_pr_description(
     existing_body: str | None,
     summary_markdown: str,
