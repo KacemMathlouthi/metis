@@ -123,3 +123,58 @@ class FinishTaskTool(BaseTool):
             },
             metadata={"type": "completion"},
         )
+
+
+class FinishSummaryTool(BaseTool):
+    """Signal that PR summary generation is complete."""
+
+    @property
+    def definition(self) -> ToolDefinition:
+        return ToolDefinition(
+            name="finish_summary",
+            description="Complete summary generation for the pull request description update.",
+            parameters={
+                "type": "object",
+                "properties": {
+                    "summary_text": {
+                        "type": "string",
+                        "description": "Final PR summary markdown text.",
+                    },
+                    "pr_title": {
+                        "type": "string",
+                        "description": "AI-generated replacement title for the pull request.",
+                    },
+                },
+                "required": ["summary_text", "pr_title"],
+            },
+        )
+
+    async def execute(
+        self,
+        summary_text: str,
+        pr_title: str,
+        **kwargs,
+    ) -> ToolResult:
+        """Mark summary task as complete."""
+        cleaned_summary = summary_text.strip()
+        if not cleaned_summary:
+            return ToolResult(
+                success=False,
+                error="summary_text must not be empty.",
+            )
+        cleaned_title = pr_title.strip()
+        if not cleaned_title:
+            return ToolResult(
+                success=False,
+                error="pr_title must not be empty.",
+            )
+
+        return ToolResult(
+            success=True,
+            data={
+                "summary_text": cleaned_summary,
+                "pr_title": cleaned_title,
+                "completed": True,
+            },
+            metadata={"type": "completion"},
+        )

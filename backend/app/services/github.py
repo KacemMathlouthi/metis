@@ -138,6 +138,56 @@ class GitHubService:
         result: dict[str, Any] = response.json()
         return result
 
+    async def get_pull_request(
+        self,
+        owner: str,
+        repo: str,
+        pr_number: int,
+        installation_id: int | None = None,
+    ) -> dict[str, Any]:
+        """Get pull request details as JSON."""
+        if installation_id is None:
+            raise ValueError("installation_id is required for fetching pull request")
+        token = await self.get_installation_token(installation_id)
+
+        response = await self._client.get(
+            f"{self.base_url}/repos/{owner}/{repo}/pulls/{pr_number}",
+            headers={"Authorization": f"Bearer {token}"},
+        )
+        response.raise_for_status()
+        result: dict[str, Any] = response.json()
+        return result
+
+    async def update_pr_description(
+        self,
+        owner: str,
+        repo: str,
+        pr_number: int,
+        body: str | None = None,
+        title: str | None = None,
+        installation_id: int | None = None,
+    ) -> dict[str, Any]:
+        """Patch pull request title/body."""
+        if installation_id is None:
+            raise ValueError("installation_id is required for updating PR description")
+        if body is None and title is None:
+            raise ValueError("At least one of body or title must be provided")
+        token = await self.get_installation_token(installation_id)
+        payload: dict[str, Any] = {}
+        if body is not None:
+            payload["body"] = body
+        if title is not None:
+            payload["title"] = title
+
+        response = await self._client.patch(
+            f"{self.base_url}/repos/{owner}/{repo}/pulls/{pr_number}",
+            headers={"Authorization": f"Bearer {token}"},
+            json=payload,
+        )
+        response.raise_for_status()
+        result: dict[str, Any] = response.json()
+        return result
+
     async def create_pr_inline_comment(
         self,
         owner: str,
