@@ -105,7 +105,7 @@ class ReviewComment(Base, BaseModel):
     line_end = Column(Integer, nullable=True, comment="For multi-line comments")
 
     # Comment content
-    title = Column(String(255), nullable=False, comment="Short finding title")
+    title = Column(String(255), nullable=True, comment="Short finding title")
     comment_text = Column(Text, nullable=False)
 
     # Classification

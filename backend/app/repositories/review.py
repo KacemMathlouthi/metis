@@ -263,6 +263,7 @@ class ReviewCommentRepository:
     async def create(
         db: AsyncSession,
         review_id: UUID | str,
+        title: str,
         file_path: str,
         line_number: int,
         comment_text: str,
@@ -275,6 +276,7 @@ class ReviewCommentRepository:
         Args:
             db: Database session
             review_id: Review UUID this comment belongs to
+            title: Short finding title
             file_path: Path to file (e.g., 'src/main.py')
             line_number: Starting line number
             comment_text: The actual comment message
@@ -287,6 +289,7 @@ class ReviewCommentRepository:
         """
         comment = ReviewComment(
             review_id=review_id,
+            title=title,
             file_path=file_path,
             line_number=line_number,
             line_end=line_end,
