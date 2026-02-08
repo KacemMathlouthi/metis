@@ -164,7 +164,8 @@ app/
 ├── tasks/               # Celery background tasks
 │   ├── __init__.py              # Task registration
 │   ├── agent_review_task.py    # AI agent-powered review task
-│   └── summary_task.py         # AI PR summary generation/update task
+│   ├── summary_task.py         # AI PR summary generation/update task
+│   └── background_agent_task.py # Issue → PR autonomous coding task
 └── utils/               # Utility functions
     ├── prompts.py       # Legacy prompts
     └── agent_logger.py  # Structured file logging for agents
@@ -174,13 +175,13 @@ app/
 1. **Webhook Reception (Async)**: GitHub sends webhook → `api/webhooks.py` → signature verification → lookup Installation → create Review (PENDING) with PR metadata (head_branch, base_branch, language) → queue AI agent task → return 202 Accepted (<500ms)
 2. **AI Agent Review Processing**: Celery worker → pick task from Redis → update Review (PROCESSING) → create Daytona sandbox → clone PR branch → initialize ReviewAgent with tools (including review posting tools) → run autonomous loop (plan → execute → evaluate) → agent uses tools to read files, search code, and **progressively posts inline/file-level findings** via `post_inline_finding`/`post_file_finding` → agent calls `finish_review()` with summary → post final review to GitHub → update Review (COMPLETED) → cleanup sandbox
 3. **PR Summary Processing (Parallel)**: webhook queues `process_pr_summary_with_agent` alongside review task → SummaryAgent analyzes PR diff in sandbox → calls `finish_summary(summary_text, pr_title)` → backend patches GitHub PR title and appends summary body (`\\n --- \\n{summary}`) → writes summary metadata on Review
-4. **Issue → PR Workflow (PLANNED)**: User → Issues page → Launch agent with custom instructions → Create AgentRun (PENDING) → Queue BackgroundAgent task → Celery worker picks task → Create Daytona sandbox → Clone main branch → Initialize BackgroundAgent with coder tools → Run autonomous loop → Agent creates branch, writes code, runs tests, commits → Agent calls finish_task() with PR details → Create GitHub PR → Update AgentRun (COMPLETED) with PR URL → User redirected to AgentProgressPage
-4. **GitHub App Auth**: App generates JWT → exchanges for installation token → authenticated API calls
-5. **User OAuth**: User clicks login → GitHub OAuth → callback → create/update user in DB → set JWT cookies → redirect to dashboard
-6. **Protected Routes**: Request → `get_current_user()` dependency → verify JWT cookie → query user from DB → endpoint access
-7. **Repository Enrollment**: User → Repositories page → Sync from GitHub → Create Installation records → Enable repository → Webhooks start working
-8. **Workspace Context**: User selects repository → Saved to localStorage → Dashboard filters by selected repo → AI settings load repo config
-9. **Database Access**: FastAPI endpoint → `get_db()` dependency → async SQLAlchemy session → automatic commit/rollback
+4. **Issue → PR Workflow**: User launches background agent (`POST /api/agents/launch`) → Create AgentRun (PENDING) → Queue `process_issue_with_agent` → worker fetches issue/repo context, creates Daytona sandbox, bootstraps git auth, runs BackgroundAgent with coder tools → agent commits/pushes branch and calls `finish_task()` → backend creates GitHub PR and updates AgentRun with PR URL/number → frontend polls `GET /api/agents/{agent_run_id}` and renders timeline in AgentProgressPage
+5. **GitHub App Auth**: App generates JWT → exchanges for installation token → authenticated API calls
+6. **User OAuth**: User clicks login → GitHub OAuth → callback → create/update user in DB → set JWT cookies → redirect to dashboard
+7. **Protected Routes**: Request → `get_current_user()` dependency → verify JWT cookie → query user from DB → endpoint access
+8. **Repository Enrollment**: User → Repositories page → Sync from GitHub → Create Installation records → Enable repository → Webhooks start working
+9. **Workspace Context**: User selects repository → Saved to localStorage → Dashboard filters by selected repo → AI settings load repo config
+10. **Database Access**: FastAPI endpoint → `get_db()` dependency → async SQLAlchemy session → automatic commit/rollback
 
 ### Frontend Structure (`frontend/src/`)
 
@@ -224,7 +225,7 @@ src/
 ├── hooks/
 │   └── use-mobile.ts           # Mobile detection hook
 ├── lib/
-│   ├── api-client.ts           # API client with Issues & Agent Run endpoints (mock data)
+│   ├── api-client.ts           # API client with Issues & Agent Run backend endpoints
 │   ├── language-icons.tsx      # Language logo utilities (17+ languages from react-icons)
 │   └── utils.ts                # Utility functions (cn, truncateText)
 ├── types/
@@ -295,13 +296,13 @@ From `docs/TECHNICAL_ARCHITECTURE.md`, the system is designed for:
 - **Context management**: Smart truncation to fit LLM context windows (150k tokens)
 - **Caching**: Redis for PR diffs (5 min TTL), file analysis (24 hr TTL), GitHub tokens (55 min TTL)
 
-### AI Agent System Architecture (Phase 4)
+### AI Agent System Architecture (Phase 4+)
 
 **Agent System** (`backend/app/agents/`):
 - **BaseAgent** (`base.py`): Core agent with `run()` method (plan → execute → evaluate in one iteration) and `should_stop()` for limit checking
 - **AgentLoop** (`loop.py`): Simple orchestrator that calls `agent.run()` until `agent.should_stop()` returns True
 - **ReviewAgent** (`implementation/review_agent.py`): Autonomous code reviewer with 11 tools (read-only + verification + review posting)
-- **BackgroundAgent** (`implementation/background_agent.py`): Autonomous coder for Issue → PR workflow with 19 tools (full CRUD + git)
+- **BackgroundAgent** (`implementation/background_agent.py`): Autonomous coder for Issue → PR workflow with full CRUD + git tools
 - **Tool System** (`tools/`): 23 Daytona-powered tools organized by category:
   - File Tools (6): read_file, list_files, search_files, replace_in_files, create_file, delete_file
   - Git Tools (8): git_status, git_branches, git_create_branch, git_checkout_branch, git_add, git_commit, git_push, git_pull
@@ -384,6 +385,13 @@ From `docs/TECHNICAL_ARCHITECTURE.md`, the system is designed for:
    - Detects language from `pull_request.head.repo.language` (webhook payload)
    - Maps to Daytona runtime: Python, TypeScript, or JavaScript
 
+   **Background Agent Task** (`app/tasks/background_agent_task.py`):
+   - `process_issue_with_agent()`: Main Issue → PR task
+   - Loads AgentRun + active installation, fetches issue/repo context from GitHub
+   - Creates sandbox from default branch, bootstraps git auth/identity once, runs BackgroundAgent
+   - Persists full raw conversation/tool trace to `agent_runs.conversation`
+   - Validates branch push on origin, creates PR, stores `pr_number`/`pr_url`/`changed_files`
+
 4. **Tools** (`app/agents/tools/`):
    - All tools auto-prefix relative paths with `workspace/repo/` (e.g., `backend/app` → `workspace/repo/backend/app`)
    - Tools execute via Daytona SDK (no manual implementation needed)
@@ -431,9 +439,10 @@ From `docs/TECHNICAL_ARCHITECTURE.md`, the system is designed for:
 ### Backend
 
 1. **Configuration**: All settings in `app/core/config.py` load from `.env` via Pydantic Settings. Vertex AI settings are exported to `os.environ` for LiteLLM auto-detection.
-2. **Celery Tasks** (`app/tasks/agent_review_task.py`, `app/tasks/summary_task.py`):
+2. **Celery Tasks** (`app/tasks/agent_review_task.py`, `app/tasks/summary_task.py`, `app/tasks/background_agent_task.py`):
    - `process_pr_review_with_agent()`: Main AI review task
    - `process_pr_summary_with_agent()`: PR summary/title update task
+   - `process_issue_with_agent()`: Background coding task for Issue → PR
    - Tasks must be imported in `celery_app.py` to register with worker
    - Use `task.delay()` to queue tasks asynchronously
 3. **GitHub Service** (`app/services/github.py`):
@@ -560,7 +569,7 @@ Coverage report available at `htmlcov/index.html`.
 - **Issues card** on dashboard replacing Contributors card
 - **Issues API integration** for list/detail/comments endpoints
 - **Review comments analytics integration** with real backend data, tabs, and detail sheet
-- **Agent runs still mocked** in API client (pending backend integration)
+- **Agent runs integration** with backend launch/list/detail endpoints and polling
 
 ### GitHub Integration
 - **GitHub App authentication** (installation tokens with 1-hour TTL)
@@ -584,16 +593,9 @@ Coverage report available at `htmlcov/index.html`.
 
 ## Not Yet Implemented
 
-### Backend APIs Needed
-- **Agent Runs API endpoints** (frontend UI ready with mock data):
-  - `POST /api/agents/launch` - Launch agent for an issue
-  - `GET /api/agents/{agent_id}` - Get agent run details
-  - `GET /api/agents` - List all agent runs for repository
-- **Issue agent-runs endpoint** still pending:
-  - `GET /api/issues/{issue_id}/agent-runs`
-- **WebSocket for real-time agent progress updates** (AgentProgressPage ready)
-- **GitHub Issues sync** to database (Issue model needs to be created)
-- **BackgroundAgent task** for Issue → PR workflow (agent implementation exists)
+### Backend APIs / Realtime
+- **WebSocket/SSE for real-time agent progress updates** (currently frontend polls `GET /api/agents/{agent_run_id}`)
+- **GitHub Issues sync improvements** (incremental sync/refresh strategies and richer issue metadata)
 
 ### Infrastructure & Monitoring
 - Redis caching for PR diffs and GitHub tokens (infrastructure ready)
@@ -644,7 +646,7 @@ Coverage report available at `htmlcov/index.html`.
 - **Fine-grained tool sets**: Reviewer (11 tools), Coder (19 tools), Summary (5 tools)
 - **BaseAgent & AgentLoop**: Autonomous plan → execute → evaluate loop with soft limits
 - **ReviewAgent**: Production-ready code review agent with progressive inline finding posting
-- **BackgroundAgent**: Autonomous coder for Issue → PR workflow (implementation ready)
+- **BackgroundAgent**: Autonomous coder for Issue → PR workflow with persisted runs and PR creation orchestration
 - **Comprehensive prompts**: 500+ line prompts with workflows, examples, guidelines
 - **LangSmith tracing**: Full LLM observability via LiteLLM native callbacks
 - **GitHub integration**: Clones PR branch, posts inline/file-level review comments
