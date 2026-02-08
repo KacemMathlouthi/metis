@@ -6,7 +6,16 @@ This separation allows querying comments independently and supports
 GitHub's review API structure with multiple inline comments per review.
 """
 
-from sqlalchemy import BigInteger, Column, DateTime, Enum, ForeignKey, Integer, String, Text
+from sqlalchemy import (
+    BigInteger,
+    Column,
+    DateTime,
+    Enum,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+)
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import relationship
 

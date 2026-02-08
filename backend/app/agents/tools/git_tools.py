@@ -16,11 +16,11 @@ class GitStatusTool(BaseTool):
                 "properties": {
                     "path": {
                         "type": "string",
-                        "description": "Repository path (default: workspace/repo)"
+                        "description": "Repository path (default: workspace/repo)",
                     }
                 },
-                "required": []
-            }
+                "required": [],
+            },
         )
 
     async def execute(self, path: str = "workspace/repo", **kwargs) -> ToolResult:
@@ -34,8 +34,8 @@ class GitStatusTool(BaseTool):
                     "current_branch": status.current_branch,
                     "ahead": status.ahead,
                     "behind": status.behind,
-                    "modified_files": [f.name for f in status.file_status]
-                }
+                    "modified_files": [f.name for f in status.file_status],
+                },
             )
         except Exception as e:
             return ToolResult(success=False, error=str(e))
@@ -54,18 +54,20 @@ class GitCreateBranchTool(BaseTool):
                 "properties": {
                     "branch_name": {
                         "type": "string",
-                        "description": "Name of the new branch"
+                        "description": "Name of the new branch",
                     },
                     "path": {
                         "type": "string",
-                        "description": "Repository path (default: workspace/repo)"
-                    }
+                        "description": "Repository path (default: workspace/repo)",
+                    },
                 },
-                "required": ["branch_name"]
-            }
+                "required": ["branch_name"],
+            },
         )
 
-    async def execute(self, branch_name: str, path: str = "workspace/repo", **kwargs) -> ToolResult:
+    async def execute(
+        self, branch_name: str, path: str = "workspace/repo", **kwargs
+    ) -> ToolResult:
         """Execute branch creation using Daytona git.create_branch()."""
         try:
             self.sandbox.git.create_branch(path, branch_name)
@@ -87,18 +89,20 @@ class GitCheckoutBranchTool(BaseTool):
                 "properties": {
                     "branch_name": {
                         "type": "string",
-                        "description": "Name of branch to checkout"
+                        "description": "Name of branch to checkout",
                     },
                     "path": {
                         "type": "string",
-                        "description": "Repository path (default: workspace/repo)"
-                    }
+                        "description": "Repository path (default: workspace/repo)",
+                    },
                 },
-                "required": ["branch_name"]
-            }
+                "required": ["branch_name"],
+            },
         )
 
-    async def execute(self, branch_name: str, path: str = "workspace/repo", **kwargs) -> ToolResult:
+    async def execute(
+        self, branch_name: str, path: str = "workspace/repo", **kwargs
+    ) -> ToolResult:
         """Execute checkout using Daytona git.checkout_branch()."""
         try:
             self.sandbox.git.checkout_branch(path, branch_name)
@@ -121,18 +125,20 @@ class GitAddTool(BaseTool):
                     "files": {
                         "type": "array",
                         "items": {"type": "string"},
-                        "description": "List of files to stage (use ['.'] for all changes)"
+                        "description": "List of files to stage (use ['.'] for all changes)",
                     },
                     "path": {
                         "type": "string",
-                        "description": "Repository path (default: workspace/repo)"
-                    }
+                        "description": "Repository path (default: workspace/repo)",
+                    },
                 },
-                "required": ["files"]
-            }
+                "required": ["files"],
+            },
         )
 
-    async def execute(self, files: list[str], path: str = "workspace/repo", **kwargs) -> ToolResult:
+    async def execute(
+        self, files: list[str], path: str = "workspace/repo", **kwargs
+    ) -> ToolResult:
         """Execute staging using Daytona git.add()."""
         try:
             self.sandbox.git.add(path, files)
@@ -152,25 +158,22 @@ class GitCommitTool(BaseTool):
             parameters={
                 "type": "object",
                 "properties": {
-                    "message": {
-                        "type": "string",
-                        "description": "Commit message"
-                    },
+                    "message": {"type": "string", "description": "Commit message"},
                     "author_name": {
                         "type": "string",
-                        "description": "Author name (default: Metis AI)"
+                        "description": "Author name (default: Metis AI)",
                     },
                     "author_email": {
                         "type": "string",
-                        "description": "Author email (default: ai@metis.com)"
+                        "description": "Author email (default: ai@metis.com)",
                     },
                     "path": {
                         "type": "string",
-                        "description": "Repository path (default: workspace/repo)"
-                    }
+                        "description": "Repository path (default: workspace/repo)",
+                    },
                 },
-                "required": ["message"]
-            }
+                "required": ["message"],
+            },
         )
 
     async def execute(
@@ -179,14 +182,14 @@ class GitCommitTool(BaseTool):
         author_name: str = "Metis AI",
         author_email: str = "ai@metis.com",
         path: str = "workspace/repo",
-        **kwargs
+        **kwargs,
     ) -> ToolResult:
         """Execute commit using Daytona git.commit()."""
         try:
             self.sandbox.git.commit(path, message, author_name, author_email)
             return ToolResult(
                 success=True,
-                data={"message": message, "author": f"{author_name} <{author_email}>"}
+                data={"message": message, "author": f"{author_name} <{author_email}>"},
             )
         except Exception as e:
             return ToolResult(success=False, error=str(e))
@@ -205,11 +208,11 @@ class GitPushTool(BaseTool):
                 "properties": {
                     "path": {
                         "type": "string",
-                        "description": "Repository path (default: workspace/repo)"
+                        "description": "Repository path (default: workspace/repo)",
                     }
                 },
-                "required": []
-            }
+                "required": [],
+            },
         )
 
     async def execute(self, path: str = "workspace/repo", **kwargs) -> ToolResult:
@@ -234,11 +237,11 @@ class GitPullTool(BaseTool):
                 "properties": {
                     "path": {
                         "type": "string",
-                        "description": "Repository path (default: workspace/repo)"
+                        "description": "Repository path (default: workspace/repo)",
                     }
                 },
-                "required": []
-            }
+                "required": [],
+            },
         )
 
     async def execute(self, path: str = "workspace/repo", **kwargs) -> ToolResult:
@@ -263,11 +266,11 @@ class GitBranchesTool(BaseTool):
                 "properties": {
                     "path": {
                         "type": "string",
-                        "description": "Repository path (default: workspace/repo)"
+                        "description": "Repository path (default: workspace/repo)",
                     }
                 },
-                "required": []
-            }
+                "required": [],
+            },
         )
 
     async def execute(self, path: str = "workspace/repo", **kwargs) -> ToolResult:
@@ -277,7 +280,7 @@ class GitBranchesTool(BaseTool):
             return ToolResult(
                 success=True,
                 data={"branches": response.branches},
-                metadata={"count": len(response.branches)}
+                metadata={"count": len(response.branches)},
             )
         except Exception as e:
             return ToolResult(success=False, error=str(e))

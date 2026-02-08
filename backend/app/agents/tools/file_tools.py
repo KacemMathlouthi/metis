@@ -16,11 +16,11 @@ class ReadFileTool(BaseTool):
                 "properties": {
                     "file_path": {
                         "type": "string",
-                        "description": "Path to file relative to workspace/repo"
+                        "description": "Path to file relative to workspace/repo",
                     }
                 },
-                "required": ["file_path"]
-            }
+                "required": ["file_path"],
+            },
         )
 
     async def execute(self, file_path: str, **kwargs) -> ToolResult:
@@ -35,12 +35,12 @@ class ReadFileTool(BaseTool):
 
             # Convert bytes to string
             if isinstance(content, bytes):
-                content = content.decode('utf-8')
+                content = content.decode("utf-8")
 
             return ToolResult(
                 success=True,
                 data={"content": content, "path": file_path},
-                metadata={"size_bytes": len(content)}
+                metadata={"size_bytes": len(content)},
             )
         except Exception as e:
             return ToolResult(success=False, error=str(e))
@@ -59,11 +59,11 @@ class ListFilesTool(BaseTool):
                 "properties": {
                     "directory": {
                         "type": "string",
-                        "description": "Directory path (default: workspace/repo)"
+                        "description": "Directory path (default: workspace/repo)",
                     }
                 },
-                "required": []
-            }
+                "required": [],
+            },
         )
 
     async def execute(self, directory: str = "workspace/repo", **kwargs) -> ToolResult:
@@ -81,7 +81,7 @@ class ListFilesTool(BaseTool):
                     "name": f.name,
                     "is_dir": f.is_dir,
                     "size": f.size,
-                    "modified": str(f.mod_time) if hasattr(f, 'mod_time') else None
+                    "modified": str(f.mod_time) if hasattr(f, "mod_time") else None,
                 }
                 for f in files
             ]
@@ -89,7 +89,7 @@ class ListFilesTool(BaseTool):
             return ToolResult(
                 success=True,
                 data={"files": file_list, "directory": directory},
-                metadata={"count": len(file_list)}
+                metadata={"count": len(file_list)},
             )
         except Exception as e:
             return ToolResult(success=False, error=str(e))
@@ -108,18 +108,20 @@ class SearchFilesTool(BaseTool):
                 "properties": {
                     "pattern": {
                         "type": "string",
-                        "description": "Text pattern to search for"
+                        "description": "Text pattern to search for",
                     },
                     "path": {
                         "type": "string",
-                        "description": "Path to search in (default: workspace/repo)"
-                    }
+                        "description": "Path to search in (default: workspace/repo)",
+                    },
                 },
-                "required": ["pattern"]
-            }
+                "required": ["pattern"],
+            },
         )
 
-    async def execute(self, pattern: str, path: str = "workspace/repo", **kwargs) -> ToolResult:
+    async def execute(
+        self, pattern: str, path: str = "workspace/repo", **kwargs
+    ) -> ToolResult:
         """Execute search using Daytona fs.find_files()."""
         try:
             # Auto-prefix relative paths
@@ -131,18 +133,14 @@ class SearchFilesTool(BaseTool):
 
             # Format results
             matches = [
-                {
-                    "file": match.file,
-                    "line": match.line,
-                    "content": match.content
-                }
+                {"file": match.file, "line": match.line, "content": match.content}
                 for match in results
             ]
 
             return ToolResult(
                 success=True,
                 data={"matches": matches, "pattern": pattern},
-                metadata={"match_count": len(matches)}
+                metadata={"match_count": len(matches)},
             )
         except Exception as e:
             return ToolResult(success=False, error=str(e))
@@ -162,46 +160,43 @@ class ReplaceInFilesTool(BaseTool):
                     "files": {
                         "type": "array",
                         "items": {"type": "string"},
-                        "description": "List of file paths to modify"
+                        "description": "List of file paths to modify",
                     },
                     "pattern": {
                         "type": "string",
-                        "description": "Text pattern to find"
+                        "description": "Text pattern to find",
                     },
                     "replacement": {
                         "type": "string",
-                        "description": "Text to replace with"
-                    }
+                        "description": "Text to replace with",
+                    },
                 },
-                "required": ["files", "pattern", "replacement"]
-            }
+                "required": ["files", "pattern", "replacement"],
+            },
         )
 
     async def execute(
-        self,
-        files: list[str],
-        pattern: str,
-        replacement: str,
-        **kwargs
+        self, files: list[str], pattern: str, replacement: str, **kwargs
     ) -> ToolResult:
         """Execute replace using Daytona fs.replace_in_files()."""
         try:
             # Prefix files with workspace/repo if not absolute
             full_paths = [
-                f"workspace/repo/{f}" if not f.startswith("/") else f
-                for f in files
+                f"workspace/repo/{f}" if not f.startswith("/") else f for f in files
             ]
 
             self.sandbox.fs.replace_in_files(
-                files=full_paths,
-                pattern=pattern,
-                new_value=replacement
+                files=full_paths, pattern=pattern, new_value=replacement
             )
 
             return ToolResult(
                 success=True,
-                data={"files_modified": full_paths, "pattern": pattern, "replacement": replacement},
-                metadata={"file_count": len(full_paths)}
+                data={
+                    "files_modified": full_paths,
+                    "pattern": pattern,
+                    "replacement": replacement,
+                },
+                metadata={"file_count": len(full_paths)},
             )
         except Exception as e:
             return ToolResult(success=False, error=str(e))
@@ -220,27 +215,24 @@ class CreateFileTool(BaseTool):
                 "properties": {
                     "file_path": {
                         "type": "string",
-                        "description": "Path for new file relative to workspace/repo"
+                        "description": "Path for new file relative to workspace/repo",
                     },
-                    "content": {
-                        "type": "string",
-                        "description": "File content"
-                    }
+                    "content": {"type": "string", "description": "File content"},
                 },
-                "required": ["file_path", "content"]
-            }
+                "required": ["file_path", "content"],
+            },
         )
 
     async def execute(self, file_path: str, content: str, **kwargs) -> ToolResult:
         """Execute file creation using Daytona fs.upload_file()."""
         try:
             full_path = f"workspace/repo/{file_path}"
-            self.sandbox.fs.upload_file(content.encode('utf-8'), full_path)
+            self.sandbox.fs.upload_file(content.encode("utf-8"), full_path)
 
             return ToolResult(
                 success=True,
                 data={"path": file_path, "size": len(content)},
-                metadata={"created": True}
+                metadata={"created": True},
             )
         except Exception as e:
             return ToolResult(success=False, error=str(e))
@@ -259,11 +251,11 @@ class DeleteFileTool(BaseTool):
                 "properties": {
                     "file_path": {
                         "type": "string",
-                        "description": "Path to file relative to workspace/repo"
+                        "description": "Path to file relative to workspace/repo",
                     }
                 },
-                "required": ["file_path"]
-            }
+                "required": ["file_path"],
+            },
         )
 
     async def execute(self, file_path: str, **kwargs) -> ToolResult:
@@ -272,9 +264,6 @@ class DeleteFileTool(BaseTool):
             full_path = f"workspace/repo/{file_path}"
             self.sandbox.fs.delete_file(full_path)
 
-            return ToolResult(
-                success=True,
-                data={"path": file_path, "deleted": True}
-            )
+            return ToolResult(success=True, data={"path": file_path, "deleted": True})
         except Exception as e:
             return ToolResult(success=False, error=str(e))

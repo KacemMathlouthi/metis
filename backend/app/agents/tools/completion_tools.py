@@ -16,29 +16,25 @@ class FinishReviewTool(BaseTool):
                 "properties": {
                     "summary": {
                         "type": "string",
-                        "description": "Short final summary of the review and main issues detected"
+                        "description": "Short final summary of the review and main issues detected",
                     },
                     "verdict": {
                         "type": "string",
                         "enum": ["APPROVE", "REQUEST_CHANGES", "COMMENT"],
-                        "description": "Final review verdict for the pull request"
+                        "description": "Final review verdict for the pull request",
                     },
                     "overall_severity": {
                         "type": "string",
                         "enum": ["low", "medium", "high", "critical"],
-                        "description": "Overall severity level across findings"
-                    }
+                        "description": "Overall severity level across findings",
+                    },
                 },
-                "required": ["summary", "verdict"]
-            }
+                "required": ["summary", "verdict"],
+            },
         )
 
     async def execute(
-        self,
-        summary: str,
-        verdict: str,
-        overall_severity: str = "medium",
-        **kwargs
+        self, summary: str, verdict: str, overall_severity: str = "medium", **kwargs
     ) -> ToolResult:
         """Mark review as complete.
 
@@ -70,9 +66,9 @@ class FinishReviewTool(BaseTool):
                 "summary": summary,
                 "verdict": normalized_verdict,
                 "overall_severity": normalized_severity,
-                "completed": True
+                "completed": True,
             },
-            metadata={"type": "completion"}
+            metadata={"type": "completion"},
         )
 
 
@@ -89,15 +85,15 @@ class FinishTaskTool(BaseTool):
                 "properties": {
                     "summary": {
                         "type": "string",
-                        "description": "Summary of what was implemented"
+                        "description": "Summary of what was implemented",
                     },
                     "branch_name": {
                         "type": "string",
-                        "description": "Name of the branch with changes"
+                        "description": "Name of the branch with changes",
                     },
                 },
-                "required": ["summary", "branch_name"]
-            }
+                "required": ["summary", "branch_name"],
+            },
         )
 
     async def execute(
@@ -105,7 +101,7 @@ class FinishTaskTool(BaseTool):
         summary: str,
         branch_name: str,
         files_changed: list[str] | None = None,
-        **kwargs
+        **kwargs,
     ) -> ToolResult:
         """Mark task as complete.
 
@@ -123,7 +119,7 @@ class FinishTaskTool(BaseTool):
                 "summary": summary,
                 "branch_name": branch_name,
                 "files_changed": files_changed or [],
-                "completed": True
+                "completed": True,
             },
-            metadata={"type": "completion"}
+            metadata={"type": "completion"},
         )

@@ -73,7 +73,9 @@ def _derive_title(comment_title: str | None, comment_text: str) -> str:
     return "Untitled finding"
 
 
-def _serialize_row(row: tuple[ReviewComment, Review]) -> ReviewCommentWithContextResponse:
+def _serialize_row(
+    row: tuple[ReviewComment, Review],
+) -> ReviewCommentWithContextResponse:
     comment, review = row
     return ReviewCommentWithContextResponse(
         comment=ReviewCommentListItemResponse(
@@ -100,13 +102,12 @@ def _serialize_row(row: tuple[ReviewComment, Review]) -> ReviewCommentWithContex
 
 @router.get("", response_model=ReviewCommentListResponse)
 async def list_review_comments(
-    repository: str = Query(
-        ..., description="Repository in format 'owner/repo'"
-    ),
+    repository: str = Query(..., description="Repository in format 'owner/repo'"),
     review_id: UUID | None = Query(None, description="Filter by review UUID"),
     severity: str | None = Query(None, description="INFO, WARNING, ERROR, CRITICAL"),
     category: str | None = Query(
-        None, description="BUG, SECURITY, PERFORMANCE, STYLE, MAINTAINABILITY, DOCUMENTATION, TESTING"
+        None,
+        description="BUG, SECURITY, PERFORMANCE, STYLE, MAINTAINABILITY, DOCUMENTATION, TESTING",
     ),
     review_status: str | None = Query(
         None, description="PENDING, PROCESSING, COMPLETED, FAILED"

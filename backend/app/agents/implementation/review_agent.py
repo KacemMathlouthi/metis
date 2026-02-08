@@ -18,7 +18,7 @@ class ReviewAgent(BaseAgent):
         ignore_patterns: list[str],
         tools,
         llm_client,
-        **kwargs
+        **kwargs,
     ):
         """Initialize review agent.
 
@@ -66,5 +66,5 @@ Begin your code review. Use your tools to gather context, verify behavior, and a
             initial_user_message=initial_user_message,
             tools=tools,
             llm_client=llm_client,
-            **kwargs
+            **kwargs,
         )

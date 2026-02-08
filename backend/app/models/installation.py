@@ -5,7 +5,16 @@ specific repository or organization. Stores the GitHub installation ID
 and review configuration (sensitivity, custom rules, etc.) as JSON.
 """
 
-from sqlalchemy import Boolean, Column, DateTime, Enum, ForeignKey, Index, Integer, String
+from sqlalchemy import (
+    Boolean,
+    Column,
+    DateTime,
+    Enum,
+    ForeignKey,
+    Index,
+    Integer,
+    String,
+)
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import relationship
 

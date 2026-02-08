@@ -85,12 +85,20 @@ async def _process_pr_review_with_agent_async(
             # 1. Load Review and Installation
             logger.info(f"Loading review {review_id}")
 
-            review_query = await db.execute(select(Review).where(Review.id == review_id))
+            review_query = await db.execute(
+                select(Review).where(Review.id == review_id)
+            )
             review = review_query.scalar_one_or_none()
 
             if not review:
-                logger.warning(f"Review {review_id} not found; skipping task without retry")
-                return {"status": "ignored", "reason": "review_not_found", "review_id": review_id}
+                logger.warning(
+                    f"Review {review_id} not found; skipping task without retry"
+                )
+                return {
+                    "status": "ignored",
+                    "reason": "review_not_found",
+                    "review_id": review_id,
+                }
 
             installation_query = await db.execute(
                 select(Installation).where(
@@ -139,14 +147,15 @@ async def _process_pr_review_with_agent_async(
             custom_instructions = config_dict.get("custom_instructions", "")
             ignore_patterns = config_dict.get("ignore_patterns", [])
 
-            logger.info(f"Review config: sensitivity={sensitivity}, ignore_patterns={ignore_patterns}")
+            logger.info(
+                f"Review config: sensitivity={sensitivity}, ignore_patterns={ignore_patterns}"
+            )
 
             # 5. Initialize Daytona sandbox
             logger.info("Creating Daytona sandbox")
 
             sandbox_manager = SandboxManager(
-                git_username="x-access-token",
-                git_token=installation_token
+                git_username="x-access-token", git_token=installation_token
             )
 
             # Clone repository in sandbox (PR branch)
@@ -230,9 +239,7 @@ async def _process_pr_review_with_agent_async(
                 if not summary:
                     reason = final_state.result.get("reason") or "missing_summary"
                     review.status = "FAILED"
-                    review.error = (
-                        f"Agent completed without finish_review output (reason={reason})"
-                    )
+                    review.error = f"Agent completed without finish_review output (reason={reason})"
                     await db.commit()
                     logger.error(review.error)
                     return {

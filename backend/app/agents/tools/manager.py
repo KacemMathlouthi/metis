@@ -132,6 +132,7 @@ class ToolManager:
 
 # Fine-Grained Tool Sets for Different Agent Types
 
+
 def get_reviewer_tools(
     sandbox,
     review_id: str,
@@ -158,46 +159,50 @@ def get_reviewer_tools(
         ToolManager with reviewer-specific tools
     """
     manager = ToolManager(sandbox)
-    manager.register_tools([
-        # File operations (read-only)
-        ReadFileTool,
-        ListFilesTool,
-        SearchFilesTool,
-        # Git operations (status only)
-        GitStatusTool,
-        GitBranchesTool,
-        # Execution (verification)
-        RunTestsTool,
-        RunLinterTool,
-        RunCommandTool,
-        # Completion
-        FinishReviewTool,
-    ])
+    manager.register_tools(
+        [
+            # File operations (read-only)
+            ReadFileTool,
+            ListFilesTool,
+            SearchFilesTool,
+            # Git operations (status only)
+            GitStatusTool,
+            GitBranchesTool,
+            # Execution (verification)
+            RunTestsTool,
+            RunLinterTool,
+            RunCommandTool,
+            # Completion
+            FinishReviewTool,
+        ]
+    )
     github = GitHubService()
-    manager.register_tool_instances([
-        PostInlineReviewFindingTool(
-            sandbox=sandbox,
-            github_service=github,
-            session_factory=AsyncSessionLocal,
-            review_id=review_id,
-            installation_token=installation_token,
-            owner=owner,
-            repo=repo,
-            pr_number=pr_number,
-            commit_sha=commit_sha,
-        ),
-        PostFileReviewFindingTool(
-            sandbox=sandbox,
-            github_service=github,
-            session_factory=AsyncSessionLocal,
-            review_id=review_id,
-            installation_token=installation_token,
-            owner=owner,
-            repo=repo,
-            pr_number=pr_number,
-            commit_sha=commit_sha,
-        ),
-    ])
+    manager.register_tool_instances(
+        [
+            PostInlineReviewFindingTool(
+                sandbox=sandbox,
+                github_service=github,
+                session_factory=AsyncSessionLocal,
+                review_id=review_id,
+                installation_token=installation_token,
+                owner=owner,
+                repo=repo,
+                pr_number=pr_number,
+                commit_sha=commit_sha,
+            ),
+            PostFileReviewFindingTool(
+                sandbox=sandbox,
+                github_service=github,
+                session_factory=AsyncSessionLocal,
+                review_id=review_id,
+                installation_token=installation_token,
+                owner=owner,
+                repo=repo,
+                pr_number=pr_number,
+                commit_sha=commit_sha,
+            ),
+        ]
+    )
     return manager
 
 
@@ -219,31 +224,33 @@ def get_coder_tools(sandbox) -> ToolManager:
         ToolManager with coder-specific tools
     """
     manager = ToolManager(sandbox)
-    manager.register_tools([
-        # File operations (full CRUD)
-        ReadFileTool,
-        ListFilesTool,
-        SearchFilesTool,
-        ReplaceInFilesTool,
-        CreateFileTool,
-        DeleteFileTool,
-        # Git operations (full workflow)
-        GitStatusTool,
-        GitBranchesTool,
-        GitCreateBranchTool,
-        GitCheckoutBranchTool,
-        GitAddTool,
-        GitCommitTool,
-        GitPushTool,
-        GitPullTool,
-        # Execution (development)
-        RunCodeTool,
-        RunTestsTool,
-        RunLinterTool,
-        RunCommandTool,
-        # Completion
-        FinishTaskTool,
-    ])
+    manager.register_tools(
+        [
+            # File operations (full CRUD)
+            ReadFileTool,
+            ListFilesTool,
+            SearchFilesTool,
+            ReplaceInFilesTool,
+            CreateFileTool,
+            DeleteFileTool,
+            # Git operations (full workflow)
+            GitStatusTool,
+            GitBranchesTool,
+            GitCreateBranchTool,
+            GitCheckoutBranchTool,
+            GitAddTool,
+            GitCommitTool,
+            GitPushTool,
+            GitPullTool,
+            # Execution (development)
+            RunCodeTool,
+            RunTestsTool,
+            RunLinterTool,
+            RunCommandTool,
+            # Completion
+            FinishTaskTool,
+        ]
+    )
     return manager
 
 
@@ -263,11 +270,13 @@ def get_summary_tools(sandbox) -> ToolManager:
         ToolManager with summary-specific tools
     """
     manager = ToolManager(sandbox)
-    manager.register_tools([
-        # File operations (minimal read-only)
-        ReadFileTool,
-        ListFilesTool,
-        # Git operations (status only)
-        GitStatusTool,
-    ])
+    manager.register_tools(
+        [
+            # File operations (minimal read-only)
+            ReadFileTool,
+            ListFilesTool,
+            # Git operations (status only)
+            GitStatusTool,
+        ]
+    )
     return manager

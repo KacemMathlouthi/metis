@@ -23,7 +23,9 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-def _transform_github_issue(issue_data: dict[str, Any], repository: str) -> IssueResponse:
+def _transform_github_issue(
+    issue_data: dict[str, Any], repository: str
+) -> IssueResponse:
     """Transform GitHub API issue data to our IssueResponse schema.
 
     Args:
@@ -122,7 +124,9 @@ async def list_issues(
     try:
         owner, repo = repository.split("/")
     except ValueError:
-        raise HTTPException(status_code=400, detail="Invalid repository format. Use 'owner/repo'")
+        raise HTTPException(
+            status_code=400, detail="Invalid repository format. Use 'owner/repo'"
+        )
 
     # Fetch issues from GitHub
     github = GitHubService()
@@ -192,7 +196,9 @@ async def get_issue(
     try:
         owner, repo = repository.split("/")
     except ValueError:
-        raise HTTPException(status_code=400, detail="Invalid repository format. Use 'owner/repo'")
+        raise HTTPException(
+            status_code=400, detail="Invalid repository format. Use 'owner/repo'"
+        )
 
     # Fetch issue from GitHub
     github = GitHubService()
@@ -210,11 +216,15 @@ async def get_issue(
     except Exception as e:
         logger.error(f"Failed to fetch issue from GitHub: {e}", exc_info=True)
         if "404" in str(e):
-            raise HTTPException(status_code=404, detail=f"Issue #{issue_number} not found")
+            raise HTTPException(
+                status_code=404, detail=f"Issue #{issue_number} not found"
+            )
         raise HTTPException(status_code=500, detail=f"Failed to fetch issue: {str(e)}")
 
 
-@router.get("/issues/{issue_number}/comments", response_model=list[IssueCommentResponse])
+@router.get(
+    "/issues/{issue_number}/comments", response_model=list[IssueCommentResponse]
+)
 async def get_issue_comments(
     issue_number: int,
     repository: str = Query(..., description="Repository in format 'owner/repo'"),
@@ -261,7 +271,9 @@ async def get_issue_comments(
     try:
         owner, repo = repository.split("/")
     except ValueError:
-        raise HTTPException(status_code=400, detail="Invalid repository format. Use 'owner/repo'")
+        raise HTTPException(
+            status_code=400, detail="Invalid repository format. Use 'owner/repo'"
+        )
 
     # Fetch comments from GitHub
     github = GitHubService()
@@ -275,7 +287,8 @@ async def get_issue_comments(
 
         # Transform to our schema
         comments = [
-            _transform_github_comment(comment, issue_number) for comment in github_comments
+            _transform_github_comment(comment, issue_number)
+            for comment in github_comments
         ]
 
         logger.info(f"Found {len(comments)} comments for issue #{issue_number}")
@@ -283,4 +296,6 @@ async def get_issue_comments(
 
     except Exception as e:
         logger.error(f"Failed to fetch comments from GitHub: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Failed to fetch comments: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to fetch comments: {str(e)}"
+        )

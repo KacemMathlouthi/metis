@@ -33,7 +33,9 @@ def process_pr_review(
 ) -> dict:
     """Process PR review asynchronously (Celery entry point)."""
     return asyncio.run(
-        _process_pr_review_async(self, review_id, installation_id, repository, pr_number)
+        _process_pr_review_async(
+            self, review_id, installation_id, repository, pr_number
+        )
     )
 
 

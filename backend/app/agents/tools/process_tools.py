@@ -16,43 +16,34 @@ class RunCommandTool(BaseTool):
                 "properties": {
                     "command": {
                         "type": "string",
-                        "description": "Shell command to execute"
+                        "description": "Shell command to execute",
                     },
                     "cwd": {
                         "type": "string",
-                        "description": "Working directory (default: workspace/repo)"
+                        "description": "Working directory (default: workspace/repo)",
                     },
                     "timeout": {
                         "type": "integer",
-                        "description": "Timeout in seconds (default: 30)"
-                    }
+                        "description": "Timeout in seconds (default: 30)",
+                    },
                 },
-                "required": ["command"]
-            }
+                "required": ["command"],
+            },
         )
 
     async def execute(
-        self,
-        command: str,
-        cwd: str = "workspace/repo",
-        timeout: int = 30,
-        **kwargs
+        self, command: str, cwd: str = "workspace/repo", timeout: int = 30, **kwargs
     ) -> ToolResult:
         """Execute command using Daytona process.exec()."""
         try:
             response = self.sandbox.process.exec(
-                command=command,
-                cwd=cwd,
-                timeout=timeout
+                command=command, cwd=cwd, timeout=timeout
             )
 
             return ToolResult(
                 success=response.exit_code == 0,
-                data={
-                    "stdout": response.result,
-                    "exit_code": response.exit_code
-                },
-                metadata={"command": command}
+                data={"stdout": response.result, "exit_code": response.exit_code},
+                metadata={"command": command},
             )
         except Exception as e:
             return ToolResult(success=False, error=str(e))
@@ -69,17 +60,14 @@ class RunCodeTool(BaseTool):
             parameters={
                 "type": "object",
                 "properties": {
-                    "code": {
-                        "type": "string",
-                        "description": "Code to execute"
-                    },
+                    "code": {"type": "string", "description": "Code to execute"},
                     "timeout": {
                         "type": "integer",
-                        "description": "Timeout in seconds (default: 30)"
-                    }
+                        "description": "Timeout in seconds (default: 30)",
+                    },
                 },
-                "required": ["code"]
-            }
+                "required": ["code"],
+            },
         )
 
     async def execute(self, code: str, timeout: int = 30, **kwargs) -> ToolResult:
@@ -89,11 +77,8 @@ class RunCodeTool(BaseTool):
 
             return ToolResult(
                 success=response.exit_code == 0,
-                data={
-                    "result": response.result,
-                    "exit_code": response.exit_code
-                },
-                metadata={"code_length": len(code)}
+                data={"result": response.result, "exit_code": response.exit_code},
+                metadata={"code_length": len(code)},
             )
         except Exception as e:
             return ToolResult(success=False, error=str(e))
@@ -112,23 +97,20 @@ class RunTestsTool(BaseTool):
                 "properties": {
                     "test_path": {
                         "type": "string",
-                        "description": "Path to test file or directory (default: . for all tests)"
+                        "description": "Path to test file or directory (default: . for all tests)",
                     },
                     "framework": {
                         "type": "string",
                         "enum": ["pytest", "jest", "unittest", "auto"],
-                        "description": "Test framework to use (default: auto-detect)"
-                    }
+                        "description": "Test framework to use (default: auto-detect)",
+                    },
                 },
-                "required": []
-            }
+                "required": [],
+            },
         )
 
     async def execute(
-        self,
-        test_path: str = ".",
-        framework: str = "auto",
-        **kwargs
+        self, test_path: str = ".", framework: str = "auto", **kwargs
     ) -> ToolResult:
         """Execute tests using Daytona process.exec()."""
         try:
@@ -149,7 +131,7 @@ class RunTestsTool(BaseTool):
             response = self.sandbox.process.exec(
                 command=command,
                 cwd="workspace/repo",
-                timeout=120  # Tests can take longer
+                timeout=120,  # Tests can take longer
             )
 
             return ToolResult(
@@ -157,9 +139,9 @@ class RunTestsTool(BaseTool):
                 data={
                     "output": response.result,
                     "exit_code": response.exit_code,
-                    "framework": framework
+                    "framework": framework,
                 },
-                metadata={"test_path": test_path}
+                metadata={"test_path": test_path},
             )
         except Exception as e:
             return ToolResult(success=False, error=str(e))
@@ -178,23 +160,20 @@ class RunLinterTool(BaseTool):
                 "properties": {
                     "path": {
                         "type": "string",
-                        "description": "Path to lint (default: . for entire repo)"
+                        "description": "Path to lint (default: . for entire repo)",
                     },
                     "linter": {
                         "type": "string",
                         "enum": ["ruff", "eslint", "pylint", "auto"],
-                        "description": "Linter to use (default: auto-detect)"
-                    }
+                        "description": "Linter to use (default: auto-detect)",
+                    },
                 },
-                "required": []
-            }
+                "required": [],
+            },
         )
 
     async def execute(
-        self,
-        path: str = ".",
-        linter: str = "auto",
-        **kwargs
+        self, path: str = ".", linter: str = "auto", **kwargs
     ) -> ToolResult:
         """Execute linter using Daytona process.exec()."""
         try:
@@ -212,9 +191,7 @@ class RunLinterTool(BaseTool):
                 command = f"{linter} {path}"
 
             response = self.sandbox.process.exec(
-                command=command,
-                cwd="workspace/repo",
-                timeout=60
+                command=command, cwd="workspace/repo", timeout=60
             )
 
             return ToolResult(
@@ -222,9 +199,9 @@ class RunLinterTool(BaseTool):
                 data={
                     "output": response.result,
                     "exit_code": response.exit_code,
-                    "linter": linter
+                    "linter": linter,
                 },
-                metadata={"path": path}
+                metadata={"path": path},
             )
         except Exception as e:
             return ToolResult(success=False, error=str(e))
