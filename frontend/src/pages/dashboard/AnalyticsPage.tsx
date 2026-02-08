@@ -1,404 +1,97 @@
-'use client';
-
-import React, { useState } from 'react';
-import {
-  TrendingUp,
-  TrendingDown,
-  AlertCircle,
-  CheckCircle2,
-  GitPullRequest,
-  Clock,
-  Bug,
-  FileCode,
-  ChevronDown,
-  ChevronUp,
-  Github,
-  ExternalLink,
-} from 'lucide-react';
-import { Area, AreaChart, Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
-import { Button } from '@/components/ui/button';
-
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  type ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  ChartLegend,
-  ChartLegendContent,
-} from '@/components/ui/chart';
-import { Badge } from '@/components/ui/badge';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-
-// --- Mock Data ---
-
-const areaChartData = [
-  { month: 'Jan', critical: 12, warning: 45, info: 80 },
-  { month: 'Feb', critical: 8, warning: 35, info: 95 },
-  { month: 'Mar', critical: 15, warning: 50, info: 110 },
-  { month: 'Apr', critical: 5, warning: 25, info: 90 },
-  { month: 'May', critical: 10, warning: 40, info: 130 },
-  { month: 'Jun', critical: 3, warning: 20, info: 150 },
-];
-
-const areaChartConfig = {
-  critical: {
-    label: 'Critical',
-    color: 'var(--metis-red)',
-  },
-  warning: {
-    label: 'Warning',
-    color: 'var(--metis-orange-light)',
-  },
-  info: {
-    label: 'Info',
-    color: 'var(--metis-orange)',
-  },
-} satisfies ChartConfig;
-
-const barChartData = [
-  { day: 'Mon', merged: 12, opened: 15 },
-  { day: 'Tue', merged: 18, opened: 22 },
-  { day: 'Wed', merged: 25, opened: 20 },
-  { day: 'Thu', merged: 15, opened: 25 },
-  { day: 'Fri', merged: 30, opened: 18 },
-  { day: 'Sat', merged: 5, opened: 8 },
-  { day: 'Sun', merged: 2, opened: 5 },
-];
-
-const barChartConfig = {
-  merged: {
-    label: 'Merged',
-    color: 'var(--metis-orange-dark)',
-  },
-  opened: {
-    label: 'Opened',
-    color: 'var(--metis-black)',
-  },
-} satisfies ChartConfig;
-
-const recentIssues = [
-  {
-    id: 'ISS-1024',
-    severity: 'critical',
-    message: 'Potential SQL Injection vulnerability detected in user input handling.',
-    file: 'backend/app/api/users.py',
-    time: '2 hours ago',
-    status: 'Open',
-  },
-  {
-    id: 'ISS-1023',
-    severity: 'warning',
-    message: "Unused variable 'config' declared.",
-    file: 'frontend/src/components/Sidebar.tsx',
-    time: '4 hours ago',
-    status: 'Fixed',
-  },
-  {
-    id: 'ISS-1022',
-    severity: 'info',
-    message: 'Function complexity exceeds recommended limit (Cyclomatic Complexity > 10).',
-    file: 'backend/app/services/analytics.py',
-    time: '1 day ago',
-    status: 'Open',
-  },
-  {
-    id: 'ISS-1021',
-    severity: 'critical',
-    message: 'Hardcoded secret key found in configuration file.',
-    file: 'backend/core/config.py',
-    time: '1 day ago',
-    status: 'Fixed',
-  },
-  {
-    id: 'ISS-1020',
-    severity: 'warning',
-    message: 'Missing dependency in useEffect dependency array.',
-    file: 'frontend/src/pages/Dashboard.tsx',
-    time: '2 days ago',
-    status: 'Open',
-  },
-];
+import React, { useEffect, useState } from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useRepository } from '@/contexts/RepositoryContext';
+import { apiClient } from '@/lib/api-client';
+import type { ReviewCommentWithContext } from '@/types/api';
+import { AnalyticsStatisticsTab } from '@/components/dashboard/analytics/AnalyticsStatisticsTab';
+import { AnalyticsIssuesTab } from '@/components/dashboard/analytics/AnalyticsIssuesTab';
 
 export const AnalyticsPage: React.FC = () => {
-  const [expandedIssue, setExpandedIssue] = useState<string | null>(null);
+  const { selectedRepo } = useRepository();
+  const [recentComments, setRecentComments] = useState<ReviewCommentWithContext[]>([]);
+  const [commentsTotal, setCommentsTotal] = useState(0);
+  const [commentsPage, setCommentsPage] = useState(1);
+  const [commentsLoading, setCommentsLoading] = useState(false);
+  const [commentsError, setCommentsError] = useState<string | null>(null);
+  const COMMENTS_PAGE_SIZE = 5;
 
-  const toggleIssue = (id: string) => {
-    setExpandedIssue(expandedIssue === id ? null : id);
-  };
+  useEffect(() => {
+    const fetchRecentComments = async () => {
+      if (!selectedRepo) {
+        setRecentComments([]);
+        setCommentsTotal(0);
+        setCommentsPage(1);
+        setCommentsError(null);
+        return;
+      }
+
+      setCommentsLoading(true);
+      setCommentsError(null);
+
+      try {
+        const response = await apiClient.listReviewComments({
+          repository: selectedRepo.repository,
+          page: commentsPage,
+          page_size: COMMENTS_PAGE_SIZE,
+        });
+        setRecentComments(response.items);
+        setCommentsTotal(response.total);
+      } catch (error) {
+        setCommentsError(error instanceof Error ? error.message : 'Failed to load review comments');
+      } finally {
+        setCommentsLoading(false);
+      }
+    };
+
+    fetchRecentComments();
+  }, [selectedRepo, commentsPage]);
+
+  useEffect(() => {
+    setCommentsPage(1);
+  }, [selectedRepo?.repository]);
 
   return (
     <div className="space-y-6 p-4 max-w-6xl mx-auto">
-      {/* Header */}
       <div className="flex flex-col gap-1">
         <h1 className="landing-display text-3xl font-black text-black">Analytics</h1>
         <p className="text-black/60 font-medium">Overview of your code quality and team velocity.</p>
       </div>
 
-      {/* Stats Row */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-black/60 text-sm font-bold">Total PRs</CardTitle>
-            <GitPullRequest className="h-4 w-4 text-black" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-black text-black">1,284</div>
-            <p className="text-black/60 flex items-center gap-1 text-xs font-bold">
-              <TrendingUp className="h-3 w-3 text-[var(--metis-orange-dark)]" />
-              <span className="text-[var(--metis-orange-dark)]">+12%</span> from last month
-            </p>
-          </CardContent>
-        </Card>
-        <Card className="border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-black/60 text-sm font-bold">
-              Avg. Merge Time
-            </CardTitle>
-            <Clock className="h-4 w-4 text-black" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-black text-black">4h 12m</div>
-            <p className="text-black/60 flex items-center gap-1 text-xs font-bold">
-              <TrendingDown className="h-3 w-3 text-[var(--metis-orange-dark)]" />
-              <span className="text-[var(--metis-orange-dark)]">-18%</span> faster than avg
-            </p>
-          </CardContent>
-        </Card>
-        <Card className="border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-black/60 text-sm font-bold">Issues Found</CardTitle>
-            <Bug className="h-4 w-4 text-black" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-black text-black">24</div>
-            <p className="text-black/60 flex items-center gap-1 text-xs font-bold">
-              <AlertCircle className="h-3 w-3 text-[var(--metis-red)]" />
-              <span className="text-[var(--metis-red)]">+4</span> new critical
-            </p>
-          </CardContent>
-        </Card>
-        <Card className="border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-black/60 text-sm font-bold">Code Quality</CardTitle>
-            <CheckCircle2 className="h-4 w-4 text-black" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-black text-black">A+</div>
-            <p className="text-black/60 text-xs font-bold">Top 5% of repositories</p>
-          </CardContent>
-        </Card>
-      </div>
+      <Tabs defaultValue="statistics">
+        <div className="flex justify-center">
+          <TabsList className="grid w-full grid-cols-2 border-2 border-black bg-white p-1 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] h-auto">
+            <TabsTrigger
+              value="statistics"
+              className="font-bold text-xs sm:text-sm data-[state=active]:bg-[var(--metis-pastel-2)] data-[state=active]:text-black data-[state=active]:border-2 data-[state=active]:border-black data-[state=active]:shadow-sm transition-all py-2"
+            >
+              Statistics
+            </TabsTrigger>
+            <TabsTrigger
+              value="issues"
+              className="font-bold text-xs sm:text-sm data-[state=active]:bg-[var(--metis-pastel-2)] data-[state=active]:text-black data-[state=active]:border-2 data-[state=active]:border-black data-[state=active]:shadow-sm transition-all py-2"
+            >
+              AI Detected Issues
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
-      {/* Charts Row */}
-      <div className="grid gap-6 md:grid-cols-2">
-        {/* Chart 1: AI Issues Trend */}
-        <Card className="flex flex-col border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-          <CardHeader>
-            <CardTitle className="font-black">AI Issues Detected</CardTitle>
-            <CardDescription className="font-medium text-black/60">Breakdown by severity over the last 6 months</CardDescription>
-          </CardHeader>
-          <CardContent className="flex-1 pb-4">
-            <ChartContainer config={areaChartConfig} className="mx-auto h-[300px] w-full">
-              <AreaChart
-                data={areaChartData}
-                margin={{
-                  left: 12,
-                  right: 12,
-                  top: 12,
-                  bottom: 12,
-                }}
-              >
-                <CartesianGrid vertical={false} />
-                <XAxis
-                  dataKey="month"
-                  tickLine={false}
-                  axisLine={false}
-                  tickMargin={8}
-                  tickFormatter={(value) => value.slice(0, 3)}
-                />
-                <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="dot" />} />
-                <Area
-                  dataKey="info"
-                  type="natural"
-                  fill="var(--color-info)"
-                  fillOpacity={0.4}
-                  stroke="var(--color-info)"
-                  stackId="a"
-                />
-                <Area
-                  dataKey="warning"
-                  type="natural"
-                  fill="var(--color-warning)"
-                  fillOpacity={0.4}
-                  stroke="var(--color-warning)"
-                  stackId="a"
-                />
-                <Area
-                  dataKey="critical"
-                  type="natural"
-                  fill="var(--color-critical)"
-                  fillOpacity={0.4}
-                  stroke="var(--color-critical)"
-                  stackId="a"
-                />
-                <ChartLegend content={<ChartLegendContent payload={[]} />} />
-              </AreaChart>
-            </ChartContainer>
-          </CardContent>
-        </Card>
+        <TabsContent value="statistics">
+          <AnalyticsStatisticsTab />
+        </TabsContent>
 
-        {/* Chart 2: PR Velocity */}
-        <Card className="flex flex-col border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-          <CardHeader>
-            <CardTitle className="font-black">PR Velocity</CardTitle>
-            <CardDescription className="font-medium">Weekly pull request activity</CardDescription>
-          </CardHeader>
-          <CardContent className="flex-1 pb-4">
-            <ChartContainer config={barChartConfig} className="mx-auto h-[300px] w-full">
-              <BarChart accessibilityLayer data={barChartData}>
-                <CartesianGrid vertical={false} />
-                <XAxis
-                  dataKey="day"
-                  tickLine={false}
-                  tickMargin={10}
-                  axisLine={false}
-                  tickFormatter={(value) => value.slice(0, 3)}
-                />
-                <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="dashed" />} />
-                <ChartLegend content={<ChartLegendContent payload={[]} />} />
-                <Bar dataKey="opened" fill="var(--color-opened)" radius={4} />
-                <Bar dataKey="merged" fill="var(--color-merged)" radius={4} />
-              </BarChart>
-            </ChartContainer>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Recent Issues List */}
-      <Card className="border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-        <CardHeader>
-          <CardTitle className="font-black">Recent AI Detected Issues</CardTitle>
-          <CardDescription className="font-medium text-black/60">Latest code quality and security findings.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow className="border-b-2 border-black bg-white hover:bg-transparent">
-                <TableHead className="font-black text-black">Severity</TableHead>
-                <TableHead className="font-black text-black">Issue</TableHead>
-                <TableHead className="font-black text-black">File</TableHead>
-                <TableHead className="font-black text-black">Time</TableHead>
-                <TableHead className="text-right font-black text-black">Status</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {recentIssues.map((issue) => (
-                <React.Fragment key={issue.id}>
-                  <TableRow
-                    className="cursor-pointer border-b-2 border-black/10 bg-white transition-colors hover:bg-[var(--metis-pastel-2)]"
-                    onClick={() => toggleIssue(issue.id)}
-                  >
-                    <TableCell>
-                      <Badge
-                        variant="neutral"
-                        className={`border-2 font-bold ${issue.severity === 'critical' ? 'border-[var(--metis-red)] bg-[var(--metis-pastel-red)] text-[var(--metis-red)]' : ''} ${issue.severity === 'warning' ? 'border-[var(--metis-orange-light)] bg-[var(--metis-pastel-2)] text-[var(--metis-orange-dark)]' : ''} ${issue.severity === 'info' ? 'border-[var(--metis-orange)] bg-[var(--metis-pastel-1)] text-[var(--metis-orange)]' : ''} `}
-                      >
-                        {issue.severity.toUpperCase()}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="font-bold text-black">{issue.message}</TableCell>
-                    <TableCell className="text-black/70 font-mono text-xs flex items-center gap-2">
-                      <FileCode className="h-4 w-4" />
-                      {issue.file}
-                    </TableCell>
-                    <TableCell className="text-black/60 font-medium">{issue.time}</TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <Badge
-                          variant="neutral"
-                          className="border-2 border-black bg-white text-black font-bold"
-                        >
-                          {issue.status}
-                        </Badge>
-                        {expandedIssue === issue.id ? (
-                          <ChevronUp className="h-4 w-4" />
-                        ) : (
-                          <ChevronDown className="h-4 w-4" />
-                        )}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                  {expandedIssue === issue.id && (
-                    <TableRow className="bg-[var(--metis-pastel-1)] hover:bg-[var(--metis-pastel-1)]">
-                      <TableCell colSpan={5} className="p-4">
-                        <div className="rounded-md border-2 border-black bg-white p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                          <div className="mb-4 flex items-center justify-between">
-                            <h4 className="text-lg font-black">Issue Details</h4>
-                            <div className="flex gap-2">
-                              <Button
-                                size="sm"
-                                variant="neutral"
-                                className="gap-2 border-2 border-black font-bold"
-                              >
-                                <Github className="h-4 w-4" />
-                                View on GitHub
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="neutral"
-                                className="gap-2 border-2 border-black font-bold"
-                              >
-                                <ExternalLink className="h-4 w-4" />
-                                Open File
-                              </Button>
-                            </div>
-                          </div>
-
-                          <div className="space-y-4">
-                            <div>
-                              <h5 className="mb-2 text-sm font-black uppercase tracking-wider">Description</h5>
-                              <p className="text-black/70 text-sm font-medium leading-relaxed">
-                                This issue was detected by the AI review engine. It indicates a
-                                potential security vulnerability or code quality issue that should
-                                be addressed before merging.
-                              </p>
-                            </div>
-
-                            <div>
-                              <h5 className="mb-2 text-sm font-black uppercase tracking-wider">Suggested Fix</h5>
-                              <div className="overflow-x-auto rounded-md border-2 border-black bg-black p-4 font-mono text-sm text-white shadow-sm">
-                                <div className="flex flex-col gap-1">
-                                  <div className="text-red-400 font-bold">
-                                    - const query = "SELECT * FROM users WHERE id = " + userId;
-                                  </div>
-                                  <div className="text-green-400 font-bold">
-                                    + const query = "SELECT * FROM users WHERE id = ?";
-                                  </div>
-                                  <div className="text-green-400 font-bold">
-                                    + db.execute(query, [userId]);
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </React.Fragment>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+        <TabsContent value="issues">
+          <AnalyticsIssuesTab
+            selectedRepository={selectedRepo?.repository ?? null}
+            comments={recentComments}
+            page={commentsPage}
+            pageSize={COMMENTS_PAGE_SIZE}
+            total={commentsTotal}
+            onPageChange={setCommentsPage}
+            loading={commentsLoading}
+            error={commentsError}
+          />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
