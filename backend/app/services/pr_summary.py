@@ -4,11 +4,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-
-SUMMARY_START_MARKER = "<!-- metis:summary:start -->"
-SUMMARY_END_MARKER = "<!-- metis:summary:end -->"
-
-
 @dataclass(frozen=True)
 class SummaryComposeResult:
     """Result of composing PR description with generated summary."""
