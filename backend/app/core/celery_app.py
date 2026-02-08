@@ -89,4 +89,4 @@ def task_failure_handler(sender, task_id, exception, **kwargs):
 
 # Import tasks to register them with Celery
 # This must be at the end to avoid circular imports
-from app.tasks import review_task, agent_review_task  # noqa: F401, E402
+from app.tasks import agent_review_task, summary_task  # noqa: F401, E402

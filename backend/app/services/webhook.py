@@ -14,6 +14,7 @@ from app.core.config import settings
 from app.models.installation import Installation
 from app.repositories.review import ReviewRepository
 from app.tasks.agent_review_task import process_pr_review_with_agent
+from app.tasks.summary_task import process_pr_summary_with_agent
 
 
 def verify_github_signature(payload: bytes, signature: str | None) -> bool:
@@ -108,14 +109,29 @@ async def handle_pull_request(
         pr_number=pr_number,
     )
 
-    # Update review with Celery task ID
+    summary_task = process_pr_summary_with_agent.delay(
+        review_id=str(review.id),
+        installation_id=github_installation_id,
+        repository=repo_full_name,
+        pr_number=pr_number,
+        mode="append",
+    )
+
+    # Update review with Celery task IDs
     review.celery_task_id = task.id
+    review.pr_metadata = {
+        **(review.pr_metadata or {}),
+        "summary_task_id": summary_task.id,
+        "summary_status": "QUEUED",
+        "summary_mode": "append",
+    }
     await db.commit()
 
     return {
         "status": "accepted",
         "message": f"Review queued for PR #{pr_number}",
         "task_id": task.id,
+        "summary_task_id": summary_task.id,
         "review_id": str(review.id),
     }
 
