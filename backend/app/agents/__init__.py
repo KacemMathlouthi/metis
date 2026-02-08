@@ -5,7 +5,7 @@ Autonomous agents for code review, issue resolution, and PR summarization.
 
 from app.agents.base import BaseAgent, AgentState, AgentStatus
 from app.agents.loop import AgentLoop
-from app.agents.implementation import ReviewAgent, BackgroundAgent
+from app.agents.implementation import ReviewAgent, BackgroundAgent, SummaryAgent
 
 __all__ = [
     "BaseAgent",
@@ -14,4 +14,5 @@ __all__ = [
     "AgentLoop",
     "ReviewAgent",
     "BackgroundAgent",
+    "SummaryAgent",
 ]
