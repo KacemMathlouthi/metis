@@ -4,11 +4,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-
-SUMMARY_START_MARKER = "<!-- metis:summary:start -->"
-SUMMARY_END_MARKER = "<!-- metis:summary:end -->"
-
-
 @dataclass(frozen=True)
 class SummaryComposeResult:
     """Result of composing PR description with generated summary."""
@@ -16,17 +11,6 @@ class SummaryComposeResult:
     body: str
     inserted_new_block: bool
     replaced_existing_block: bool
-
-
-def build_summary_block(summary_markdown: str) -> str:
-    """Build managed summary block wrapped in marker comments."""
-    content = summary_markdown.strip()
-    return (
-        f"{SUMMARY_START_MARKER}\n"
-        "## Metis AI Summary\n\n"
-        f"{content}\n"
-        f"{SUMMARY_END_MARKER}"
-    )
 
 
 def compose_pr_description(
