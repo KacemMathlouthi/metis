@@ -29,6 +29,7 @@ from app.agents.tools.process_tools import (
 from app.agents.tools.completion_tools import (
     FinishReviewTool,
     FinishTaskTool,
+    FinishSummaryTool,
 )
 from app.agents.tools.review_posting_tools import (
     PostInlineReviewFindingTool,
@@ -275,8 +276,11 @@ def get_summary_tools(sandbox) -> ToolManager:
             # File operations (minimal read-only)
             ReadFileTool,
             ListFilesTool,
+            SearchFilesTool,
             # Git operations (status only)
             GitStatusTool,
+            # Completion
+            FinishSummaryTool,
         ]
     )
     return manager
