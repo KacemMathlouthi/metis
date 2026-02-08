@@ -2,6 +2,7 @@
 
 import asyncio
 import logging
+import shlex
 from datetime import datetime, timezone
 
 from sqlalchemy import and_, select
@@ -91,6 +92,13 @@ async def _process_issue_with_agent_async(
             agent_run.status = "RUNNING"
             agent_run.started_at = started_at
             agent_run.error = None
+            # Clear stale completion fields when rerunning.
+            agent_run.completed_at = None
+            agent_run.elapsed_seconds = None
+            agent_run.pr_number = None
+            agent_run.pr_url = None
+            agent_run.branch_name = None
+            agent_run.final_summary = None
             agent_run.celery_task_id = agent_run.celery_task_id or task_self.request.id
             await db.commit()
 
@@ -141,6 +149,40 @@ async def _process_issue_with_agent_async(
                 branch=base_branch,
                 language=sandbox_language,
             )
+
+            # Bootstrap git identity/auth once; agent should only add/commit/push.
+            push_url = (
+                f"https://x-access-token:{installation_token}@github.com/{agent_run.repository}.git"
+            )
+            bootstrap_cmd = (
+                f"git config user.name {shlex.quote('Metis AI')} && "
+                f"git config user.email {shlex.quote('ai@metis.dev')} && "
+                f"git remote set-url origin {shlex.quote(push_url)}"
+            )
+            bootstrap_response = sandbox.process.exec(
+                command=bootstrap_cmd,
+                cwd="workspace/repo",
+                timeout=60,
+            )
+            if bootstrap_response.exit_code != 0:
+                agent_run.status = "FAILED"
+                agent_run.error = (
+                    "failed_git_bootstrap: "
+                    f"exit_code={bootstrap_response.exit_code}, "
+                    f"output={(bootstrap_response.result or '').strip()[:500]}"
+                )
+                agent_run.completed_at = _utcnow()
+                if agent_run.started_at:
+                    agent_run.elapsed_seconds = int(
+                        (agent_run.completed_at - agent_run.started_at).total_seconds()
+                    )
+                await db.commit()
+                return {
+                    "status": "failed",
+                    "reason": "failed_git_bootstrap",
+                    "agent_run_id": str(agent_run.id),
+                }
+
             tools = get_coder_tools(sandbox=sandbox)
             llm_client = get_llm_client()
 
@@ -204,7 +246,33 @@ async def _process_issue_with_agent_async(
                     "agent_run_id": str(agent_run.id),
                 }
 
-            # 5) Gather changed files from latest commit
+            # 5) Validate branch was pushed by agent before PR creation.
+            branch_check_response = sandbox.process.exec(
+                command=f"git ls-remote --heads origin {shlex.quote(branch_name)}",
+                cwd="workspace/repo",
+                timeout=30,
+            )
+            if branch_check_response.exit_code != 0 or not (branch_check_response.result or "").strip():
+                agent_run.status = "FAILED"
+                agent_run.error = (
+                    "branch_not_pushed_to_origin: "
+                    f"branch={branch_name}, "
+                    f"exit_code={branch_check_response.exit_code}, "
+                    f"output={(branch_check_response.result or '').strip()[:500]}"
+                )
+                agent_run.completed_at = _utcnow()
+                if agent_run.started_at:
+                    agent_run.elapsed_seconds = int(
+                        (agent_run.completed_at - agent_run.started_at).total_seconds()
+                    )
+                await db.commit()
+                return {
+                    "status": "failed",
+                    "reason": "branch_not_pushed_to_origin",
+                    "agent_run_id": str(agent_run.id),
+                }
+
+            # 6) Gather changed files from latest commit
             changed_files: list[str] = []
             try:
                 diff_response = sandbox.process.exec(
@@ -227,7 +295,7 @@ async def _process_issue_with_agent_async(
                 except Exception:
                     changed_files = []
 
-            # 6) Create PR (orchestrator side-effect)
+            # 7) Create PR (orchestrator side-effect)
             pr_title, pr_body = _build_pr_payload(
                 issue_number=agent_run.issue_number,
                 issue_title=issue_title,
@@ -243,7 +311,7 @@ async def _process_issue_with_agent_async(
                 installation_id=installation.github_installation_id,
             )
 
-            # 7) Finalize run
+            # 8) Finalize run
             completed_at = _utcnow()
             agent_run.status = "COMPLETED"
             agent_run.completed_at = completed_at
