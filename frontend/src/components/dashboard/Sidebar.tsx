@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -9,12 +9,15 @@ import {
   ChevronsUpDown,
   Plus,
   Code2,
-  FileDiff,
+  AlertCircle,
   CircleDot,
+  Clock3,
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRepository } from '@/contexts/RepositoryContext';
+import { apiClient } from '@/lib/api-client';
+import type { AnalyticsCardMetric } from '@/types/api';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -43,6 +46,34 @@ export const AppSidebar: React.FC = () => {
   const { isMobile } = useSidebar();
   const { user, logout } = useAuth();
   const { selectedRepo, setSelectedRepo, installations, loading } = useRepository();
+  const [statsCards, setStatsCards] = useState<AnalyticsCardMetric[]>([]);
+  const [statsLoading, setStatsLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchSidebarStats = async () => {
+      if (!selectedRepo?.repository) {
+        setStatsCards([]);
+        setStatsLoading(false);
+        return;
+      }
+
+      setStatsLoading(true);
+      try {
+        const response = await apiClient.getSidebarAnalytics(selectedRepo.repository);
+        setStatsCards(response.cards);
+      } catch {
+        setStatsCards([]);
+      } finally {
+        setStatsLoading(false);
+      }
+    };
+
+    fetchSidebarStats();
+  }, [selectedRepo?.repository]);
+
+  const statsMap = useMemo(() => {
+    return new Map(statsCards.map((card) => [card.key, card]));
+  }, [statsCards]);
 
   const navItems = [
     { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard' },
@@ -174,28 +205,36 @@ export const AppSidebar: React.FC = () => {
                   <GitPullRequest className="h-3 w-3" />
                   PRs
                 </div>
-                <span className="text-lg font-black text-black">12</span>
+                <span className="text-lg font-black text-black">
+                  {statsLoading ? '...' : (statsMap.get('prs_reviewed')?.display_value ?? '--')}
+                </span>
               </div>
               <div className="flex flex-col rounded-md border-2 border-black bg-[var(--metis-pastel-1)] p-1.5 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                 <div className="flex items-center gap-1 text-[10px] font-bold text-black">
-                  <CheckCircle2 className="h-3 w-3" />
-                  Fixed
+                  <AlertCircle className="h-3 w-3" />
+                  Findings
                 </div>
-                <span className="text-lg font-black text-black">5</span>
+                <span className="text-lg font-black text-black">
+                  {statsLoading ? '...' : (statsMap.get('findings_detected')?.display_value ?? '--')}
+                </span>
               </div>
               <div className="flex flex-col rounded-md border-2 border-black bg-[var(--metis-pastel-3)] p-1.5 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                 <div className="flex items-center gap-1 text-[10px] font-bold text-black">
-                  <Code2 className="h-3 w-3" />
-                  Added
+                  <CheckCircle2 className="h-3 w-3" />
+                  Completed
                 </div>
-                <span className="text-lg font-black text-black">+450</span>
+                <span className="text-lg font-black text-black">
+                  {statsLoading ? '...' : (statsMap.get('completed_reviews')?.display_value ?? '--')}
+                </span>
               </div>
               <div className="flex flex-col rounded-md border-2 border-black bg-white p-1.5 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                 <div className="flex items-center gap-1 text-[10px] font-bold text-black">
-                  <FileDiff className="h-3 w-3" />
-                  Removed
+                  <Clock3 className="h-3 w-3" />
+                  Latency
                 </div>
-                <span className="text-lg font-black text-black">-120</span>
+                <span className="text-lg font-black text-black">
+                  {statsLoading ? '...' : (statsMap.get('avg_review_latency_seconds')?.display_value ?? '--')}
+                </span>
               </div>
             </div>
           </SidebarGroupContent>

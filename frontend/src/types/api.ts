@@ -217,3 +217,52 @@ export interface ReviewCommentsListResponse {
   page: number;
   page_size: number;
 }
+
+export interface AnalyticsCardMetric {
+  key: string;
+  label: string;
+  value: number;
+  display_value: string;
+  description: string;
+}
+
+export interface SeverityDailyPoint {
+  date: string;
+  INFO: number;
+  WARNING: number;
+  ERROR: number;
+  CRITICAL: number;
+  total: number;
+}
+
+export interface CategoryDailyPoint {
+  date: string;
+  BUG: number;
+  SECURITY: number;
+  PERFORMANCE: number;
+  STYLE: number;
+  MAINTAINABILITY: number;
+  DOCUMENTATION: number;
+  TESTING: number;
+  total: number;
+}
+
+export interface AnalyticsOverviewResponse {
+  repository: string;
+  window_days: number;
+  cards: AnalyticsCardMetric[];
+  severity_chart: SeverityDailyPoint[];
+  category_chart: CategoryDailyPoint[];
+}
+
+export interface DashboardAnalyticsResponse {
+  repository: string;
+  window_days: number;
+  cards: AnalyticsCardMetric[];
+}
+
+export interface SidebarAnalyticsResponse {
+  repository: string;
+  window_days: number;
+  cards: AnalyticsCardMetric[];
+}

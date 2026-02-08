@@ -1,14 +1,6 @@
-import React from 'react';
-import {
-  TrendingUp,
-  TrendingDown,
-  AlertCircle,
-  CheckCircle2,
-  GitPullRequest,
-  Clock,
-  Bug,
-} from 'lucide-react';
-import { Area, AreaChart, Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
+import React, { useMemo } from 'react';
+import { Bug, Clock3, GitPullRequest, Timer } from 'lucide-react';
+import { Area, AreaChart, Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   type ChartConfig,
@@ -18,160 +10,145 @@ import {
   ChartLegend,
   ChartLegendContent,
 } from '@/components/ui/chart';
+import type { AnalyticsCardMetric, AnalyticsOverviewResponse } from '@/types/api';
 
-const areaChartData = [
-  { month: 'Jan', critical: 12, warning: 45, info: 80 },
-  { month: 'Feb', critical: 8, warning: 35, info: 95 },
-  { month: 'Mar', critical: 15, warning: 50, info: 110 },
-  { month: 'Apr', critical: 5, warning: 25, info: 90 },
-  { month: 'May', critical: 10, warning: 40, info: 130 },
-  { month: 'Jun', critical: 3, warning: 20, info: 150 },
-];
+interface AnalyticsStatisticsTabProps {
+  selectedRepository: string | null;
+  overview: AnalyticsOverviewResponse | null;
+  loading: boolean;
+  error: string | null;
+}
 
-const areaChartConfig = {
-  critical: {
-    label: 'Critical',
-    color: 'var(--metis-red)',
-  },
-  warning: {
-    label: 'Warning',
-    color: 'var(--metis-orange-light)',
-  },
-  info: {
-    label: 'Info',
-    color: 'var(--metis-orange)',
-  },
+const severityChartConfig = {
+  CRITICAL: { label: 'Critical', color: 'var(--metis-red)' },
+  ERROR: { label: 'Error', color: '#ef4444' },
+  WARNING: { label: 'Warning', color: 'var(--metis-orange-light)' },
+  INFO: { label: 'Info', color: 'var(--metis-orange)' },
 } satisfies ChartConfig;
 
-const barChartData = [
-  { day: 'Mon', merged: 12, opened: 15 },
-  { day: 'Tue', merged: 18, opened: 22 },
-  { day: 'Wed', merged: 25, opened: 20 },
-  { day: 'Thu', merged: 15, opened: 25 },
-  { day: 'Fri', merged: 30, opened: 18 },
-  { day: 'Sat', merged: 5, opened: 8 },
-  { day: 'Sun', merged: 2, opened: 5 },
-];
-
-const barChartConfig = {
-  merged: {
-    label: 'Merged',
-    color: 'var(--metis-orange-dark)',
-  },
-  opened: {
-    label: 'Opened',
-    color: 'var(--metis-black)',
-  },
+const categoryChartConfig = {
+  BUG: { label: 'Bug', color: '#ef4444' },
+  SECURITY: { label: 'Security', color: '#dc2626' },
+  PERFORMANCE: { label: 'Performance', color: '#f97316' },
+  STYLE: { label: 'Style', color: '#f59e0b' },
+  MAINTAINABILITY: { label: 'Maintainability', color: '#facc15' },
+  DOCUMENTATION: { label: 'Documentation', color: '#84cc16' },
+  TESTING: { label: 'Testing', color: '#22c55e' },
 } satisfies ChartConfig;
 
-export const AnalyticsStatisticsTab: React.FC = () => {
+const cardOrder = [
+  'total_findings',
+  'completed_reviews',
+  'affected_pull_requests',
+  'avg_review_latency_seconds',
+] as const;
+
+function cardIcon(key: string) {
+  if (key === 'total_findings') return Bug;
+  if (key === 'completed_reviews') return GitPullRequest;
+  if (key === 'affected_pull_requests') return GitPullRequest;
+  if (key === 'avg_review_latency_seconds') return Clock3;
+  return Timer;
+}
+
+export const AnalyticsStatisticsTab: React.FC<AnalyticsStatisticsTabProps> = ({
+  selectedRepository,
+  overview,
+  loading,
+  error,
+}) => {
+  const cards = useMemo(() => {
+    const byKey = new Map<string, AnalyticsCardMetric>();
+    for (const card of overview?.cards ?? []) {
+      byKey.set(card.key, card);
+    }
+    return cardOrder
+      .map((key) => byKey.get(key))
+      .filter((card): card is AnalyticsCardMetric => Boolean(card));
+  }, [overview?.cards]);
+
+  if (!selectedRepository) {
+    return (
+      <Card className="border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+        <CardContent className="py-10 text-center text-black/60 font-medium">
+          Select a repository to view analytics.
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (loading) {
+    return (
+      <Card className="border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+        <CardContent className="py-10 text-center text-black/60 font-medium">
+          Loading analytics...
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card className="border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+        <CardContent className="py-10 text-center text-[var(--metis-red)] font-medium">
+          Failed to load analytics: {error}
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-black/60 text-sm font-bold">Total PRs</CardTitle>
-            <GitPullRequest className="h-4 w-4 text-black" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-black text-black">1,284</div>
-            <p className="text-black/60 flex items-center gap-1 text-xs font-bold">
-              <TrendingUp className="h-3 w-3 text-[var(--metis-orange-dark)]" />
-              <span className="text-[var(--metis-orange-dark)]">+12%</span> from last month
-            </p>
-          </CardContent>
-        </Card>
-        <Card className="border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-black/60 text-sm font-bold">Avg. Merge Time</CardTitle>
-            <Clock className="h-4 w-4 text-black" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-black text-black">4h 12m</div>
-            <p className="text-black/60 flex items-center gap-1 text-xs font-bold">
-              <TrendingDown className="h-3 w-3 text-[var(--metis-orange-dark)]" />
-              <span className="text-[var(--metis-orange-dark)]">-18%</span> faster than avg
-            </p>
-          </CardContent>
-        </Card>
-        <Card className="border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-black/60 text-sm font-bold">Issues Found</CardTitle>
-            <Bug className="h-4 w-4 text-black" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-black text-black">24</div>
-            <p className="text-black/60 flex items-center gap-1 text-xs font-bold">
-              <AlertCircle className="h-3 w-3 text-[var(--metis-red)]" />
-              <span className="text-[var(--metis-red)]">+4</span> new critical
-            </p>
-          </CardContent>
-        </Card>
-        <Card className="border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-black/60 text-sm font-bold">Code Quality</CardTitle>
-            <CheckCircle2 className="h-4 w-4 text-black" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-black text-black">A+</div>
-            <p className="text-black/60 text-xs font-bold">Top 5% of repositories</p>
-          </CardContent>
-        </Card>
+        {cards.map((card) => {
+          const Icon = cardIcon(card.key);
+          return (
+            <Card
+              key={card.key}
+              className="border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+            >
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-black/60 text-sm font-bold">{card.label}</CardTitle>
+                <Icon className="h-4 w-4 text-black" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-black text-black">{card.display_value}</div>
+                <p className="text-[11px] leading-tight text-black/55">{card.description}</p>
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
         <Card className="flex flex-col border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
           <CardHeader>
-            <CardTitle className="font-black">AI Issues Detected</CardTitle>
+            <CardTitle className="font-black">AI Issues by Severity</CardTitle>
             <CardDescription className="font-medium text-black/60">
-              Breakdown by severity over the last 6 months
+              Daily findings over the last {overview?.window_days ?? 7} days
             </CardDescription>
           </CardHeader>
           <CardContent className="flex-1 pb-4">
-            <ChartContainer config={areaChartConfig} className="mx-auto h-[300px] w-full">
+            <ChartContainer config={severityChartConfig} className="mx-auto h-[300px] w-full">
               <AreaChart
-                data={areaChartData}
-                margin={{
-                  left: 12,
-                  right: 12,
-                  top: 12,
-                  bottom: 12,
-                }}
+                data={overview?.severity_chart ?? []}
+                margin={{ left: 12, right: 12, top: 12, bottom: 12 }}
               >
                 <CartesianGrid vertical={false} />
                 <XAxis
-                  dataKey="month"
+                  dataKey="date"
                   tickLine={false}
                   axisLine={false}
                   tickMargin={8}
-                  tickFormatter={(value) => value.slice(0, 3)}
+                  tickFormatter={(value) => new Date(value).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                 />
+                <YAxis allowDecimals={false} domain={[0, 'auto']} />
                 <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="dot" />} />
-                <Area
-                  dataKey="info"
-                  type="natural"
-                  fill="var(--color-info)"
-                  fillOpacity={0.4}
-                  stroke="var(--color-info)"
-                  stackId="a"
-                />
-                <Area
-                  dataKey="warning"
-                  type="natural"
-                  fill="var(--color-warning)"
-                  fillOpacity={0.4}
-                  stroke="var(--color-warning)"
-                  stackId="a"
-                />
-                <Area
-                  dataKey="critical"
-                  type="natural"
-                  fill="var(--color-critical)"
-                  fillOpacity={0.4}
-                  stroke="var(--color-critical)"
-                  stackId="a"
-                />
-                <ChartLegend content={<ChartLegendContent payload={[]} />} />
+                <Area dataKey="INFO" type="monotone" fill="var(--color-INFO)" fillOpacity={0.3} stroke="var(--color-INFO)" stackId="a" />
+                <Area dataKey="WARNING" type="monotone" fill="var(--color-WARNING)" fillOpacity={0.3} stroke="var(--color-WARNING)" stackId="a" />
+                <Area dataKey="ERROR" type="monotone" fill="var(--color-ERROR)" fillOpacity={0.3} stroke="var(--color-ERROR)" stackId="a" />
+                <Area dataKey="CRITICAL" type="monotone" fill="var(--color-CRITICAL)" fillOpacity={0.3} stroke="var(--color-CRITICAL)" stackId="a" />
+                <ChartLegend content={<ChartLegendContent payload={[]} className="flex-wrap gap-x-3 gap-y-1" />} />
               </AreaChart>
             </ChartContainer>
           </CardContent>
@@ -179,24 +156,32 @@ export const AnalyticsStatisticsTab: React.FC = () => {
 
         <Card className="flex flex-col border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
           <CardHeader>
-            <CardTitle className="font-black">PR Velocity</CardTitle>
-            <CardDescription className="font-medium">Weekly pull request activity</CardDescription>
+            <CardTitle className="font-black">AI Issues by Category</CardTitle>
+            <CardDescription className="font-medium">
+              Daily category distribution over the last {overview?.window_days ?? 7} days
+            </CardDescription>
           </CardHeader>
           <CardContent className="flex-1 pb-4">
-            <ChartContainer config={barChartConfig} className="mx-auto h-[300px] w-full">
-              <BarChart accessibilityLayer data={barChartData}>
+            <ChartContainer config={categoryChartConfig} className="mx-auto h-[300px] w-full">
+              <BarChart accessibilityLayer data={overview?.category_chart ?? []}>
                 <CartesianGrid vertical={false} />
                 <XAxis
-                  dataKey="day"
+                  dataKey="date"
                   tickLine={false}
                   tickMargin={10}
                   axisLine={false}
-                  tickFormatter={(value) => value.slice(0, 3)}
+                  tickFormatter={(value) => new Date(value).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                 />
-                <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="dashed" />} />
-                <ChartLegend content={<ChartLegendContent payload={[]} />} />
-                <Bar dataKey="opened" fill="var(--color-opened)" radius={4} />
-                <Bar dataKey="merged" fill="var(--color-merged)" radius={4} />
+                <YAxis allowDecimals={false} domain={[0, 'auto']} />
+                <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="dot" />} />
+                <ChartLegend content={<ChartLegendContent payload={[]} className="flex-wrap gap-x-3 gap-y-1" />} />
+                <Bar dataKey="BUG" stackId="a" fill="var(--color-BUG)" radius={2} />
+                <Bar dataKey="SECURITY" stackId="a" fill="var(--color-SECURITY)" radius={2} />
+                <Bar dataKey="PERFORMANCE" stackId="a" fill="var(--color-PERFORMANCE)" radius={2} />
+                <Bar dataKey="STYLE" stackId="a" fill="var(--color-STYLE)" radius={2} />
+                <Bar dataKey="MAINTAINABILITY" stackId="a" fill="var(--color-MAINTAINABILITY)" radius={2} />
+                <Bar dataKey="DOCUMENTATION" stackId="a" fill="var(--color-DOCUMENTATION)" radius={2} />
+                <Bar dataKey="TESTING" stackId="a" fill="var(--color-TESTING)" radius={2} />
               </BarChart>
             </ChartContainer>
           </CardContent>
