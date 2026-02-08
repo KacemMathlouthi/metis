@@ -1,3 +1,5 @@
+import { Streamdown } from 'streamdown';
+import { code } from '@streamdown/code';
 
 export function formatDateTime(value: string | null): string {
   if (!value) return 'N/A';
@@ -49,14 +51,22 @@ export function toPrettyJson(value: unknown): string {
   }
 }
 
-export function CodeBlock({ code, language = 'text' }: { code: string; language?: string }) {
-  const safeCode = code.replace(/```/g, '``\\`');
-  const markdown = `\`\`\`${language}\n${safeCode}\n\`\`\``;
-
+export function MarkdownContent({ markdown }: { markdown: string }) {
   return (
     <div className="prose prose-sm max-w-none prose-pre:overflow-x-auto prose-pre:rounded-md prose-pre:border prose-pre:border-black/20 prose-pre:bg-black prose-pre:p-3 prose-pre:text-xs prose-pre:text-gray-50">
-      <Streamdown isAnimating={false}>{markdown}</Streamdown>
+      <Streamdown
+        isAnimating={false}
+        plugins={{ code }}
+        shikiTheme={['github-light', 'github-dark']}
+      >
+        {markdown}
+      </Streamdown>
     </div>
   );
 }
-import { Streamdown } from 'streamdown';
+
+export function CodeBlock({ code, language = 'text' }: { code: string; language?: string }) {
+  const safeCode = code.replace(/```/g, '``\\`');
+  const markdown = `\`\`\`${language}\n${safeCode}\n\`\`\``;
+  return <MarkdownContent markdown={markdown} />;
+}
