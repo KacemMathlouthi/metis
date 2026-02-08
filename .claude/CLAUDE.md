@@ -106,6 +106,9 @@ app/
 ├── api/                 # API route handlers
 │   ├── auth.py          # Authentication endpoints (OAuth, login, logout, me)
 │   ├── installations.py # Installation management (list, sync, enable, configure)
+│   ├── issues.py        # GitHub issues read APIs
+│   ├── review_comments.py # Review comments listing/detail APIs
+│   ├── analytics.py     # Analytics endpoints (overview, dashboard, sidebar)
 │   └── webhooks.py      # GitHub webhook endpoint (/webhooks/github) with async task queueing
 ├── core/                # Core configuration
 │   ├── config.py        # Pydantic Settings for env vars, JWT, Redis, Celery, Daytona, LangSmith
@@ -130,27 +133,29 @@ app/
 ├── services/            # Business logic
 │   ├── github.py        # GitHub API client (JWT auth, installation tokens, fetch repos)
 │   ├── oauth.py         # GitHub OAuth flow (login, token exchange, user info)
-│   ├── webhook.py       # Async webhook handler (queues AI agent tasks, <500ms response)
-│   └── metis_agent.py   # Legacy AI reviewer (superseded by agent system)
+│   ├── webhook.py       # Async webhook handler (queues review + summary tasks, <500ms response)
+│   └── pr_summary.py    # PR summary composition utilities
 ├── agents/              # AI Agent System (NEW)
 │   ├── __init__.py      # Agent exports
 │   ├── base.py          # BaseAgent with run() and should_stop() methods
 │   ├── loop.py          # AgentLoop orchestrator
 │   ├── implementation/  # Agent implementations
 │   │   ├── review_agent.py      # ReviewAgent for PR reviews
-│   │   └── background_agent.py  # BackgroundAgent for Issue → PR
+│   │   ├── background_agent.py  # BackgroundAgent for Issue → PR
+│   │   └── summary_agent.py     # SummaryAgent for PR title/body summaries
 │   ├── prompts/         # System prompts for agents
 │   │   ├── reviewer_prompt.py   # Comprehensive code review prompt
-│   │   └── coder_prompt.py      # Comprehensive coding prompt
+│   │   ├── coder_prompt.py      # Comprehensive coding prompt
+│   │   └── summary_prompt.py    # PR summary prompt
 │   ├── sandbox/         # Daytona sandbox integration
 │   │   ├── client.py    # DaytonaClient wrapper with git auth
 │   │   └── manager.py   # SandboxManager for lifecycle
-│   └── tools/           # Tool system (22 tools)
+│   └── tools/           # Tool system (23 tools)
 │       ├── base.py              # BaseTool interface
 │       ├── file_tools.py        # 6 file operations (read, list, search, replace, create, delete)
 │       ├── git_tools.py         # 8 git operations (status, branch, add, commit, push, pull)
 │       ├── process_tools.py     # 4 execution tools (command, code, tests, linter)
-│       ├── completion_tools.py  # 2 completion tools (finish_review, finish_task)
+│       ├── completion_tools.py  # 3 completion tools (finish_review, finish_task, finish_summary)
 │       ├── review_posting_tools.py  # 2 review posting tools (post_inline_finding, post_file_finding)
 │       └── manager.py           # ToolManager with fine-grained tool sets
 ├── schemas/             # Pydantic models for request/response validation
@@ -158,8 +163,8 @@ app/
 │   └── installation.py  # Installation API schemas (7 models)
 ├── tasks/               # Celery background tasks
 │   ├── __init__.py              # Task registration
-│   ├── review_task.py           # Legacy PR review task
-│   └── agent_review_task.py    # AI agent-powered review task
+│   ├── agent_review_task.py    # AI agent-powered review task
+│   └── summary_task.py         # AI PR summary generation/update task
 └── utils/               # Utility functions
     ├── prompts.py       # Legacy prompts
     └── agent_logger.py  # Structured file logging for agents
@@ -168,7 +173,8 @@ app/
 **Key flows**:
 1. **Webhook Reception (Async)**: GitHub sends webhook → `api/webhooks.py` → signature verification → lookup Installation → create Review (PENDING) with PR metadata (head_branch, base_branch, language) → queue AI agent task → return 202 Accepted (<500ms)
 2. **AI Agent Review Processing**: Celery worker → pick task from Redis → update Review (PROCESSING) → create Daytona sandbox → clone PR branch → initialize ReviewAgent with tools (including review posting tools) → run autonomous loop (plan → execute → evaluate) → agent uses tools to read files, search code, and **progressively posts inline/file-level findings** via `post_inline_finding`/`post_file_finding` → agent calls `finish_review()` with summary → post final review to GitHub → update Review (COMPLETED) → cleanup sandbox
-3. **Issue → PR Workflow (PLANNED)**: User → Issues page → Launch agent with custom instructions → Create AgentRun (PENDING) → Queue BackgroundAgent task → Celery worker picks task → Create Daytona sandbox → Clone main branch → Initialize BackgroundAgent with coder tools → Run autonomous loop → Agent creates branch, writes code, runs tests, commits → Agent calls finish_task() with PR details → Create GitHub PR → Update AgentRun (COMPLETED) with PR URL → User redirected to AgentProgressPage
+3. **PR Summary Processing (Parallel)**: webhook queues `process_pr_summary_with_agent` alongside review task → SummaryAgent analyzes PR diff in sandbox → calls `finish_summary(summary_text, pr_title)` → backend patches GitHub PR title and appends summary body (`\\n --- \\n{summary}`) → writes summary metadata on Review
+4. **Issue → PR Workflow (PLANNED)**: User → Issues page → Launch agent with custom instructions → Create AgentRun (PENDING) → Queue BackgroundAgent task → Celery worker picks task → Create Daytona sandbox → Clone main branch → Initialize BackgroundAgent with coder tools → Run autonomous loop → Agent creates branch, writes code, runs tests, commits → Agent calls finish_task() with PR details → Create GitHub PR → Update AgentRun (COMPLETED) with PR URL → User redirected to AgentProgressPage
 4. **GitHub App Auth**: App generates JWT → exchanges for installation token → authenticated API calls
 5. **User OAuth**: User clicks login → GitHub OAuth → callback → create/update user in DB → set JWT cookies → redirect to dashboard
 6. **Protected Routes**: Request → `get_current_user()` dependency → verify JWT cookie → query user from DB → endpoint access
@@ -296,12 +302,12 @@ From `docs/TECHNICAL_ARCHITECTURE.md`, the system is designed for:
 - **AgentLoop** (`loop.py`): Simple orchestrator that calls `agent.run()` until `agent.should_stop()` returns True
 - **ReviewAgent** (`implementation/review_agent.py`): Autonomous code reviewer with 11 tools (read-only + verification + review posting)
 - **BackgroundAgent** (`implementation/background_agent.py`): Autonomous coder for Issue → PR workflow with 19 tools (full CRUD + git)
-- **Tool System** (`tools/`): 22 Daytona-powered tools organized by category:
+- **Tool System** (`tools/`): 23 Daytona-powered tools organized by category:
   - File Tools (6): read_file, list_files, search_files, replace_in_files, create_file, delete_file
   - Git Tools (8): git_status, git_branches, git_create_branch, git_checkout_branch, git_add, git_commit, git_push, git_pull
   - Process Tools (4): run_command, run_code, run_tests, run_linter
   - Review Posting Tools (2): post_inline_finding, post_file_finding
-  - Completion Tools (2): finish_review, finish_task
+  - Completion Tools (3): finish_review, finish_task, finish_summary
 - **Daytona Sandbox** (`sandbox/`): Safe code execution with git auth, branch cloning, auto-cleanup
 - **Prompts** (`prompts/`): Comprehensive system prompts with workflows, examples, and guidelines
 
@@ -311,7 +317,7 @@ From `docs/TECHNICAL_ARCHITECTURE.md`, the system is designed for:
 3. Agent runs autonomous loop:
    - **Plan**: LLM decides what tools to call based on context
    - **Execute**: Tools run in parallel via Daytona SDK
-   - **Evaluate**: Check if task complete (finish_review/finish_task called)
+   - **Evaluate**: Check if task complete (finish_review/finish_task/finish_summary called)
    - **Repeat**: Continue until completion or limits (50 iterations, 200K tokens, 5min)
 4. Extract results from final state
 5. Post review/PR to GitHub
@@ -425,9 +431,10 @@ From `docs/TECHNICAL_ARCHITECTURE.md`, the system is designed for:
 ### Backend
 
 1. **Configuration**: All settings in `app/core/config.py` load from `.env` via Pydantic Settings. Vertex AI settings are exported to `os.environ` for LiteLLM auto-detection.
-2. **Celery Tasks** (`app/tasks/review_task.py`):
-   - `process_pr_review()`: Sync wrapper that calls `asyncio.run()` for Celery compatibility
-   - Task must be imported in `celery_app.py` to register with worker
+2. **Celery Tasks** (`app/tasks/agent_review_task.py`, `app/tasks/summary_task.py`):
+   - `process_pr_review_with_agent()`: Main AI review task
+   - `process_pr_summary_with_agent()`: PR summary/title update task
+   - Tasks must be imported in `celery_app.py` to register with worker
    - Use `task.delay()` to queue tasks asynchronously
 3. **GitHub Service** (`app/services/github.py`):
    - `GitHubService._generate_jwt()`: Creates 10-minute JWT for app authentication
@@ -591,7 +598,6 @@ Coverage report available at `htmlcov/index.html`.
 ### Infrastructure & Monitoring
 - Redis caching for PR diffs and GitHub tokens (infrastructure ready)
 - Priority queues for Celery (critical/default/low)
-- SummaryAgent implementation (prompts ready, implementation pending)
 - Docker containerization (multi-stage builds)
 - Kubernetes deployment with Helm charts
 - Distributed tracing and monitoring (Prometheus, Grafana, Jaeger)
@@ -624,7 +630,7 @@ Coverage report available at `htmlcov/index.html`.
 ### Phase 3: Async Processing (Redis + Celery) ✅ (COMPLETED)
 - **Redis**: Singleton client with connection pooling (ready for caching + queue)
 - **Celery**: Production-grade configuration (JSON serialization, acks_late, retry backoff)
-- **Background task**: `process_pr_review` with asyncio.run() wrapper for compatibility
+- **Background tasks**: `process_pr_review_with_agent` and `process_pr_summary_with_agent` with asyncio.run() wrappers for compatibility
 - **Async webhooks**: Returns 202 Accepted in <500ms (vs 30+ seconds before)
 - **Retry logic**: Exponential backoff (5s, 25s, 125s) with jitter, max 3 retries
 - **Time limits**: 10min hard limit, 9min soft limit for graceful handling
@@ -635,7 +641,7 @@ Coverage report available at `htmlcov/index.html`.
 ### Phase 4: AI Agent System ✅ (COMPLETED)
 - **Daytona Sandbox Integration**: Safe code execution in isolated environments with git auth
 - **22 Tools**: File ops (6), Git ops (8), Process execution (4), Review posting (2), Completion (2)
-- **Fine-grained tool sets**: Reviewer (11 tools), Coder (19 tools), Summary (3 tools)
+- **Fine-grained tool sets**: Reviewer (11 tools), Coder (19 tools), Summary (5 tools)
 - **BaseAgent & AgentLoop**: Autonomous plan → execute → evaluate loop with soft limits
 - **ReviewAgent**: Production-ready code review agent with progressive inline finding posting
 - **BackgroundAgent**: Autonomous coder for Issue → PR workflow (implementation ready)
@@ -696,7 +702,7 @@ Coverage report available at `htmlcov/index.html`.
 - **Autonomous code review agent** with tool-augmented analysis and progressive inline posting
 - **Daytona sandbox integration** for safe code execution
 - **22 tools** across file ops, git ops, process execution, review posting
-- **Fine-grained tool sets** (11 reviewer, 19 coder, 3 summary tools)
+- **Fine-grained tool sets** (11 reviewer, 19 coder, 5 summary tools)
 - **Multi-iteration agent loop** with soft limits and circuit breaker
 - **LiteLLM integration** for model-agnostic LLM access (Vertex AI, OpenAI, Mistral, etc.)
 - **LangSmith tracing** via LiteLLM native callbacks
