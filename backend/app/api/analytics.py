@@ -128,7 +128,9 @@ async def get_analytics_overview(
                     case(
                         (
                             Review.status == "COMPLETED",
-                            func.extract("epoch", Review.updated_at - Review.created_at),
+                            func.extract(
+                                "epoch", Review.updated_at - Review.created_at
+                            ),
                         ),
                         else_=None,
                     )
@@ -146,7 +148,9 @@ async def get_analytics_overview(
 
     total_reviews = float(review_metrics_row.total_reviews or 0)
     completed_reviews = float(review_metrics_row.completed_reviews or 0)
-    review_completion_rate = (completed_reviews / total_reviews * 100) if total_reviews else 0.0
+    review_completion_rate = (
+        (completed_reviews / total_reviews * 100) if total_reviews else 0.0
+    )
     avg_latency_seconds = float(review_metrics_row.avg_latency_seconds or 0)
     avg_latency_seconds_value = avg_latency_seconds if avg_latency_seconds else 0.0
 
@@ -193,7 +197,10 @@ async def get_analytics_overview(
     severity_rows = (
         await db.execute(
             select(day_expr, ReviewComment.severity, func.count().label("count"))
-            .join(reviews_subquery, reviews_subquery.c.review_id == ReviewComment.review_id)
+            .join(
+                reviews_subquery,
+                reviews_subquery.c.review_id == ReviewComment.review_id,
+            )
             .where(base_filters)
             .group_by(day_expr, ReviewComment.severity)
         )
@@ -202,7 +209,10 @@ async def get_analytics_overview(
     category_rows = (
         await db.execute(
             select(day_expr, ReviewComment.category, func.count().label("count"))
-            .join(reviews_subquery, reviews_subquery.c.review_id == ReviewComment.review_id)
+            .join(
+                reviews_subquery,
+                reviews_subquery.c.review_id == ReviewComment.review_id,
+            )
             .where(base_filters)
             .group_by(day_expr, ReviewComment.category)
         )
@@ -210,10 +220,7 @@ async def get_analytics_overview(
 
     day_buckets = [window_start.date() + timedelta(days=i) for i in range(WINDOW_DAYS)]
 
-    severity_map = {
-        day: {key: 0 for key in SEVERITY_ORDER}
-        for day in day_buckets
-    }
+    severity_map = {day: {key: 0 for key in SEVERITY_ORDER} for day in day_buckets}
     for row in severity_rows:
         day = row.day.date()
         key = _enum_to_str(row.severity)
@@ -232,10 +239,7 @@ async def get_analytics_overview(
         for day in day_buckets
     ]
 
-    category_map = {
-        day: {key: 0 for key in CATEGORY_ORDER}
-        for day in day_buckets
-    }
+    category_map = {day: {key: 0 for key in CATEGORY_ORDER} for day in day_buckets}
     for row in category_rows:
         day = row.day.date()
         key = _enum_to_str(row.category)
@@ -285,17 +289,19 @@ async def get_dashboard_analytics(
     review_metrics = (
         await db.execute(
             select(
-                func.count(func.distinct(Review.pr_number)).filter(
-                    Review.status == "COMPLETED"
-                ).label("prs_reviewed"),
-                func.count(Review.id).filter(Review.status == "COMPLETED").label(
-                    "completed_reviews"
-                ),
+                func.count(func.distinct(Review.pr_number))
+                .filter(Review.status == "COMPLETED")
+                .label("prs_reviewed"),
+                func.count(Review.id)
+                .filter(Review.status == "COMPLETED")
+                .label("completed_reviews"),
                 func.avg(
                     case(
                         (
                             Review.status == "COMPLETED",
-                            func.extract("epoch", Review.updated_at - Review.created_at),
+                            func.extract(
+                                "epoch", Review.updated_at - Review.created_at
+                            ),
                         ),
                         else_=None,
                     )
@@ -383,17 +389,19 @@ async def get_sidebar_analytics(
     review_row = (
         await db.execute(
             select(
-                func.count(Review.id).filter(Review.status == "COMPLETED").label(
-                    "completed_reviews"
-                ),
-                func.count(func.distinct(Review.pr_number)).filter(
-                    Review.status == "COMPLETED"
-                ).label("prs_reviewed"),
+                func.count(Review.id)
+                .filter(Review.status == "COMPLETED")
+                .label("completed_reviews"),
+                func.count(func.distinct(Review.pr_number))
+                .filter(Review.status == "COMPLETED")
+                .label("prs_reviewed"),
                 func.avg(
                     case(
                         (
                             Review.status == "COMPLETED",
-                            func.extract("epoch", Review.updated_at - Review.created_at),
+                            func.extract(
+                                "epoch", Review.updated_at - Review.created_at
+                            ),
                         ),
                         else_=None,
                     )
