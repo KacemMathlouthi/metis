@@ -5,6 +5,7 @@ from __future__ import annotations
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from app.agents.tools.base import BaseTool, ToolDefinition, ToolResult
+from app.core.config import settings
 from app.models.review import ReviewComment
 from app.services.github import GitHubService
 
@@ -23,11 +24,19 @@ CATEGORY_VALUES = {
 
 def _see_more_footer_markdown() -> str:
     """Build the See More footer in markdown form for GitHub rendering."""
-    target_url = "http://localhost:5173/dashboard/analytics"
-    badge_url = "https://i.imgur.com/j21PULe.png"
+    base_url = (settings.FRONTEND_URL or "http://localhost:5173").rstrip("/")
+    target_url = f"{base_url}/dashboard/analytics"
+
+    # SVG badge (Shields) tuned to Metis palette and readability.
+    # labelColor: near-black, color: warm Metis orange.
+    badge_url = (
+        "https://img.shields.io/badge/"
+        "METIS-SEE%20MORE%20DETAILS-FF9F1C"
+        "?style=for-the-badge&labelColor=111111&logo=github&logoColor=FFFFFF"
+    )
     return (
         f'<a href="{target_url}">'
-        f'<img src="{badge_url}" alt="METIS: SEE MORE DETAILS" width="200" />'
+        f'<img src="{badge_url}" alt="METIS: See More Details" width="260" />'
         "</a>"
     )
 
