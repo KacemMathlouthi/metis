@@ -551,7 +551,9 @@ Coverage report available at `htmlcov/index.html`.
 - **Enhanced dashboard styling** with improved layouts and visual consistency
 - **Issues navigation** added to sidebar
 - **Issues card** on dashboard replacing Contributors card
-- **API client mock data** for issues and agent runs (ready for backend integration)
+- **Issues API integration** for list/detail/comments endpoints
+- **Review comments analytics integration** with real backend data, tabs, and detail sheet
+- **Agent runs still mocked** in API client (pending backend integration)
 
 ### GitHub Integration
 - **GitHub App authentication** (installation tokens with 1-hour TTL)
@@ -562,19 +564,26 @@ Coverage report available at `htmlcov/index.html`.
 - **Structured inline review comments** posted directly on PR diff lines via GitHub API
 - **File-level review comments** for issues spanning entire files
 - **Progressive finding posting** - agent posts findings as it discovers them, not batched at the end
+- **Review comment titles** generated and persisted for analytics-friendly UI
+- **GitHub comment IDs stored as bigint** in `review_comments.github_comment_id`
+
+### Review Comments APIs
+- **`GET /api/review-comments`** implemented with pagination and filters
+  - Required: `repository`
+  - Optional: `review_id`, `severity`, `category`, `review_status`, `created_from`, `created_to`
+  - Pagination: `page`, `page_size`
+- **`GET /api/review-comments/{comment_id}`** implemented for single-comment detail
+- **Query strategy**: repository-scoped review subquery joined to `review_comments`, sorted newest first
 
 ## Not Yet Implemented
 
 ### Backend APIs Needed
-- **Issues API endpoints** (frontend UI ready with mock data):
-  - `GET /api/issues` - List issues for repository
-  - `GET /api/issues/{issue_id}` - Get single issue details
-  - `GET /api/issues/{issue_id}/comments` - Get issue comments
-  - `GET /api/issues/{issue_id}/agent-runs` - Get agent runs for issue
 - **Agent Runs API endpoints** (frontend UI ready with mock data):
   - `POST /api/agents/launch` - Launch agent for an issue
   - `GET /api/agents/{agent_id}` - Get agent run details
   - `GET /api/agents` - List all agent runs for repository
+- **Issue agent-runs endpoint** still pending:
+  - `GET /api/issues/{issue_id}/agent-runs`
 - **WebSocket for real-time agent progress updates** (AgentProgressPage ready)
 - **GitHub Issues sync** to database (Issue model needs to be created)
 - **BackgroundAgent task** for Issue → PR workflow (agent implementation exists)
@@ -593,7 +602,7 @@ Coverage report available at `htmlcov/index.html`.
 
 ### Phase 1: Database Foundation ✅ (COMPLETED)
 - **Database Layer**: PostgreSQL with async SQLAlchemy engine and connection pooling
-- **Database Models** (6 models with relationships):
+- **Database Models** (6 core models with relationships):
   - `User` - GitHub OAuth users with encrypted access tokens
   - `Installation` - GitHub App installations (composite unique: github_installation_id + repository)
   - `Review` - PR reviews with status tracking + celery_task_id for async processing
@@ -603,6 +612,7 @@ Coverage report available at `htmlcov/index.html`.
 - **Database Migrations**: Alembic configured with migrations for schema evolution
 - **Session Management**: FastAPI `get_db()` dependency with automatic transaction handling
 - **Indexes**: Composite indexes for query optimization (installation lookup, review filtering)
+- **ReviewComment schema updates**: `title` field added and `github_comment_id` migrated to bigint
 
 ### Phase 2: Authentication & User Management ✅ (COMPLETED)
 - **GitHub OAuth 2.0**: Complete authentication flow (login, callback, refresh, logout)
@@ -660,7 +670,7 @@ Coverage report available at `htmlcov/index.html`.
 - **Authentication Pages**: Login (PixelBlast), Callback, 404 (PixelBlast)
 - **Dashboard Layout**: Sidebar with repository selector, Issues navigation
 - **Dashboard Page**: Enhanced layout, metrics cards, Issues card (replaces Contributors), quick actions
-- **Analytics Page**: Enhanced styling, stats row, area/bar charts (Recharts)
+- **Analytics Page**: Tabbed `Statistics` + `AI Detected Issues`, backend-backed findings table, 5-item pagination, detail sheet
 - **AI Review Page**: Enhanced styling, live config editor, sensitivity selector, custom instructions, ignore patterns, floating save bar
 - **Repositories Page**: Enhanced styling, GitHub installation sync, enable/disable repos, language icons, configure buttons
 - **Issues Page** (NEW): Tabs for Issues and Agent Runs, pagination, status filtering, launch agent actions
@@ -672,6 +682,7 @@ Coverage report available at `htmlcov/index.html`.
 - **Language Icons**: react-icons/simple-icons for 17+ languages (TypeScript, Python, Go, Rust, etc.)
 - **UI Components**: Complete shadcn/ui library with neo-brutalist styling + Pagination component
 - **Issue Components**: IssuesTable, AgentRunsTable, LaunchAgentDialog, AgentStatusBadge, IssueCommentCard, LabelBadge
+- **Analytics Components**: `AnalyticsStatisticsTab`, `AnalyticsIssuesTab`, `AnalyticsCommentSheet`
 - **Enhanced Font Loading**: Moved to index.html for better performance
 
 ### Infrastructure (Completed)

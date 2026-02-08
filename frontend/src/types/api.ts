@@ -177,3 +177,43 @@ export interface LaunchAgentResponse {
   celery_task_id: string;
   message: string;
 }
+
+export interface ReviewCommentRecord {
+  id: string;
+  review_id: string;
+  title: string;
+  file_path: string;
+  line_number: number;
+  line_end: number | null;
+  comment_text: string;
+  severity: 'INFO' | 'WARNING' | 'ERROR' | 'CRITICAL';
+  category:
+    | 'BUG'
+    | 'SECURITY'
+    | 'PERFORMANCE'
+    | 'STYLE'
+    | 'MAINTAINABILITY'
+    | 'DOCUMENTATION'
+    | 'TESTING';
+  github_comment_id: number | null;
+  created_at: string;
+}
+
+export interface ReviewCommentReviewContext {
+  repository: string;
+  pr_number: number;
+  review_status: 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
+  commit_sha: string;
+}
+
+export interface ReviewCommentWithContext {
+  comment: ReviewCommentRecord;
+  review: ReviewCommentReviewContext;
+}
+
+export interface ReviewCommentsListResponse {
+  items: ReviewCommentWithContext[];
+  total: number;
+  page: number;
+  page_size: number;
+}

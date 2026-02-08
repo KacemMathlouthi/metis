@@ -25,9 +25,9 @@ You have access to the following tools via function calling:
 
 **CRITICAL: Use these tools to post findings as you discover them. Do NOT wait until the end.**
 
-- `post_inline_finding(file_path, line_number, line_end, severity, category, issue, proposed_fix)` - **PREFERRED**: Post a finding anchored to a specific line or range of lines. **IMPORTANT: The `line_number` MUST be a line that appears in the PR diff (added or modified lines only).** GitHub will reject comments on lines not in the diff with a 422 error. If the line you want to comment on is NOT in the diff, use `post_file_finding` instead.
+- `post_inline_finding(file_path, line_number, line_end, severity, title, category, issue, proposed_fix)` - **PREFERRED**: Post a finding anchored to a specific line or range of lines. Include a concise `title` (3-10 words). **IMPORTANT: The `line_number` MUST be a line that appears in the PR diff (added or modified lines only).** GitHub will reject comments on lines not in the diff with a 422 error. If the line you want to comment on is NOT in the diff, use `post_file_finding` instead.
 
-- `post_file_finding(file_path, severity, category, issue, proposed_fix)` - **FALLBACK**: Post a finding that applies to an entire file or to code that is NOT part of the diff. Use this when: (1) the issue spans the whole file, (2) the problematic line is not in the diff, or (3) the issue affects multiple disconnected sections.
+- `post_file_finding(file_path, severity, title, category, issue, proposed_fix)` - **FALLBACK**: Post a finding that applies to an entire file or to code that is NOT part of the diff. Include a concise `title` (3-10 words). Use this when: (1) the issue spans the whole file, (2) the problematic line is not in the diff, or (3) the issue affects multiple disconnected sections.
 
 **When to use which:**
 - **Inline** (preferred): Issue is on a line that was ADDED or MODIFIED in this PR diff
@@ -173,6 +173,7 @@ Iteration 5 (inline finding - preferred):
     file_path="backend/app/api/auth.py",
     line_number=122,
     severity="ERROR",
+    title="Missing Refresh Token Type Validation",
     category="SECURITY",
     issue="Refresh token type is not validated before issuing access token.",
     proposed_fix="Validate token type == 'refresh' before generating a new access token."
@@ -184,6 +185,7 @@ Iteration 6 (another inline finding on a different file):
     line_number=88,
     line_end=95,
     severity="WARNING",
+    title="Missing Installation Null Check",
     category="BUG",
     issue="Missing null check on installation object before accessing its properties.",
     proposed_fix="Add: if installation is None: logger.warning('Not enrolled'); return"
@@ -193,6 +195,7 @@ Iteration 7 (file-level finding - only when whole file is affected):
 - Call: post_file_finding(
     file_path="backend/app/agents/tools/process_tools.py",
     severity="INFO",
+    title="Public Methods Missing Docstrings",
     category="DOCUMENTATION",
     issue="File lacks docstrings for all public methods, making it hard to understand tool behavior.",
     proposed_fix="Add Google-style docstrings to all public methods."

@@ -6,7 +6,7 @@ This separation allows querying comments independently and supports
 GitHub's review API structure with multiple inline comments per review.
 """
 
-from sqlalchemy import Column, DateTime, Enum, ForeignKey, Integer, String, Text
+from sqlalchemy import BigInteger, Column, DateTime, Enum, ForeignKey, Integer, String, Text
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import relationship
 
@@ -105,6 +105,7 @@ class ReviewComment(Base, BaseModel):
     line_end = Column(Integer, nullable=True, comment="For multi-line comments")
 
     # Comment content
+    title = Column(String(255), nullable=True, comment="Short finding title")
     comment_text = Column(Text, nullable=False)
 
     # Classification
@@ -129,7 +130,9 @@ class ReviewComment(Base, BaseModel):
     )
 
     # GitHub integration
-    github_comment_id = Column(Integer, nullable=True, comment="GitHub API comment ID")
+    github_comment_id = Column(
+        BigInteger, nullable=True, comment="GitHub API comment ID (bigint)"
+    )
 
     # Relationships
     review = relationship("Review", back_populates="comments")
