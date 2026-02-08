@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useRepository } from '@/contexts/RepositoryContext';
 import { apiClient } from '@/lib/api-client';
-import type { ReviewCommentWithContext } from '@/types/api';
+import type { AnalyticsOverviewResponse, ReviewCommentWithContext } from '@/types/api';
 import { AnalyticsStatisticsTab } from '@/components/dashboard/analytics/AnalyticsStatisticsTab';
 import { AnalyticsIssuesTab } from '@/components/dashboard/analytics/AnalyticsIssuesTab';
 
@@ -13,7 +13,35 @@ export const AnalyticsPage: React.FC = () => {
   const [commentsPage, setCommentsPage] = useState(1);
   const [commentsLoading, setCommentsLoading] = useState(false);
   const [commentsError, setCommentsError] = useState<string | null>(null);
+  const [overview, setOverview] = useState<AnalyticsOverviewResponse | null>(null);
+  const [overviewLoading, setOverviewLoading] = useState(false);
+  const [overviewError, setOverviewError] = useState<string | null>(null);
   const COMMENTS_PAGE_SIZE = 5;
+
+  useEffect(() => {
+    const fetchOverview = async () => {
+      if (!selectedRepo) {
+        setOverview(null);
+        setOverviewError(null);
+        return;
+      }
+
+      setOverviewLoading(true);
+      setOverviewError(null);
+      try {
+        const response = await apiClient.getAnalyticsOverview(selectedRepo.repository);
+        setOverview(response);
+      } catch (error) {
+        setOverviewError(
+          error instanceof Error ? error.message : 'Failed to load analytics overview'
+        );
+      } finally {
+        setOverviewLoading(false);
+      }
+    };
+
+    fetchOverview();
+  }, [selectedRepo]);
 
   useEffect(() => {
     const fetchRecentComments = async () => {
@@ -76,7 +104,12 @@ export const AnalyticsPage: React.FC = () => {
         </div>
 
         <TabsContent value="statistics">
-          <AnalyticsStatisticsTab />
+          <AnalyticsStatisticsTab
+            selectedRepository={selectedRepo?.repository ?? null}
+            overview={overview}
+            loading={overviewLoading}
+            error={overviewError}
+          />
         </TabsContent>
 
         <TabsContent value="issues">
