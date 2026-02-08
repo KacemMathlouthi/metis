@@ -18,6 +18,9 @@ import type {
   LaunchAgentRequest,
   LaunchAgentResponse,
   ReviewCommentsListResponse,
+  AnalyticsOverviewResponse,
+  DashboardAnalyticsResponse,
+  SidebarAnalyticsResponse,
 } from '@/types/api';
 
 const API_BASE_URL =
@@ -206,6 +209,39 @@ class ApiClient {
     query.set('page_size', String(params.page_size ?? 20));
 
     return this.request<ReviewCommentsListResponse>(`/api/review-comments?${query.toString()}`);
+  }
+
+  /**
+   * Get analytics overview for statistics tab.
+   */
+  async getAnalyticsOverview(repository: string): Promise<AnalyticsOverviewResponse> {
+    return this.request<AnalyticsOverviewResponse>(
+      `/api/analytics/overview?repository=${encodeURIComponent(repository)}`
+    );
+  }
+
+  /**
+   * Get dashboard cards analytics.
+   */
+  async getDashboardAnalytics(
+    repository: string,
+    days: number = 30
+  ): Promise<DashboardAnalyticsResponse> {
+    return this.request<DashboardAnalyticsResponse>(
+      `/api/analytics/dashboard?repository=${encodeURIComponent(repository)}&days=${days}`
+    );
+  }
+
+  /**
+   * Get sidebar cards analytics.
+   */
+  async getSidebarAnalytics(
+    repository: string,
+    days: number = 30
+  ): Promise<SidebarAnalyticsResponse> {
+    return this.request<SidebarAnalyticsResponse>(
+      `/api/analytics/sidebar?repository=${encodeURIComponent(repository)}&days=${days}`
+    );
   }
 
   /**
