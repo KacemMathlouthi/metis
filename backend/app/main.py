@@ -7,7 +7,7 @@ sets up middleware, includes routers, and defines startup/shutdown events.
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import auth, installations, issues, review_comments, webhooks
+from app.api import analytics, auth, installations, issues, review_comments, webhooks
 from app.core.config import settings
 
 
@@ -36,6 +36,7 @@ def create_application() -> FastAPI:
     app.include_router(installations.router, prefix="/api", tags=["Installations"])
     app.include_router(issues.router, prefix="/api", tags=["Issues"])
     app.include_router(review_comments.router, prefix="/api", tags=["Review Comments"])
+    app.include_router(analytics.router, prefix="/api", tags=["Analytics"])
 
     return app
 
