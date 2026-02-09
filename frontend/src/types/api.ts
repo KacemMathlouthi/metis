@@ -151,6 +151,16 @@ export interface AgentRun {
   // Metadata
   celery_task_id: string | null;
   created_at: string;
+
+  // Detail-only fields
+  issue_title_snapshot?: string | null;
+  issue_body_snapshot?: string | null;
+  issue_url?: string | null;
+  final_summary?: string | null;
+  system_prompt?: string | null;
+  initial_user_message?: string | null;
+  conversation?: Array<Record<string, unknown>>;
+  final_result?: Record<string, unknown>;
 }
 
 /**

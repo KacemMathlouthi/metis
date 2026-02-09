@@ -1,5 +1,7 @@
 """Git operation tools using Daytona SDK."""
 
+import json
+
 from app.agents.tools.base import BaseTool, ToolDefinition, ToolResult
 
 
@@ -161,11 +163,11 @@ class GitCommitTool(BaseTool):
                     "message": {"type": "string", "description": "Commit message"},
                     "author_name": {
                         "type": "string",
-                        "description": "Author name (default: Metis AI)",
+                        "description": "Author name (optional). If omitted, uses git config identity.",
                     },
                     "author_email": {
                         "type": "string",
-                        "description": "Author email (default: ai@metis.com)",
+                        "description": "Author email (optional). If omitted, uses git config identity.",
                     },
                     "path": {
                         "type": "string",
@@ -179,17 +181,39 @@ class GitCommitTool(BaseTool):
     async def execute(
         self,
         message: str,
-        author_name: str = "Metis AI",
-        author_email: str = "ai@metis.com",
+        author_name: str | None = None,
+        author_email: str | None = None,
         path: str = "workspace/repo",
         **kwargs,
     ) -> ToolResult:
-        """Execute commit using Daytona git.commit()."""
+        """Execute commit using git identity by default; override only if provided."""
         try:
-            self.sandbox.git.commit(path, message, author_name, author_email)
+            normalized_name = (author_name or "").strip()
+            normalized_email = (author_email or "").strip()
+            if normalized_name and normalized_email:
+                self.sandbox.git.commit(path, message, normalized_name, normalized_email)
+                return ToolResult(
+                    success=True,
+                    data={
+                        "message": message,
+                        "author": f"{normalized_name} <{normalized_email}>",
+                    },
+                )
+
+            # Default path: use repository git identity without overriding author metadata.
+            response = self.sandbox.process.exec(
+                command=f"git commit -m {json.dumps(message)}",
+                cwd=path,
+                timeout=30,
+            )
             return ToolResult(
-                success=True,
-                data={"message": message, "author": f"{author_name} <{author_email}>"},
+                success=response.exit_code == 0,
+                data={
+                    "message": message,
+                    "author": "git-config",
+                    "stdout": response.result,
+                    "exit_code": response.exit_code,
+                },
             )
         except Exception as e:
             return ToolResult(success=False, error=str(e))

@@ -8,7 +8,8 @@ proper relationships, indexes, and constraints for data integrity and performanc
 
 # Import all models so SQLAlchemy can resolve string relationships
 from app.models.installation import Installation
+from app.models.agent_run import AgentRun
 from app.models.review import Review, ReviewComment
 from app.models.user import User
 
-__all__ = ["Installation", "Review", "ReviewComment", "User"]
+__all__ = ["AgentRun", "Installation", "Review", "ReviewComment", "User"]

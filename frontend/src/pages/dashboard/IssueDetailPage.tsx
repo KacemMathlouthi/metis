@@ -33,15 +33,15 @@ export const IssueDetailPage: React.FC = () => {
     try {
       const issueNum = parseInt(issueNumber);
 
-      const [issueData, commentsData] = await Promise.all([
+      const [issueData, commentsData, runsData] = await Promise.all([
         apiClient.getIssue(issueNum, selectedRepo.repository),
         apiClient.getIssueComments(issueNum, selectedRepo.repository),
+        apiClient.getIssueAgentRuns(issueNum, selectedRepo.repository),
       ]);
 
       setIssue(issueData);
       setComments(commentsData);
-      // Agent runs not yet implemented
-      setAgentRuns([]);
+      setAgentRuns(runsData);
     } catch (err) {
       toast.error(
         'Failed to load issue',
@@ -65,9 +65,8 @@ export const IssueDetailPage: React.FC = () => {
 
       toast.dismiss(loadingId);
       toast.success('Agent launched!', `Task ID: ${response.celery_task_id}`);
-
-      // Agent runs will be implemented later
-      // Refresh would happen here
+      await fetchIssue();
+      navigate(`/dashboard/agents/${response.agent_run_id}`);
     } catch (err) {
       toast.dismiss(loadingId);
       toast.error(

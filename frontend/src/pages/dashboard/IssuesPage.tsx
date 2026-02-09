@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { RefreshCw, FileQuestion, Bot, Loader2 } from 'lucide-react';
 import { useRepository } from '@/contexts/RepositoryContext';
@@ -20,11 +20,9 @@ export const IssuesPage: React.FC = () => {
   const [issues, setIssues] = useState<IssueWithAgent[]>([]);
   const [agentRuns, setAgentRuns] = useState<AgentRun[]>([]);
   const [loading, setLoading] = useState(false);
-  const hasFetchedRef = useRef(false);
 
   useEffect(() => {
-    if (!hasFetchedRef.current && selectedRepo) {
-      hasFetchedRef.current = true;
+    if (selectedRepo) {
       fetchData();
     }
   }, [selectedRepo]);
@@ -34,10 +32,12 @@ export const IssuesPage: React.FC = () => {
 
     setLoading(true);
     try {
-      const issuesData = await apiClient.listIssues(selectedRepo.repository);
+      const [issuesData, agentRunsData] = await Promise.all([
+        apiClient.listIssues(selectedRepo.repository),
+        apiClient.listAgentRuns(selectedRepo.repository),
+      ]);
       setIssues(issuesData as IssueWithAgent[]); // Cast since agent runs not implemented yet
-      // Agent runs not yet implemented
-      setAgentRuns([]);
+      setAgentRuns(agentRunsData);
     } catch (err) {
       toast.error('Failed to load data', err instanceof Error ? err.message : 'Unknown error');
     } finally {

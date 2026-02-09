@@ -427,6 +427,52 @@ class GitHubService:
         comments: list[dict[str, Any]] = response.json()
         return comments
 
+    async def get_repository(
+        self,
+        owner: str,
+        repo: str,
+        installation_id: int,
+    ) -> dict[str, Any]:
+        """Get repository metadata from GitHub."""
+        token = await self.get_installation_token(installation_id)
+
+        response = await self._client.get(
+            f"{self.base_url}/repos/{owner}/{repo}",
+            headers={"Authorization": f"Bearer {token}"},
+        )
+        response.raise_for_status()
+
+        repository_data: dict[str, Any] = response.json()
+        return repository_data
+
+    async def create_pull_request(
+        self,
+        owner: str,
+        repo: str,
+        title: str,
+        body: str,
+        head: str,
+        base: str,
+        installation_id: int,
+    ) -> dict[str, Any]:
+        """Create a pull request."""
+        token = await self.get_installation_token(installation_id)
+
+        response = await self._client.post(
+            f"{self.base_url}/repos/{owner}/{repo}/pulls",
+            headers={"Authorization": f"Bearer {token}"},
+            json={
+                "title": title,
+                "body": body,
+                "head": head,
+                "base": base,
+            },
+        )
+        response.raise_for_status()
+
+        pr_data: dict[str, Any] = response.json()
+        return pr_data
+
 
 # Global instance
 github_service = GitHubService()

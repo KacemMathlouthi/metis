@@ -14,13 +14,39 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.auth_deps import get_current_user
 from app.db.session import get_db
 from app.models.installation import Installation
+from app.models.agent_run import AgentRun
 from app.models.user import User
+from app.schemas.agent_run import AgentRunListItemResponse
 from app.schemas.issue import IssueCommentResponse, IssueResponse
 from app.services.github import GitHubService
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
+
+
+def _serialize_agent_run(run: AgentRun) -> AgentRunListItemResponse:
+    return AgentRunListItemResponse(
+        id=run.id,
+        issue_id=f"{run.repository}#{run.issue_number}",
+        repository=run.repository,
+        issue_number=run.issue_number,
+        status=str(run.status),
+        custom_instructions=run.custom_instructions,
+        iteration=run.iteration or 0,
+        tokens_used=run.tokens_used or 0,
+        tool_calls_made=run.tool_calls_made or 0,
+        started_at=run.started_at,
+        completed_at=run.completed_at,
+        elapsed_seconds=run.elapsed_seconds,
+        pr_url=run.pr_url,
+        pr_number=run.pr_number,
+        branch_name=run.branch_name,
+        files_changed=run.changed_files or [],
+        error=run.error,
+        celery_task_id=run.celery_task_id,
+        created_at=run.created_at,
+    )
 
 
 def _transform_github_issue(
@@ -299,3 +325,34 @@ async def get_issue_comments(
         raise HTTPException(
             status_code=500, detail=f"Failed to fetch comments: {str(e)}"
         )
+
+
+@router.get(
+    "/issues/{issue_number}/agent-runs",
+    response_model=list[AgentRunListItemResponse],
+)
+async def list_issue_agent_runs(
+    issue_number: int,
+    repository: str = Query(..., description="Repository in format 'owner/repo'"),
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> list[AgentRunListItemResponse]:
+    """List background agent runs for one issue in a repository."""
+    rows = (
+        (
+            await db.execute(
+                select(AgentRun)
+                .where(
+                    and_(
+                        AgentRun.user_id == current_user.id,
+                        AgentRun.repository == repository,
+                        AgentRun.issue_number == issue_number,
+                    )
+                )
+                .order_by(AgentRun.created_at.desc(), AgentRun.id.desc())
+            )
+        )
+        .scalars()
+        .all()
+    )
+    return [_serialize_agent_run(run) for run in rows]
