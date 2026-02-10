@@ -27,6 +27,55 @@ const API_BASE_URL =
   import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 class ApiClient {
+  private refreshPromise: Promise<void> | null = null;
+
+  private buildRequestInit(options?: RequestInit): RequestInit {
+    return {
+      ...options,
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        ...options?.headers,
+      },
+    };
+  }
+
+  private async parseResponse<T>(response: Response): Promise<T> {
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(`API error ${response.status}: ${error}`);
+    }
+
+    if (response.status === 204) {
+      return undefined as T;
+    }
+
+    return response.json();
+  }
+
+  private shouldSkipRefresh(endpoint: string): boolean {
+    return endpoint === '/auth/refresh' || endpoint === '/auth/logout';
+  }
+
+  private async refreshSession(): Promise<void> {
+    if (!this.refreshPromise) {
+      this.refreshPromise = (async () => {
+        const response = await fetch(
+          `${API_BASE_URL}/auth/refresh`,
+          this.buildRequestInit({ method: 'POST' })
+        );
+        if (!response.ok) {
+          const error = await response.text();
+          throw new Error(`API error ${response.status}: ${error}`);
+        }
+      })().finally(() => {
+        this.refreshPromise = null;
+      });
+    }
+
+    return this.refreshPromise;
+  }
+
   /**
    * Make HTTP request with automatic cookie handling.
    *
@@ -37,26 +86,21 @@ class ApiClient {
     endpoint: string,
     options?: RequestInit
   ): Promise<T> {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      ...options,
-      credentials: 'include', // Send cookies with request
-      headers: {
-        'Content-Type': 'application/json',
-        ...options?.headers,
-      },
-    });
+    const response = await fetch(
+      `${API_BASE_URL}${endpoint}`,
+      this.buildRequestInit(options)
+    );
 
-    if (!response.ok) {
-      const error = await response.text();
-      throw new Error(`API error ${response.status}: ${error}`);
+    if (response.status === 401 && !this.shouldSkipRefresh(endpoint)) {
+      await this.refreshSession();
+      const retryResponse = await fetch(
+        `${API_BASE_URL}${endpoint}`,
+        this.buildRequestInit(options)
+      );
+      return this.parseResponse<T>(retryResponse);
     }
 
-    // Handle 204 No Content (no response body)
-    if (response.status === 204) {
-      return undefined as T;
-    }
-
-    return response.json();
+    return this.parseResponse<T>(response);
   }
 
   // ==================== Auth Endpoints ====================
@@ -82,10 +126,8 @@ class ApiClient {
    * Refresh access token using refresh token.
    * Called automatically when access token expires.
    */
-  async refreshToken(): Promise<{ access_token: string }> {
-    return this.request<{ access_token: string }>('/auth/refresh', {
-      method: 'POST',
-    });
+  async refreshToken(): Promise<void> {
+    await this.refreshSession();
   }
 
   // ==================== Installation Endpoints ====================
