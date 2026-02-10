@@ -1,0 +1,17 @@
+<svg width="920" height="220" viewBox="0 0 920 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Metis logo">
+  <defs>
+    <linearGradient id="metisGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFD800" />
+      <stop offset="55%" stop-color="#FFAF00" />
+      <stop offset="100%" stop-color="#E10500" />
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="160%" height="160%">
+      <feDropShadow dx="10" dy="10" stdDeviation="0" flood-color="#000000" flood-opacity="1" />
+    </filter>
+  </defs>
+
+  <rect x="150" y="30" width="160" height="160" rx="0" fill="url(#metisGradient)" stroke="#000000" stroke-width="10" filter="url(#shadow)" />
+  <text x="230" y="110" text-anchor="middle" font-family="Space Grotesk, Sora, sans-serif" font-size="88" font-weight="900" fill="#FFFFFF" dy=".35em">M</text>
+
+  <text x="560" y="110" text-anchor="middle" font-family="Space Grotesk, Sora, sans-serif" font-size="118" font-weight="900" letter-spacing="-4" fill="#FFFFFF" dy=".35em">METIS</text>
+</svg>
