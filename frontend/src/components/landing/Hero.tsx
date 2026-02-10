@@ -40,12 +40,14 @@ export const Hero: React.FC = () => {
           Metis catches issues before they hit production.
         </p>
         <div className="flex flex-col justify-center gap-6 md:flex-row">
-          <Button size="lg" className="bg-[var(--metis-orange)] text-white">
-            INSTALL ON GITHUB <Github className="h-6 w-6" />
-          </Button>
-          <Button size="lg" className="bg-white">
+          <a href="/login">
+            <Button size="lg" className="bg-[var(--metis-orange)] text-white">
+              INSTALL ON GITHUB <Github className="h-6 w-6" />
+            </Button>
+          </a>
+          {/* <Button size="lg" className="bg-white">
             VIEW DEMO
-          </Button>
+          </Button> */}
         </div>
       </div>
     </header>
