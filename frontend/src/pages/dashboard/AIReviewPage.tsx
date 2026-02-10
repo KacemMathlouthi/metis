@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Bot, Zap, FileText, GitCommit, Ban, Plus, Trash2, Sparkles } from 'lucide-react';
+import { Zap, FileText, Ban, Plus, Trash2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
@@ -122,47 +121,16 @@ export const AIReviewPage: React.FC = () => {
         </p>
       </div>
 
-      {/* AI Agent Info */}
-      <div>
-        <Card className="border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-          <div className="relative border-b-2 border-black px-6 pt-4 pb-3 pr-28">
-            <div className="flex items-center gap-2">
-              <Bot className="h-6 w-6" />
-              <h2 className="font-black">Metis Agent Capabilities</h2>
-            </div>
-            <p className="mt-1 text-sm font-medium text-black/70">
-              Automated feedback on pull requests with actionable insights.
-            </p>
-            <img
-              src={lechatGif}
-              alt="LeChat agent"
-              className="pointer-events-none absolute right-6 top-0 z-10 h-16 w-auto -translate-y-[calc(100%+10px)] -scale-x-100 md:right-8 md:h-20"
-            />
-          </div>
-          <CardContent className="space-y-4 pt-5">
-            <div className="flex items-start gap-4 rounded-md border-2 border-black bg-[var(--metis-pastel-4)] p-5">
-              <div className="mt-0.5 rounded-full bg-[var(--metis-orange-dark)] p-2.5 border-2 border-black shadow-[2px_2px_0px_0px_#000]">
-                <Sparkles className="h-6 w-6 text-white" />
-              </div>
-              <div>
-                <p className="text-sm font-black text-black">On-Demand Reviews</p>
-                <p className="text-black/70 mt-1 text-sm font-medium">
-                  Mention{' '}
-                  <Badge variant="neutral" className="border-2 border-black bg-white text-xs font-bold">
-                    @metis-ai
-                  </Badge>{' '}
-                  in any pull request to trigger a fresh review, ask for clarification, or request
-                  code changes.
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      {/* Metis Agent Capabilities section hidden for now */}
 
       {/* Sensitivity */}
       <Card className="border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-        <CardHeader>
+        <CardHeader className="relative pr-28">
+          <img
+            src={lechatGif}
+            alt="LeChat agent"
+            className="pointer-events-none absolute right-6 top-0 z-10 h-16 w-auto -translate-y-[calc(100%+10px)] -scale-x-100 md:right-8 md:h-20"
+          />
           <div className="flex items-center gap-2">
             <Zap className="h-6 w-6" />
             <CardTitle className="font-black">Review Depth</CardTitle>
@@ -230,7 +198,7 @@ export const AIReviewPage: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* Incremental Commits */}
+      {/* Incremental Commits
       <Card className="border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
         <CardHeader>
           <div className="flex items-center justify-between">
@@ -253,7 +221,7 @@ export const AIReviewPage: React.FC = () => {
             noise.
           </p>
         </CardContent>
-      </Card>
+      </Card> */}
 
       {/* Ignore Patterns */}
       <Card className="border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
