@@ -21,6 +21,36 @@ from app.services.oauth import github_oauth
 router = APIRouter()
 
 
+def _set_auth_cookies(
+    response: Response,
+    access_token: str,
+    refresh_token: str,
+) -> None:
+    """Set access and refresh cookies with consistent auth settings."""
+    response.set_cookie(
+        key="access_token",
+        value=access_token,
+        httponly=True,
+        secure=False,  # Set True in production with HTTPS
+        samesite="lax",
+        max_age=settings.JWT_ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+    )
+    response.set_cookie(
+        key="refresh_token",
+        value=refresh_token,
+        httponly=True,
+        secure=False,  # Set True in production
+        samesite="lax",
+        max_age=settings.JWT_REFRESH_TOKEN_EXPIRE_DAYS * 86400,
+    )
+
+
+def _clear_auth_cookies(response: Response) -> None:
+    """Clear auth cookies from response."""
+    response.delete_cookie(key="access_token")
+    response.delete_cookie(key="refresh_token")
+
+
 @router.get("/login/github")
 async def github_login() -> RedirectResponse:
     """Initiate GitHub OAuth flow.
@@ -80,22 +110,10 @@ async def github_callback(
     # Set secure HTTP-only cookies and redirect to dashboard
     response = RedirectResponse(url=f"{settings.FRONTEND_URL}/dashboard")
 
-    response.set_cookie(
-        key="access_token",
-        value=jwt_access_token,
-        httponly=True,  # Prevents JavaScript access (XSS protection)
-        secure=False,  # Set True in production with HTTPS
-        samesite="lax",  # CSRF protection
-        max_age=settings.JWT_ACCESS_TOKEN_EXPIRE_MINUTES * 60,
-    )
-
-    response.set_cookie(
-        key="refresh_token",
-        value=jwt_refresh_token,
-        httponly=True,
-        secure=False,  # Set True in production
-        samesite="lax",
-        max_age=settings.JWT_REFRESH_TOKEN_EXPIRE_DAYS * 86400,
+    _set_auth_cookies(
+        response=response,
+        access_token=jwt_access_token,
+        refresh_token=jwt_refresh_token,
     )
 
     return response
@@ -105,7 +123,7 @@ async def github_callback(
 async def refresh_access_token(
     refresh_token: Annotated[str | None, Cookie()] = None,
     db: AsyncSession = Depends(get_db),
-) -> dict[str, str]:
+) -> Response:
     """Refresh access token using refresh token.
 
     When access token expires, frontend calls this with refresh token
@@ -140,10 +158,20 @@ async def refresh_access_token(
                 status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found"
             )
 
-        # Generate new access token
+        # Rotate tokens to maintain session continuity and reduce replay window.
         new_access_token = create_access_token(data={"sub": str(user.id)})
+        new_refresh_token = create_refresh_token(user_id=str(user.id))
 
-        return {"access_token": new_access_token, "token_type": "bearer"}
+        response = Response(
+            content='{"message":"Token refreshed"}',
+            media_type="application/json",
+        )
+        _set_auth_cookies(
+            response=response,
+            access_token=new_access_token,
+            refresh_token=new_refresh_token,
+        )
+        return response
 
     except ValueError as e:
         raise HTTPException(
@@ -152,7 +180,7 @@ async def refresh_access_token(
 
 
 @router.post("/logout")
-async def logout() -> dict[str, str]:
+async def logout() -> Response:
     """Logout user by clearing authentication cookies.
 
     Removes both access_token and refresh_token cookies.
@@ -162,8 +190,7 @@ async def logout() -> dict[str, str]:
         content='{"message": "Logged out successfully"}', media_type="application/json"
     )
 
-    response.delete_cookie(key="access_token")
-    response.delete_cookie(key="refresh_token")
+    _clear_auth_cookies(response)
 
     return response
 
