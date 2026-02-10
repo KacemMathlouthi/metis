@@ -113,8 +113,8 @@ app/
 ├── core/                # Core configuration
 │   ├── config.py        # Pydantic Settings for env vars, JWT, Redis, Celery, Daytona, LangSmith
 │   ├── client.py        # LiteLLM client factory (multi-provider: Vertex AI, OpenAI, Mistral, etc.)
-│   ├── security.py      # JWT generation/verification, token encryption (Fernet)
-│   ├── auth_deps.py     # get_current_user() dependency for protected routes
+│   ├── security.py      # JWT generation/verification (+ token type claims), token encryption (Fernet)
+│   ├── auth_deps.py     # get_current_user() dependency for protected routes (enforces access token type)
 │   ├── redis_client.py  # Redis singleton with connection pooling
 │   └── celery_app.py    # Celery application with production config, BaseTask
 ├── db/                  # Database layer
@@ -192,7 +192,8 @@ src/
 ├── main.tsx                    # Application entry point with StrictMode
 ├── App.tsx                     # Root with AuthProvider, ToastProvider, RepositoryProvider (dashboard only)
 ├── assets/                     # Static assets
-│   └── lechat.gif              # LeChat AI agent animation for loading states
+│   ├── lechat.gif              # LeChat AI agent animation for loading states and landing/readme visuals
+│   └── Handshake-with-AI.png   # Landing hero visual (human/AI handshake)
 ├── components/
 │   ├── ProtectedRoute.tsx      # Auth guard for dashboard routes
 │   ├── UnsavedChangesBar.tsx   # Floating glassmorphic save bar
@@ -225,7 +226,7 @@ src/
 ├── hooks/
 │   └── use-mobile.ts           # Mobile detection hook
 ├── lib/
-│   ├── api-client.ts           # API client with Issues & Agent Run backend endpoints
+│   ├── api-client.ts           # API client with Issues & Agent Run backend endpoints + silent auth refresh retry on 401
 │   ├── language-icons.tsx      # Language logo utilities (17+ languages from react-icons)
 │   └── utils.ts                # Utility functions (cn, truncateText)
 ├── types/
@@ -514,9 +515,11 @@ Coverage report available at `htmlcov/index.html`.
 ### Authentication & Authorization
 - **GitHub OAuth 2.0** user authentication flow
 - **JWT tokens** (access + refresh) with HTTP-only cookies
+- **Refresh flow hardening**: `/auth/refresh` rotates refresh token and sets fresh access/refresh cookies
+- **Token type enforcement**: access/refresh tokens include `type` claim; protected routes validate access token type
 - **Token encryption** (Fernet) for storing GitHub OAuth tokens in database
 - **Protected routes** with `get_current_user()` dependency
-- **Session management** with automatic token refresh
+- **Session management** with frontend silent refresh-and-retry on 401 (cookie-based continuity)
 - **Ownership verification** on all installation endpoints
 
 ### Async Processing (Redis + Celery)
@@ -542,16 +545,19 @@ Coverage report available at `htmlcov/index.html`.
 ### Frontend
 - **Complete UI** with landing, login, callback, dashboard, analytics, AI settings, repositories, issues, 404
 - **Auth integration** with AuthContext and ProtectedRoute guard
+- **API auth resilience**: automatic silent refresh and request retry on 401 (excluding refresh/logout endpoints)
 - **Workspace context** (RepositoryContext) for selected repository state
 - **Repository management page** with sync, enable/disable, language-specific icons (17+ languages)
 - **Real user data** in sidebar (GitHub profile, avatar, repository selector in user dropdown)
 - **Custom toast system** using Alert component (bottom-left position, auto-dismiss)
 - **Confirmation dialogs** (AlertDialog for destructive actions)
 - **Live config editor** on AI Review page with floating save bar and dirty tracking
+- **AI Review visual polish**: LeChat visual integrated into "Metis Agent Capabilities" header area
 - **Language icons** using react-icons/simple-icons (TypeScript, Python, Go, Rust, etc.)
 - **PixelBlast animations** on login, callback, and 404 pages
 - **API client** with type-safe methods, 204 No Content handling, cookie-based auth
 - **No duplicate requests** (useRef guards in contexts to prevent StrictMode double-fetching)
+- **Landing hero redesign**: full-bleed handshake visual integrated with palette-consistent overlays and marquee color tuning
 
 ### Issues & Agent Runs UI
 - **IssuesPage** with tabs for Issues and Agent Runs
@@ -699,6 +705,12 @@ Coverage report available at `htmlcov/index.html`.
 - **pgAdmin**: http://localhost:5050 for database management
 - **Redis Insight**: http://localhost:5540 for Redis key inspection
 - **Flower**: http://localhost:5555 for Celery task monitoring (when running)
+
+### OSS Baseline (In Progress)
+- **Repository docs foundation**: production-grade `README.md` with architecture, quickstart, badges, and contribution entrypoints
+- **Contributor onboarding**: `CONTRIBUTING.md` added with workflow, quality checks, and PR expectations
+- **Community and security baseline**: `CODE_OF_CONDUCT.md` and `SECURITY.md` added
+- **Branding asset extraction**: `static/metis-logo.svg` added for reusable logo rendering in docs
 
 ### AI Agent System ✅ (COMPLETED)
 - **Autonomous code review agent** with tool-augmented analysis and progressive inline posting
