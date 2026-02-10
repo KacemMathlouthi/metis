@@ -1,7 +1,7 @@
 <p align="center">
-  <h1 align="center">METIS</h1>
-  <p align="center">AI-Powered GitHub Code Review Platform</p>
+  <img src="static/metis-logo.svg" alt="Metis logo" width="520" />
 </p>
+<p align="center">AI-Powered GitHub Code Review Platform</p>
 
 <p align="center">
   <a href="https://github.com/KacemMathlouthi/metis">
