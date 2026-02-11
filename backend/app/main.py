@@ -7,7 +7,15 @@ sets up middleware, includes routers, and defines startup/shutdown events.
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import agents, analytics, auth, installations, issues, review_comments, webhooks
+from app.api import (
+    agents,
+    analytics,
+    auth,
+    installations,
+    issues,
+    review_comments,
+    webhooks,
+)
 from app.core.config import settings
 
 

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+
 @dataclass(frozen=True)
 class SummaryComposeResult:
     """Result of composing PR description with generated summary."""

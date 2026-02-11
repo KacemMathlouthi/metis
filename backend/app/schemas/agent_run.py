@@ -58,4 +58,3 @@ class AgentRunDetailResponse(AgentRunListItemResponse):
     initial_user_message: str | None
     conversation: list[dict[str, Any]]
     final_result: dict[str, Any]
-
