@@ -530,6 +530,8 @@ function SidebarMenuAction({
         'peer-data-[size=sm]/menu-button:top-1',
         'peer-data-[size=default]/menu-button:top-1.5',
         'peer-data-[size=lg]/menu-button:top-2.5',
+        showOnHover &&
+          'peer-data-[active=true]/menu-button:text-main-foreground group-hover/menu-item:opacity-100 focus-visible:opacity-100 md:opacity-0',
         'group-data-[collapsible=icon]:hidden',
         className
       )}
@@ -564,10 +566,7 @@ function SidebarMenuSkeleton({
 }: React.ComponentProps<'div'> & {
   showIcon?: boolean;
 }) {
-  // Random width between 50 to 90%.
-  const width = React.useMemo(() => {
-    return `${Math.floor(Math.random() * 40) + 50}%`;
-  }, []);
+  const width = '70%';
 
   return (
     <div
