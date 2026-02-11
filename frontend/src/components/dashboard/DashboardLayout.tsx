@@ -15,8 +15,7 @@ export const DashboardLayout: React.FC = () => {
   const location = useLocation();
   const pathSegments = location.pathname.split('/').filter(Boolean);
   const currentPage = pathSegments[pathSegments.length - 1];
-  const displayPage =
-    currentPage === 'dashboard' ? 'Dashboard' : currentPage.replace('-', ' ');
+  const displayPage = currentPage === 'dashboard' ? 'Dashboard' : currentPage.replace('-', ' ');
 
   React.useEffect(() => {
     const title = `Metis — ${displayPage
@@ -44,14 +43,14 @@ export const DashboardLayout: React.FC = () => {
                     </BreadcrumbItem>
                     <BreadcrumbSeparator className="hidden md:block" />
                     <BreadcrumbItem>
-                      <BreadcrumbPage className="capitalize font-semibold text-[var(--metis-red)]">
+                      <BreadcrumbPage className="font-semibold text-[var(--metis-red)] capitalize">
                         {displayPage}
                       </BreadcrumbPage>
                     </BreadcrumbItem>
                   </>
                 ) : (
                   <BreadcrumbItem>
-                    <BreadcrumbPage className="capitalize font-semibold text-[var(--metis-red)]">
+                    <BreadcrumbPage className="font-semibold text-[var(--metis-red)] capitalize">
                       {displayPage}
                     </BreadcrumbPage>
                   </BreadcrumbItem>

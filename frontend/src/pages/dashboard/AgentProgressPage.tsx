@@ -43,10 +43,7 @@ export const AgentProgressPage: React.FC = () => {
       const data = await apiClient.getAgentRun(agentId);
       setAgentRun(data);
     } catch (err) {
-      toast.error(
-        'Failed to load agent run',
-        err instanceof Error ? err.message : 'Unknown error'
-      );
+      toast.error('Failed to load agent run', err instanceof Error ? err.message : 'Unknown error');
     } finally {
       if (!silent) setLoading(false);
     }

@@ -45,14 +45,13 @@ export const IssuesPage: React.FC = () => {
     }
   };
 
-
   if (!selectedRepo) {
     return (
-      <div className="flex items-center justify-center py-12 p-4">
+      <div className="flex items-center justify-center p-4 py-12">
         <Card className="border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
           <CardContent className="flex flex-col items-center p-12 text-center">
-            <FileQuestion className="h-12 w-12 mb-4 text-black/40" />
-            <h3 className="font-black text-lg">No repository selected</h3>
+            <FileQuestion className="mb-4 h-12 w-12 text-black/40" />
+            <h3 className="text-lg font-black">No repository selected</h3>
             <p className="text-sm font-medium text-black/60">
               Select a repository from the sidebar to view issues
             </p>
@@ -63,12 +62,12 @@ export const IssuesPage: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6 p-4 max-w-6xl mx-auto">
+    <div className="mx-auto max-w-6xl space-y-6 p-4">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+      <div className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
         <div>
           <h1 className="landing-display text-3xl font-black text-black">Issues</h1>
-          <p className="text-black/60 font-medium mt-1">
+          <p className="mt-1 font-medium text-black/60">
             Manage GitHub issues and launch AI agents to solve them
           </p>
         </div>
@@ -76,25 +75,25 @@ export const IssuesPage: React.FC = () => {
           onClick={fetchData}
           disabled={loading}
           variant="neutral"
-          className="border-2 border-black font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-0.5 hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all"
+          className="border-2 border-black font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]"
         >
-          <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+          <RefreshCw className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
           Refresh
         </Button>
       </div>
 
       {/* Main Tabs */}
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'issues' | 'agents')}>
-        <TabsList className="grid w-full grid-cols-2 border-2 border-black bg-white p-1 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] h-auto">
+        <TabsList className="grid h-auto w-full grid-cols-2 border-2 border-black bg-white p-1 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
           <TabsTrigger
             value="issues"
-            className="font-bold text-xs sm:text-sm data-[state=active]:bg-[var(--metis-pastel-2)] data-[state=active]:text-black data-[state=active]:border-2 data-[state=active]:border-black data-[state=active]:shadow-sm transition-all py-2"
+            className="py-2 text-xs font-bold transition-all data-[state=active]:border-2 data-[state=active]:border-black data-[state=active]:bg-[var(--metis-pastel-2)] data-[state=active]:text-black data-[state=active]:shadow-sm sm:text-sm"
           >
             All Issues ({issues.length})
           </TabsTrigger>
           <TabsTrigger
             value="agents"
-            className="font-bold text-xs sm:text-sm data-[state=active]:bg-[var(--metis-pastel-2)] data-[state=active]:text-black data-[state=active]:border-2 data-[state=active]:border-black data-[state=active]:shadow-sm transition-all py-2"
+            className="py-2 text-xs font-bold transition-all data-[state=active]:border-2 data-[state=active]:border-black data-[state=active]:bg-[var(--metis-pastel-2)] data-[state=active]:text-black data-[state=active]:shadow-sm sm:text-sm"
           >
             Agent Runs ({agentRuns.length})
           </TabsTrigger>
@@ -104,14 +103,14 @@ export const IssuesPage: React.FC = () => {
         <TabsContent value="issues" className="mt-6">
           {loading ? (
             <div className="flex flex-col items-center justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin mb-4" />
+              <Loader2 className="mb-4 h-8 w-8 animate-spin" />
               <p className="text-sm font-medium text-black/60">Loading issues...</p>
             </div>
           ) : issues.length === 0 ? (
             <Card className="border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-              <CardContent className="flex flex-col items-center py-12 px-4 text-center">
-                <FileQuestion className="h-12 w-12 mb-4 text-black/40" />
-                <h3 className="font-black text-lg">No issues found</h3>
+              <CardContent className="flex flex-col items-center px-4 py-12 text-center">
+                <FileQuestion className="mb-4 h-12 w-12 text-black/40" />
+                <h3 className="text-lg font-black">No issues found</h3>
                 <p className="text-sm font-medium text-black/60">
                   There are no issues in this repository
                 </p>
@@ -126,17 +125,17 @@ export const IssuesPage: React.FC = () => {
         </TabsContent>
 
         {/* Agents Tab */}
-        <TabsContent value="agents" className="flex-1 flex flex-col min-h-0 mt-6">
+        <TabsContent value="agents" className="mt-6 flex min-h-0 flex-1 flex-col">
           {loading ? (
             <div className="flex flex-col items-center justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin mb-4" />
+              <Loader2 className="mb-4 h-8 w-8 animate-spin" />
               <p className="text-sm font-medium text-black/60">Loading agents...</p>
             </div>
           ) : agentRuns.length === 0 ? (
             <Card className="border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-              <CardContent className="flex flex-col items-center py-12 px-4 text-center">
-                <Bot className="h-12 w-12 mb-4 text-black/40" />
-                <h3 className="font-black text-lg">No agents running</h3>
+              <CardContent className="flex flex-col items-center px-4 py-12 text-center">
+                <Bot className="mb-4 h-12 w-12 text-black/40" />
+                <h3 className="text-lg font-black">No agents running</h3>
                 <p className="text-sm font-medium text-black/60">
                   Launch an agent from the Issues tab to get started
                 </p>

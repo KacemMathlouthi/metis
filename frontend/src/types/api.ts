@@ -85,7 +85,14 @@ export interface ReviewComment {
   line_end: number | null;
   comment_text: string;
   severity: 'INFO' | 'WARNING' | 'ERROR' | 'CRITICAL';
-  category: 'BUG' | 'SECURITY' | 'PERFORMANCE' | 'STYLE' | 'MAINTAINABILITY' | 'DOCUMENTATION' | 'TESTING';
+  category:
+    | 'BUG'
+    | 'SECURITY'
+    | 'PERFORMANCE'
+    | 'STYLE'
+    | 'MAINTAINABILITY'
+    | 'DOCUMENTATION'
+    | 'TESTING';
   created_at: string;
 }
 
@@ -93,17 +100,17 @@ export interface ReviewComment {
  * GitHub Issue
  */
 export interface Issue {
-  id: string;  // Our UUID
+  id: string; // Our UUID
   github_issue_id: number;
-  repository: string;  // "owner/repo"
+  repository: string; // "owner/repo"
   issue_number: number;
   title: string;
   body: string | null;
   status: 'OPEN' | 'CLOSED';
-  labels: string[];  // Array of label names
-  assignees: string[];  // Array of GitHub usernames
-  author: string;  // GitHub username
-  created_at: string;  // ISO date
+  labels: string[]; // Array of label names
+  assignees: string[]; // Array of GitHub usernames
+  author: string; // GitHub username
+  created_at: string; // ISO date
   updated_at: string | null;
   closed_at: string | null;
   comments_count: number;
@@ -126,7 +133,7 @@ export interface IssueComment {
  * Agent run tracking
  */
 export interface AgentRun {
-  id: string;  // Agent execution ID
+  id: string; // Agent execution ID
   issue_id: string;
   repository: string;
   issue_number: number;
@@ -142,10 +149,10 @@ export interface AgentRun {
   elapsed_seconds: number | null;
 
   // Results
-  pr_url: string | null;  // GitHub PR URL
+  pr_url: string | null; // GitHub PR URL
   pr_number: number | null;
   branch_name: string | null;
-  files_changed: string[];  // Array of file paths
+  files_changed: string[]; // Array of file paths
   error: string | null;
 
   // Metadata

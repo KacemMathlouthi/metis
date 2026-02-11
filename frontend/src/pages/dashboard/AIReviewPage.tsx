@@ -94,7 +94,10 @@ export const AIReviewPage: React.FC = () => {
       toast.success('Configuration Saved', 'Review settings updated successfully');
     } catch (err) {
       toast.dismiss(loadingId);
-      toast.error('Save Failed', err instanceof Error ? err.message : 'Failed to save configuration');
+      toast.error(
+        'Save Failed',
+        err instanceof Error ? err.message : 'Failed to save configuration'
+      );
     } finally {
       setSaving(false);
     }
@@ -116,7 +119,7 @@ export const AIReviewPage: React.FC = () => {
     <div className="mx-auto max-w-6xl space-y-6 p-4">
       <div className="flex flex-col gap-2">
         <h1 className="landing-display text-3xl font-black">Review Configuration</h1>
-        <p className="text-black/60 font-medium">
+        <p className="font-medium text-black/60">
           Customize Metis's code review behavior and preferences.
         </p>
       </div>
@@ -129,13 +132,15 @@ export const AIReviewPage: React.FC = () => {
           <img
             src={lechatGif}
             alt="LeChat agent"
-            className="pointer-events-none absolute right-6 top-0 z-10 h-16 w-auto -translate-y-[calc(100%+10px)] -scale-x-100 md:right-8 md:h-20"
+            className="pointer-events-none absolute top-0 right-6 z-10 h-16 w-auto -translate-y-[calc(100%+10px)] -scale-x-100 md:right-8 md:h-20"
           />
           <div className="flex items-center gap-2">
             <Zap className="h-6 w-6" />
             <CardTitle className="font-black">Review Depth</CardTitle>
           </div>
-          <CardDescription className="font-medium">Adjust the granularity and strictness of the analysis.</CardDescription>
+          <CardDescription className="font-medium">
+            Adjust the granularity and strictness of the analysis.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -166,10 +171,16 @@ export const AIReviewPage: React.FC = () => {
                 } `}
               >
                 <div className="mb-2 flex items-center justify-between">
-                  <span className="font-black text-lg">{option.label}</span>
-                  {sensitivity === option.id && <div className="h-3 w-3 rounded-full bg-black border border-black" />}
+                  <span className="text-lg font-black">{option.label}</span>
+                  {sensitivity === option.id && (
+                    <div className="h-3 w-3 rounded-full border border-black bg-black" />
+                  )}
                 </div>
-                <p className={`text-xs font-medium ${sensitivity === option.id ? 'text-black' : 'text-gray-500'}`}>{option.desc}</p>
+                <p
+                  className={`text-xs font-medium ${sensitivity === option.id ? 'text-black' : 'text-gray-500'}`}
+                >
+                  {option.desc}
+                </p>
               </div>
             ))}
           </div>
@@ -193,7 +204,7 @@ export const AIReviewPage: React.FC = () => {
             value={customInstructions}
             onChange={(e) => setCustomInstructions(e.target.value)}
             placeholder="Enter specific coding standards, architectural patterns, or focus areas for Metis..."
-            className="min-h-[120px] resize-none border-2 border-black focus-visible:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] focus-visible:ring-0 font-medium placeholder:text-gray-400"
+            className="min-h-[120px] resize-none border-2 border-black font-medium placeholder:text-gray-400 focus-visible:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] focus-visible:ring-0"
           />
         </CardContent>
       </Card>
@@ -240,11 +251,11 @@ export const AIReviewPage: React.FC = () => {
               placeholder="e.g., *.test.ts, vendor/*"
               value={newPattern}
               onChange={(e) => setNewPattern(e.target.value)}
-              className="border-2 border-black focus-visible:ring-0 font-medium"
+              className="border-2 border-black font-medium focus-visible:ring-0"
             />
             <Button
               onClick={addPattern}
-              className="border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-y-[1px] hover:shadow-none font-bold"
+              className="border-2 border-black font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-y-[1px] hover:shadow-none"
             >
               <Plus className="mr-2 h-4 w-4" /> Add
             </Button>
@@ -274,11 +285,7 @@ export const AIReviewPage: React.FC = () => {
 
       {/* Save Bar */}
       {hasChanges && (
-        <UnsavedChangesBar
-          onSave={handleSave}
-          onRevert={handleRevert}
-          saving={saving}
-        />
+        <UnsavedChangesBar onSave={handleSave} onRevert={handleRevert} saving={saving} />
       )}
     </div>
   );

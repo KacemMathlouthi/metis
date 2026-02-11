@@ -6,10 +6,7 @@ interface LabelBadgeProps {
   className?: string;
 }
 
-export const LabelBadge: React.FC<LabelBadgeProps> = ({
-  label,
-  className,
-}) => {
+export const LabelBadge: React.FC<LabelBadgeProps> = ({ label, className }) => {
   // hash function to generate consistent colors for labels
   const getColorForLabel = (str: string) => {
     const colors = [
@@ -53,13 +50,7 @@ export const LabelBadge: React.FC<LabelBadgeProps> = ({
   return (
     <Badge
       variant="neutral"
-      className={cn(
-        'border-2 font-bold text-xs',
-        color.border,
-        color.bg,
-        color.text,
-        className
-      )}
+      className={cn('border-2 text-xs font-bold', color.border, color.bg, color.text, className)}
     >
       {label}
     </Badge>

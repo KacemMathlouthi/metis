@@ -21,13 +21,12 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   // Fetch user when protected route mounts
   useEffect(() => {
     refetch().finally(() => {
-      setHasChecked(true);  // Mark that we've checked auth
+      setHasChecked(true); // Mark that we've checked auth
     });
   }, []);
 
   // Show loading state while checking auth
   if (!hasChecked || loading) {
-
     return (
       <div className="flex min-h-screen items-center justify-center bg-[var(--metis-cream)]">
         <div className="w-full max-w-sm space-y-4">
@@ -39,9 +38,18 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
           </div>
           {/* Spinning dots */}
           <div className="flex justify-center gap-2">
-            <div className="h-3 w-3 animate-bounce rounded-sm border-2 border-black bg-[var(--metis-yellow)] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]" style={{ animationDelay: '0s' }}></div>
-            <div className="h-3 w-3 animate-bounce rounded-sm border-2 border-black bg-[var(--metis-orange-light)] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]" style={{ animationDelay: '0.1s' }}></div>
-            <div className="h-3 w-3 animate-bounce rounded-sm border-2 border-black bg-[var(--metis-red)] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]" style={{ animationDelay: '0.2s' }}></div>
+            <div
+              className="h-3 w-3 animate-bounce rounded-sm border-2 border-black bg-[var(--metis-yellow)] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+              style={{ animationDelay: '0s' }}
+            ></div>
+            <div
+              className="h-3 w-3 animate-bounce rounded-sm border-2 border-black bg-[var(--metis-orange-light)] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+              style={{ animationDelay: '0.1s' }}
+            ></div>
+            <div
+              className="h-3 w-3 animate-bounce rounded-sm border-2 border-black bg-[var(--metis-red)] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+              style={{ animationDelay: '0.2s' }}
+            ></div>
           </div>
         </div>
       </div>

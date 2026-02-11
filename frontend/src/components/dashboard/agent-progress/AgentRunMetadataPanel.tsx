@@ -13,10 +13,16 @@ export const AgentRunMetadataPanel: React.FC<AgentRunMetadataPanelProps> = ({ ag
     <>
       <div className="rounded-lg border-2 border-black bg-white p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:p-5">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-          <h2 className="text-sm font-black uppercase tracking-wider text-black/70">Run Metadata</h2>
+          <h2 className="text-sm font-black tracking-wider text-black/70 uppercase">
+            Run Metadata
+          </h2>
           <div className="flex items-center gap-2">
             {agentRun.pr_url && (
-              <Button asChild variant="neutral" className="h-8 gap-2 border-2 border-black px-3 font-bold">
+              <Button
+                asChild
+                variant="neutral"
+                className="h-8 gap-2 border-2 border-black px-3 font-bold"
+              >
                 <a href={agentRun.pr_url} target="_blank" rel="noreferrer">
                   <ExternalLink className="h-4 w-4" />
                   PR #{agentRun.pr_number}
@@ -24,7 +30,11 @@ export const AgentRunMetadataPanel: React.FC<AgentRunMetadataPanelProps> = ({ ag
               </Button>
             )}
             {agentRun.issue_url && (
-              <Button asChild variant="neutral" className="h-8 gap-2 border-2 border-black px-3 font-bold">
+              <Button
+                asChild
+                variant="neutral"
+                className="h-8 gap-2 border-2 border-black px-3 font-bold"
+              >
                 <a href={agentRun.issue_url} target="_blank" rel="noreferrer">
                   <ExternalLink className="h-4 w-4" />
                   Open Issue
@@ -50,7 +60,7 @@ export const AgentRunMetadataPanel: React.FC<AgentRunMetadataPanelProps> = ({ ag
 
         {agentRun.files_changed.length > 0 && (
           <div className="mt-4 space-y-2">
-            <p className="text-xs font-bold uppercase tracking-wider text-black/70">
+            <p className="text-xs font-bold tracking-wider text-black/70 uppercase">
               Changed Files ({agentRun.files_changed.length})
             </p>
             <div className="flex flex-wrap gap-2">
@@ -70,7 +80,7 @@ export const AgentRunMetadataPanel: React.FC<AgentRunMetadataPanelProps> = ({ ag
 
       {agentRun.status === 'FAILED' && agentRun.error && (
         <div className="rounded-lg border-2 border-black bg-[var(--metis-pastel-red)] p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-          <h2 className="mb-3 flex items-center gap-2 text-sm font-black uppercase tracking-wider text-[var(--metis-red)]">
+          <h2 className="mb-3 flex items-center gap-2 text-sm font-black tracking-wider text-[var(--metis-red)] uppercase">
             Error
           </h2>
           <CodeBlock code={agentRun.error} language="text" />

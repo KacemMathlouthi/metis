@@ -192,28 +192,31 @@ export const AnalyticsIssuesTab: React.FC<AnalyticsIssuesTabProps> = ({
             <TableBody>
               {!selectedRepository && (
                 <TableRow className="border-b-2 border-black/10 bg-white">
-                  <TableCell colSpan={5} className="py-8 text-center text-black/60 font-medium">
+                  <TableCell colSpan={5} className="py-8 text-center font-medium text-black/60">
                     Select a repository to view AI detected issues.
                   </TableCell>
                 </TableRow>
               )}
               {selectedRepository && loading && (
                 <TableRow className="border-b-2 border-black/10 bg-white">
-                  <TableCell colSpan={5} className="py-8 text-center text-black/60 font-medium">
+                  <TableCell colSpan={5} className="py-8 text-center font-medium text-black/60">
                     Loading recent review comments...
                   </TableCell>
                 </TableRow>
               )}
               {selectedRepository && !loading && error && (
                 <TableRow className="border-b-2 border-black/10 bg-white">
-                  <TableCell colSpan={5} className="py-8 text-center text-[var(--metis-red)] font-medium">
+                  <TableCell
+                    colSpan={5}
+                    className="py-8 text-center font-medium text-[var(--metis-red)]"
+                  >
                     Failed to load issues: {error}
                   </TableCell>
                 </TableRow>
               )}
               {selectedRepository && !loading && !error && sortedComments.length === 0 && (
                 <TableRow className="border-b-2 border-black/10 bg-white">
-                  <TableCell colSpan={5} className="py-8 text-center text-black/60 font-medium">
+                  <TableCell colSpan={5} className="py-8 text-center font-medium text-black/60">
                     No AI findings yet for this repository.
                   </TableCell>
                 </TableRow>
@@ -235,19 +238,19 @@ export const AnalyticsIssuesTab: React.FC<AnalyticsIssuesTabProps> = ({
                       </Badge>
                     </TableCell>
                     <TableCell className="font-bold text-black">{getDisplayTitle(item)}</TableCell>
-                    <TableCell className="text-black/70 font-mono text-xs">
+                    <TableCell className="font-mono text-xs text-black/70">
                       <div className="flex items-center gap-2">
                         <FileCode className="h-4 w-4" />
                         <span>{item.comment.file_path}</span>
                       </div>
                     </TableCell>
-                    <TableCell className="text-black/60 font-medium">
+                    <TableCell className="font-medium text-black/60">
                       {formatRelativeTime(item.comment.created_at)}
                     </TableCell>
                     <TableCell className="text-right">
                       <Badge
                         variant="neutral"
-                        className="border-2 border-black bg-white text-black font-bold"
+                        className="border-2 border-black bg-white font-bold text-black"
                       >
                         {item.review.review_status}
                       </Badge>
@@ -259,7 +262,7 @@ export const AnalyticsIssuesTab: React.FC<AnalyticsIssuesTabProps> = ({
         </CardContent>
       </Card>
       {selectedRepository && !loading && !error && totalPages > 0 && (
-        <div className="flex-none flex justify-center py-2">
+        <div className="flex flex-none justify-center py-2">
           <Pagination>
             <PaginationContent>
               <PaginationItem>
@@ -272,7 +275,9 @@ export const AnalyticsIssuesTab: React.FC<AnalyticsIssuesTabProps> = ({
               <PaginationItem>
                 <PaginationNext
                   onClick={() => onPageChange(Math.min(totalPages, page + 1))}
-                  className={page === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                  className={
+                    page === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'
+                  }
                 />
               </PaginationItem>
             </PaginationContent>

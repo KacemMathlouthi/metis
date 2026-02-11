@@ -58,7 +58,14 @@ const createTouchTexture = () => {
     ctx.fillStyle = 'black';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
   };
-  const drawPoint = (p: { x: number; y: number; vx: number; vy: number; force: number; age: number }) => {
+  const drawPoint = (p: {
+    x: number;
+    y: number;
+    vx: number;
+    vy: number;
+    force: number;
+    age: number;
+  }) => {
     const pos = { x: p.x * size, y: (1 - p.y) * size };
     let intensity = 1;
     const easeOutSine = (t: number) => Math.sin((t * Math.PI) / 2);
@@ -118,11 +125,14 @@ const createTouchTexture = () => {
     get radiusScale() {
       return radius / (0.1 * size);
     },
-    size
+    size,
   };
 };
 
-const createLiquidEffect = (texture: THREE.Texture, opts?: { strength?: number; freq?: number }) => {
+const createLiquidEffect = (
+  texture: THREE.Texture,
+  opts?: { strength?: number; freq?: number }
+) => {
   const fragment = `
     uniform sampler2D uTexture;
     uniform float uStrength;
@@ -147,8 +157,8 @@ const createLiquidEffect = (texture: THREE.Texture, opts?: { strength?: number; 
       ['uTexture', new THREE.Uniform(texture)],
       ['uStrength', new THREE.Uniform(opts?.strength ?? 0.025)],
       ['uTime', new THREE.Uniform(0)],
-      ['uFreq', new THREE.Uniform(opts?.freq ?? 4.5)]
-    ])
+      ['uFreq', new THREE.Uniform(opts?.freq ?? 4.5)],
+    ]),
   });
 };
 
@@ -156,7 +166,7 @@ const SHAPE_MAP: Record<PixelBlastVariant, number> = {
   square: 0,
   circle: 1,
   triangle: 2,
-  diamond: 3
+  diamond: 3,
 };
 
 const VERTEX_SRC = `
@@ -347,7 +357,7 @@ const PixelBlast: React.FC<PixelBlastProps> = ({
   speed = 0.5,
   transparent = true,
   edgeFade = 0.5,
-  noiseAmount = 0
+  noiseAmount = 0,
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const visibilityRef = useRef({ visible: true });
@@ -410,7 +420,8 @@ const PixelBlast: React.FC<PixelBlastProps> = ({
         t.material.dispose();
         t.composer?.dispose();
         t.renderer.dispose();
-        if (t.renderer.domElement.parentElement === container) container.removeChild(t.renderer.domElement);
+        if (t.renderer.domElement.parentElement === container)
+          container.removeChild(t.renderer.domElement);
         threeRef.current = null;
       }
       const canvas = document.createElement('canvas');
@@ -418,7 +429,7 @@ const PixelBlast: React.FC<PixelBlastProps> = ({
         canvas,
         antialias,
         alpha: true,
-        powerPreference: 'high-performance'
+        powerPreference: 'high-performance',
       });
       renderer.domElement.style.width = '100%';
       renderer.domElement.style.height = '100%';
@@ -431,7 +442,7 @@ const PixelBlast: React.FC<PixelBlastProps> = ({
         uTime: { value: 0 },
         uColor: { value: new THREE.Color(color) },
         uClickPos: {
-          value: Array.from({ length: MAX_CLICKS }, () => new THREE.Vector2(-1, -1))
+          value: Array.from({ length: MAX_CLICKS }, () => new THREE.Vector2(-1, -1)),
         },
         uClickTimes: { value: new Float32Array(MAX_CLICKS) },
         uShapeType: { value: SHAPE_MAP[variant] ?? 0 },
@@ -443,7 +454,7 @@ const PixelBlast: React.FC<PixelBlastProps> = ({
         uRippleSpeed: { value: rippleSpeed },
         uRippleThickness: { value: rippleThickness },
         uRippleIntensity: { value: rippleIntensityScale },
-        uEdgeFade: { value: edgeFade }
+        uEdgeFade: { value: edgeFade },
       };
       const scene = new THREE.Scene();
       const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
@@ -454,7 +465,7 @@ const PixelBlast: React.FC<PixelBlastProps> = ({
         transparent: true,
         depthTest: false,
         depthWrite: false,
-        glslVersion: THREE.GLSL3
+        glslVersion: THREE.GLSL3,
       });
       const quadGeom = new THREE.PlaneGeometry(2, 2);
       const quad = new THREE.Mesh(quadGeom, material);
@@ -491,7 +502,7 @@ const PixelBlast: React.FC<PixelBlastProps> = ({
         const renderPass = new RenderPass(scene, camera);
         liquidEffect = createLiquidEffect(touch.texture, {
           strength: liquidStrength,
-          freq: liquidWobbleSpeed
+          freq: liquidWobbleSpeed,
         });
         const effectPass = new EffectPass(camera, liquidEffect);
         effectPass.renderToScreen = true;
@@ -509,13 +520,14 @@ const PixelBlast: React.FC<PixelBlastProps> = ({
           {
             uniforms: new Map<string, THREE.Uniform>([
               ['uTime', new THREE.Uniform(0)],
-              ['uAmount', new THREE.Uniform(noiseAmount)]
-            ])
+              ['uAmount', new THREE.Uniform(noiseAmount)],
+            ]),
           }
         );
         const noisePass = new EffectPass(camera, noiseEffect);
         noisePass.renderToScreen = true;
-        if (composer && composer.passes.length > 0) composer.passes.forEach(p => ((p as any).renderToScreen = false));
+        if (composer && composer.passes.length > 0)
+          composer.passes.forEach((p) => ((p as any).renderToScreen = false));
         composer.addPass(noisePass);
       }
       if (composer) composer.setSize(renderer.domElement.width, renderer.domElement.height);
@@ -529,7 +541,7 @@ const PixelBlast: React.FC<PixelBlastProps> = ({
           fx,
           fy,
           w: renderer.domElement.width,
-          h: renderer.domElement.height
+          h: renderer.domElement.height,
         };
       };
       const onPointerDown = (e: PointerEvent) => {
@@ -545,10 +557,10 @@ const PixelBlast: React.FC<PixelBlastProps> = ({
         touch.addTouch({ x: fx / w, y: fy / h });
       };
       renderer.domElement.addEventListener('pointerdown', onPointerDown, {
-        passive: true
+        passive: true,
       });
       renderer.domElement.addEventListener('pointermove', onPointerMove, {
-        passive: true
+        passive: true,
       });
       let raf = 0;
       const animate = () => {
@@ -560,7 +572,7 @@ const PixelBlast: React.FC<PixelBlastProps> = ({
         if (liquidEffect) (liquidEffect as any).uniforms.get('uTime').value = uniforms.uTime.value;
         if (composer) {
           if (touch) touch.update();
-          composer.passes.forEach(p => {
+          composer.passes.forEach((p) => {
             const effs = (p as any).effects;
             if (effs)
               effs.forEach((eff: any) => {
@@ -587,7 +599,7 @@ const PixelBlast: React.FC<PixelBlastProps> = ({
         timeOffset,
         composer,
         touch,
-        liquidEffect
+        liquidEffect,
       };
     } else {
       const t = threeRef.current!;
@@ -623,7 +635,8 @@ const PixelBlast: React.FC<PixelBlastProps> = ({
       t.material.dispose();
       t.composer?.dispose();
       t.renderer.dispose();
-      if (t.renderer.domElement.parentElement === container) container.removeChild(t.renderer.domElement);
+      if (t.renderer.domElement.parentElement === container)
+        container.removeChild(t.renderer.domElement);
       threeRef.current = null;
     };
   }, [
@@ -646,13 +659,13 @@ const PixelBlast: React.FC<PixelBlastProps> = ({
     autoPauseOffscreen,
     variant,
     color,
-    speed
+    speed,
   ]);
 
   return (
     <div
       ref={containerRef}
-      className={`w-full h-full relative overflow-hidden ${className ?? ''}`}
+      className={`relative h-full w-full overflow-hidden ${className ?? ''}`}
       style={style}
       aria-label="PixelBlast interactive background"
     />

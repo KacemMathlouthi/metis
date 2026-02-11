@@ -18,7 +18,8 @@ export const CodeTerminal: React.FC = () => {
               <CheckCircle className="h-6 w-6 fill-[var(--metis-orange-dark)]" /> Zero-config setup
             </li>
             <li className="flex items-center gap-3">
-              <CheckCircle className="h-6 w-6 fill-[var(--metis-orange-dark)]" /> Custom instruction support
+              <CheckCircle className="h-6 w-6 fill-[var(--metis-orange-dark)]" /> Custom instruction
+              support
             </li>
             <li className="flex items-center gap-3">
               <CheckCircle className="h-6 w-6 fill-[var(--metis-orange-dark)]" /> Secure & Private
@@ -52,7 +53,8 @@ export const CodeTerminal: React.FC = () => {
 
               <div className="animate-pulse">
                 <p className="mb-2 font-bold text-white">
-                  <span className="text-[var(--metis-red)]">@metis-bot</span> is analyzing changes...
+                  <span className="text-[var(--metis-red)]">@metis-bot</span> is analyzing
+                  changes...
                 </p>
               </div>
 

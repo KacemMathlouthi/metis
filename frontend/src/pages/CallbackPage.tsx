@@ -10,8 +10,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import PixelBlast from '@/components/ui/PixelBlast';
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 export const CallbackPage = () => {
   const [searchParams] = useSearchParams();
@@ -29,13 +28,10 @@ export const CallbackPage = () => {
 
       try {
         // Send code to backend (backend handles token exchange)
-        const response = await fetch(
-          `${API_BASE_URL}/auth/callback/github?code=${code}`,
-          {
-            credentials: 'include', // Receive cookies from backend
-            redirect: 'manual', // Don't auto-follow redirects
-          }
-        );
+        const response = await fetch(`${API_BASE_URL}/auth/callback/github?code=${code}`, {
+          credentials: 'include', // Receive cookies from backend
+          redirect: 'manual', // Don't auto-follow redirects
+        });
 
         if (response.ok || response.type === 'opaqueredirect') {
           // Cookies set by backend, redirect to dashboard

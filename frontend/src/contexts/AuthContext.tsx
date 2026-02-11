@@ -51,9 +51,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Don't fetch on mount - only ProtectedRoute will call refetch()
   return (
-    <AuthContext.Provider
-      value={{ user, loading, error, logout, refetch: fetchUser }}
-    >
+    <AuthContext.Provider value={{ user, loading, error, logout, refetch: fetchUser }}>
       {children}
     </AuthContext.Provider>
   );

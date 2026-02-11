@@ -79,7 +79,7 @@ export const AppSidebar: React.FC = () => {
     { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard' },
     { icon: GitPullRequest, label: 'AI Review', href: '/dashboard/ai-review' },
     { icon: CircleDot, label: 'Issues', href: '/dashboard/issues' },
-    { icon: BarChart3, label: 'Analytics', href: '/dashboard/analytics' }
+    { icon: BarChart3, label: 'Analytics', href: '/dashboard/analytics' },
   ];
 
   return (
@@ -156,14 +156,15 @@ export const AppSidebar: React.FC = () => {
                 {installations.length > 0 && (
                   <>
                     <DropdownMenuSeparator className="bg-black" />
-                    <DropdownMenuItem asChild className="gap-2 bg-white p-2 hover:bg-[var(--metis-pastel-1)]">
+                    <DropdownMenuItem
+                      asChild
+                      className="gap-2 bg-white p-2 hover:bg-[var(--metis-pastel-1)]"
+                    >
                       <Link to="/dashboard/repositories">
                         <div className="bg-background flex size-6 items-center justify-center rounded-md border border-black">
                           <Plus className="size-4" />
                         </div>
-                        <div className="text-muted-foreground font-medium">
-                          Manage repositories
-                        </div>
+                        <div className="text-muted-foreground font-medium">Manage repositories</div>
                       </Link>
                     </DropdownMenuItem>
                   </>
@@ -215,7 +216,9 @@ export const AppSidebar: React.FC = () => {
                   Findings
                 </div>
                 <span className="text-lg font-black text-black">
-                  {statsLoading ? '...' : (statsMap.get('findings_detected')?.display_value ?? '--')}
+                  {statsLoading
+                    ? '...'
+                    : (statsMap.get('findings_detected')?.display_value ?? '--')}
                 </span>
               </div>
               <div className="flex flex-col rounded-md border-2 border-black bg-[var(--metis-pastel-3)] p-1.5 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
@@ -224,7 +227,9 @@ export const AppSidebar: React.FC = () => {
                   Completed
                 </div>
                 <span className="text-lg font-black text-black">
-                  {statsLoading ? '...' : (statsMap.get('completed_reviews')?.display_value ?? '--')}
+                  {statsLoading
+                    ? '...'
+                    : (statsMap.get('completed_reviews')?.display_value ?? '--')}
                 </span>
               </div>
               <div className="flex flex-col rounded-md border-2 border-black bg-white p-1.5 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
@@ -233,7 +238,9 @@ export const AppSidebar: React.FC = () => {
                   Latency
                 </div>
                 <span className="text-lg font-black text-black">
-                  {statsLoading ? '...' : (statsMap.get('avg_review_latency_seconds')?.display_value ?? '--')}
+                  {statsLoading
+                    ? '...'
+                    : (statsMap.get('avg_review_latency_seconds')?.display_value ?? '--')}
                 </span>
               </div>
             </div>
@@ -285,7 +292,10 @@ export const AppSidebar: React.FC = () => {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator className="bg-black" />
                 {/* Manage Repositories Link */}
-                <DropdownMenuItem asChild className="gap-2 bg-white p-2 hover:bg-[var(--metis-pastel-1)]">
+                <DropdownMenuItem
+                  asChild
+                  className="gap-2 bg-white p-2 hover:bg-[var(--metis-pastel-1)]"
+                >
                   <Link to="/dashboard/repositories">
                     <Plus className="size-4" />
                     <span className="font-semibold">Manage repositories</span>
@@ -294,7 +304,7 @@ export const AppSidebar: React.FC = () => {
 
                 <DropdownMenuSeparator className="bg-black" />
                 <DropdownMenuItem
-                  className="rounded-md border-2 border-transparent bg-white font-bold text-[var(--metis-red)] focus:border-black focus:bg-[var(--metis-pastel-1)] cursor-pointer"
+                  className="cursor-pointer rounded-md border-2 border-transparent bg-white font-bold text-[var(--metis-red)] focus:border-black focus:bg-[var(--metis-pastel-1)]"
                   onClick={logout}
                 >
                   <LogOut className="mr-2 h-4 w-4" />

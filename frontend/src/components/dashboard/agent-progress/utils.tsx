@@ -53,7 +53,7 @@ export function toPrettyJson(value: unknown): string {
 
 export function MarkdownContent({ markdown }: { markdown: string }) {
   return (
-    <div className="prose prose-sm max-w-none prose-pre:overflow-x-auto prose-pre:rounded-md prose-pre:border prose-pre:border-black/20 prose-pre:bg-black prose-pre:p-3 prose-pre:text-xs prose-pre:text-gray-50">
+    <div className="prose prose-sm prose-pre:overflow-x-auto prose-pre:rounded-md prose-pre:border prose-pre:border-black/20 prose-pre:bg-black prose-pre:p-3 prose-pre:text-xs prose-pre:text-gray-50 max-w-none">
       <Streamdown
         isAnimating={false}
         plugins={{ code }}

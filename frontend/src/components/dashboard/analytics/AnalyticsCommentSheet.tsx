@@ -68,7 +68,7 @@ export const AnalyticsCommentSheet: React.FC<AnalyticsCommentSheetProps> = ({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="right"
-        className="w-full sm:max-w-2xl border-l-2 border-black bg-[var(--metis-pastel-1)] p-0"
+        className="w-full border-l-2 border-black bg-[var(--metis-pastel-1)] p-0 sm:max-w-2xl"
       >
         {selectedComment && (
           <div className="flex h-full flex-col">
@@ -83,7 +83,7 @@ export const AnalyticsCommentSheet: React.FC<AnalyticsCommentSheetProps> = ({
                 <Button
                   asChild
                   variant="neutral"
-                  className="gap-2 border-2 border-black font-bold shrink-0"
+                  className="shrink-0 gap-2 border-2 border-black font-bold"
                 >
                   <a
                     href={`https://github.com/${selectedComment.review.repository}/blob/${selectedComment.review.commit_sha}/${selectedComment.comment.file_path}#L${selectedComment.comment.line_number}`}
@@ -97,7 +97,7 @@ export const AnalyticsCommentSheet: React.FC<AnalyticsCommentSheetProps> = ({
               </div>
             </SheetHeader>
 
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            <div className="flex-1 space-y-4 overflow-y-auto p-4">
               <div className="rounded-lg border-2 border-black bg-white p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                 <div className="mb-3 flex flex-wrap items-center gap-2">
                   <Badge
@@ -108,19 +108,19 @@ export const AnalyticsCommentSheet: React.FC<AnalyticsCommentSheetProps> = ({
                   </Badge>
                   <Badge
                     variant="neutral"
-                    className="border-2 border-black bg-white text-black font-bold"
+                    className="border-2 border-black bg-white font-bold text-black"
                   >
                     {selectedComment.comment.category}
                   </Badge>
                   <Badge
                     variant="neutral"
-                    className="border-2 border-black bg-white text-black font-bold"
+                    className="border-2 border-black bg-white font-bold text-black"
                   >
                     {selectedComment.review.review_status}
                   </Badge>
                 </div>
 
-                <div className="text-xs font-mono text-black/70">
+                <div className="font-mono text-xs text-black/70">
                   {selectedComment.comment.file_path}:{selectedComment.comment.line_number}
                   {selectedComment.comment.line_end ? `-${selectedComment.comment.line_end}` : ''}
                 </div>
@@ -131,22 +131,26 @@ export const AnalyticsCommentSheet: React.FC<AnalyticsCommentSheetProps> = ({
 
               <div className="rounded-lg border-2 border-black bg-white p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                 <h4 className="mb-2 text-lg font-black">{getDisplayTitle(selectedComment)}</h4>
-                <h4 className="mb-3 text-sm font-black uppercase tracking-wider">
+                <h4 className="mb-3 text-sm font-black tracking-wider uppercase">
                   Issue Description
                 </h4>
-                <div className="prose prose-sm max-w-none prose-p:leading-relaxed prose-pre:bg-black prose-pre:text-gray-50">
+                <div className="prose prose-sm prose-p:leading-relaxed prose-pre:bg-black prose-pre:text-gray-50 max-w-none">
                   <Streamdown isAnimating={false}>
                     {selectedComment.comment.comment_text}
                   </Streamdown>
                 </div>
-                <div className="mt-3 text-[11px] font-mono text-black/60">
+                <div className="mt-3 font-mono text-[11px] text-black/60">
                   commit: {selectedComment.review.commit_sha}
                 </div>
               </div>
 
               <div className="flex flex-wrap gap-2">
                 {toGitHubCommentUrl(selectedComment) && (
-                  <Button asChild variant="neutral" className="gap-2 border-2 border-black font-bold">
+                  <Button
+                    asChild
+                    variant="neutral"
+                    className="gap-2 border-2 border-black font-bold"
+                  >
                     <a
                       href={toGitHubCommentUrl(selectedComment) || '#'}
                       target="_blank"

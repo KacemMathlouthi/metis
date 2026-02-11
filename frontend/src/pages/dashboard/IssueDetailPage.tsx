@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { AlertCircle, Loader2, ArrowLeft, Github, CircleDot, Circle, GitPullRequest } from 'lucide-react';
+import {
+  AlertCircle,
+  Loader2,
+  ArrowLeft,
+  Github,
+  CircleDot,
+  Circle,
+  GitPullRequest,
+} from 'lucide-react';
 import { useRepository } from '@/contexts/RepositoryContext';
 import { useToast } from '@/contexts/ToastContext';
 import { Button } from '@/components/ui/button';
@@ -43,10 +51,7 @@ export const IssueDetailPage: React.FC = () => {
       setComments(commentsData);
       setAgentRuns(runsData);
     } catch (err) {
-      toast.error(
-        'Failed to load issue',
-        err instanceof Error ? err.message : 'Unknown error'
-      );
+      toast.error('Failed to load issue', err instanceof Error ? err.message : 'Unknown error');
     } finally {
       setLoading(false);
     }
@@ -69,17 +74,14 @@ export const IssueDetailPage: React.FC = () => {
       navigate(`/dashboard/agents/${response.agent_run_id}`);
     } catch (err) {
       toast.dismiss(loadingId);
-      toast.error(
-        'Failed to launch agent',
-        err instanceof Error ? err.message : 'Unknown error'
-      );
+      toast.error('Failed to launch agent', err instanceof Error ? err.message : 'Unknown error');
     }
   };
 
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin mb-4 text-[var(--metis-orange-dark)]" />
+        <Loader2 className="mb-4 h-8 w-8 animate-spin text-[var(--metis-orange-dark)]" />
         <p className="text-sm text-black/60">Loading issue...</p>
       </div>
     );
@@ -93,12 +95,12 @@ export const IssueDetailPage: React.FC = () => {
           variant="neutral"
           className="border-2 border-black font-bold"
         >
-          <ArrowLeft className="h-4 w-4 mr-2" />
+          <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Issues
         </Button>
-        <div className="text-center py-12">
-          <AlertCircle className="h-12 w-12 mx-auto mb-4 text-red-500" />
-          <h3 className="font-bold text-lg">Issue not found</h3>
+        <div className="py-12 text-center">
+          <AlertCircle className="mx-auto mb-4 h-12 w-12 text-red-500" />
+          <h3 className="text-lg font-bold">Issue not found</h3>
         </div>
       </div>
     );
@@ -113,7 +115,7 @@ export const IssueDetailPage: React.FC = () => {
   };
 
   return (
-    <div className="p-2 md:p-4 max-w-6xl mx-auto">
+    <div className="mx-auto max-w-6xl p-2 md:p-4">
       {/* Back Button */}
       <div className="mb-4">
         <Button
@@ -121,42 +123,41 @@ export const IssueDetailPage: React.FC = () => {
           variant="neutral"
           className="border-2 border-black font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
         >
-          <ArrowLeft className="h-4 w-4 mr-2" />
+          <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Issues
         </Button>
       </div>
 
       {/* Main Layout: Content + Sidebar */}
-      <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
+      <div className="flex flex-col gap-8 lg:flex-row lg:gap-12">
         {/* Left: Main Content */}
-        <div className="flex-1 space-y-4 min-w-0 order-2 lg:order-1">
+        <div className="order-2 min-w-0 flex-1 space-y-4 lg:order-1">
           {/* Title Section */}
-          <div className="space-y-2 border-b border-black/10 pb-4 mb-6">
-            <h1 className="landing-display text-2xl md:text-3xl font-black text-black break-words mb-2">
+          <div className="mb-6 space-y-2 border-b border-black/10 pb-4">
+            <h1 className="landing-display mb-2 text-2xl font-black break-words text-black md:text-3xl">
               {issue.title}
-              <span className="text-black/60 font-normal ml-2">#{issue.issue_number}</span>
+              <span className="ml-2 font-normal text-black/60">#{issue.issue_number}</span>
             </h1>
 
             <div className="flex flex-wrap items-center gap-2 text-sm">
               {issue.status === 'OPEN' ? (
-                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-600 text-white shadow-sm">
+                <div className="flex items-center gap-1.5 rounded-full bg-green-600 px-3 py-1 text-white shadow-sm">
                   <CircleDot className="h-3.5 w-3.5" />
-                  <span className="font-bold text-xs">Open</span>
+                  <span className="text-xs font-bold">Open</span>
                 </div>
               ) : (
-                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-600 text-white shadow-sm">
+                <div className="flex items-center gap-1.5 rounded-full bg-purple-600 px-3 py-1 text-white shadow-sm">
                   <Circle className="h-3.5 w-3.5" />
-                  <span className="font-bold text-xs">Closed</span>
+                  <span className="text-xs font-bold">Closed</span>
                 </div>
               )}
 
-              <span className="text-sm text-black/60 ml-1">
-                <span className="font-semibold text-black">{issue.author}</span> opened this issue on {formatDate(issue.created_at)}
+              <span className="ml-1 text-sm text-black/60">
+                <span className="font-semibold text-black">{issue.author}</span> opened this issue
+                on {formatDate(issue.created_at)}
               </span>
 
-              <span className="text-sm text-black/60">
-                • {issue.comments_count} comments
-              </span>
+              <span className="text-sm text-black/60">• {issue.comments_count} comments</span>
             </div>
           </div>
 
@@ -186,10 +187,10 @@ export const IssueDetailPage: React.FC = () => {
         </div>
 
         {/* Right: Sidebar */}
-        <div className="w-full lg:w-72 flex-shrink-0 space-y-6 order-1 lg:order-2 lg:pl-8 lg:border-l lg:border-black/10">
+        <div className="order-1 w-full flex-shrink-0 space-y-6 lg:order-2 lg:w-72 lg:border-l lg:border-black/10 lg:pl-8">
           {/* Assignees */}
           <div className="border-b border-black/10 pb-4">
-            <div className="flex items-center justify-between mb-2">
+            <div className="mb-2 flex items-center justify-between">
               <h3 className="text-xs font-bold text-black/60">Assignees</h3>
             </div>
             {issue.assignees.length === 0 ? (
@@ -197,13 +198,15 @@ export const IssueDetailPage: React.FC = () => {
             ) : (
               <div className="space-y-2">
                 {issue.assignees.map((assignee) => (
-                  <div key={assignee} className="flex items-center gap-2 group cursor-pointer">
-                    <img 
-                      src={`https://github.com/${assignee}.png`} 
+                  <div key={assignee} className="group flex cursor-pointer items-center gap-2">
+                    <img
+                      src={`https://github.com/${assignee}.png`}
                       alt={assignee}
                       className="h-5 w-5 rounded-full border border-black/20"
                     />
-                    <span className="text-sm font-medium text-black/70 group-hover:text-[var(--metis-orange)]">{assignee}</span>
+                    <span className="text-sm font-medium text-black/70 group-hover:text-[var(--metis-orange)]">
+                      {assignee}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -212,7 +215,7 @@ export const IssueDetailPage: React.FC = () => {
 
           {/* Labels */}
           <div className="border-b border-black/10 pb-4">
-            <div className="flex items-center justify-between mb-2">
+            <div className="mb-2 flex items-center justify-between">
               <h3 className="text-xs font-bold text-black/60">Labels</h3>
             </div>
             {issue.labels.length === 0 ? (
@@ -228,7 +231,7 @@ export const IssueDetailPage: React.FC = () => {
 
           {/* Development Section */}
           <div className="border-b border-black/10 pb-4">
-            <h3 className="text-xs font-bold text-black/60 mb-3">Development</h3>
+            <h3 className="mb-3 text-xs font-bold text-black/60">Development</h3>
 
             {/* Launch Agent Button */}
             <LaunchAgentDialog
@@ -237,7 +240,7 @@ export const IssueDetailPage: React.FC = () => {
               repository={selectedRepo?.repository || ''}
               onLaunch={handleLaunchAgent}
               triggerButton={
-                <Button className="w-full border-2 border-black bg-[var(--metis-orange)] text-white font-bold text-sm shadow-[2px_2px_0px_0px_#000] hover:-translate-y-0.5 hover:shadow-[3px_3px_0px_0px_#000] transition-all mb-3">
+                <Button className="mb-3 w-full border-2 border-black bg-[var(--metis-orange)] text-sm font-bold text-white shadow-[2px_2px_0px_0px_#000] transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0px_0px_#000]">
                   Code with agent mode
                 </Button>
               }
@@ -245,27 +248,28 @@ export const IssueDetailPage: React.FC = () => {
 
             {/* Related PRs */}
             {agentRuns.filter((r) => r.pr_number).length > 0 ? (
-              <div className="space-y-2 mt-3">
+              <div className="mt-3 space-y-2">
                 {agentRuns
                   .filter((run) => run.pr_number)
                   .map((run) => (
                     <div
                       key={run.id}
-                      className="flex items-center gap-2 text-sm group cursor-pointer"
+                      className="group flex cursor-pointer items-center gap-2 text-sm"
                       onClick={() => navigate(`/dashboard/agents/${run.id}`)}
                     >
                       <GitPullRequest className="h-4 w-4 text-[var(--metis-orange-dark)]" />
                       <span className="font-medium text-black group-hover:text-[var(--metis-orange)]">
                         #{run.pr_number}
                       </span>
-                      <AgentStatusBadge status={run.status} className="text-[10px] px-1.5 py-0 ml-auto" />
+                      <AgentStatusBadge
+                        status={run.status}
+                        className="ml-auto px-1.5 py-0 text-[10px]"
+                      />
                     </div>
                   ))}
               </div>
             ) : (
-              <p className="text-xs text-black/60 italic">
-                No pull requests yet
-              </p>
+              <p className="text-xs text-black/60 italic">No pull requests yet</p>
             )}
           </div>
 
@@ -275,7 +279,7 @@ export const IssueDetailPage: React.FC = () => {
               href={`https://github.com/${issue.repository}/issues/${issue.issue_number}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs font-medium text-black/60 hover:text-[var(--metis-orange)] flex items-center gap-1"
+              className="flex items-center gap-1 text-xs font-medium text-black/60 hover:text-[var(--metis-orange)]"
             >
               <Github className="h-3.5 w-3.5" />
               View on GitHub
