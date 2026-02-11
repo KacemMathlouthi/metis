@@ -7,14 +7,30 @@ services:
       POSTGRES_USER: metis
       POSTGRES_PASSWORD: metis_dev
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U metis"]
+      test: ['CMD-SHELL', 'pg_isready -U metis']
       interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 10
+    networks:
+      - metis-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: metis-redis
+    command: redis-server --maxmemory 512mb --maxmemory-policy allkeys-lru
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 10
     networks:
       - metis-network
 
@@ -27,27 +43,85 @@ services:
       PGADMIN_CONFIG_SERVER_MODE: 'False'
       PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
     ports:
-      - "5050:80"
+      - '5050:80'
     volumes:
       - pgadmin_data:/var/lib/pgadmin
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     networks:
       - metis-network
 
-  redis:
-    image: redis:7-alpine
-    container_name: metis-redis
-    command: redis-server --maxmemory 512mb --maxmemory-policy allkeys-lru
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: metis-api
+    env_file:
+      - ./backend/.env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://metis:metis_dev@postgres:5432/metis
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
+      FRONTEND_URL: http://localhost:5173
     ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
+      - '8000:8000'
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: [
+      'sh',
+      '-c',
+      'uv run alembic upgrade head && uv run uvicorn app.main:app --host 0.0.0.0 --port 8000'
+    ]
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 5s
-      timeout: 3s
-      retries: 5
+      test: ['CMD', 'curl', '-f', 'http://localhost:8000/health']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - metis-network
+
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: metis-worker
+    env_file:
+      - ./backend/.env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://metis:metis_dev@postgres:5432/metis
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
+      FRONTEND_URL: http://localhost:5173
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      api:
+        condition: service_healthy
+    command: ['uv', 'run', 'celery', '-A', 'app.core.celery_app', 'worker', '--loglevel=info']
+    networks:
+      - metis-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: dev
+    container_name: metis-frontend
+    environment:
+      VITE_API_URL: http://localhost:8000
+    ports:
+      - '5173:5173'
+    depends_on:
+      api:
+        condition: service_healthy
     networks:
       - metis-network
 
