@@ -1,0 +1,17 @@
+.venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache
+.ruff_cache
+.mypy_cache
+.coverage
+htmlcov
+logs
+.env
+.git
+.gitignore
+README.md
+tests
+metis-ai-testing.2025-11-21.private-key.pem
