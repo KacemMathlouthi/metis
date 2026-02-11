@@ -10,15 +10,15 @@ interface AgentRunHeaderProps {
   onRefresh: () => void;
 }
 
-export const AgentRunHeader: React.FC<AgentRunHeaderProps> = ({
-  agentRun,
-  onBack,
-  onRefresh,
-}) => {
+export const AgentRunHeader: React.FC<AgentRunHeaderProps> = ({ agentRun, onBack, onRefresh }) => {
   return (
     <div className="mb-2 flex flex-col items-start justify-between gap-4 border-b border-black/10 pb-5 sm:flex-row sm:items-center">
       <div className="flex items-center gap-4">
-        <Button onClick={onBack} variant="neutral" className="h-10 w-10 rounded-full border-2 border-black p-0">
+        <Button
+          onClick={onBack}
+          variant="neutral"
+          className="h-10 w-10 rounded-full border-2 border-black p-0"
+        >
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div>

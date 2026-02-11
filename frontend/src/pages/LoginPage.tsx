@@ -7,8 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import PixelBlast from '@/components/ui/PixelBlast';
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 export const LoginPage = () => {
   const handleLogin = () => {
@@ -53,8 +52,8 @@ export const LoginPage = () => {
 
           <div className="mb-6 rounded border-2 border-black bg-[var(--metis-pastel-2)] p-4">
             <p className="text-sm font-semibold">
-              Sign in with your GitHub account to start reviewing pull requests
-              with AI-powered insights.
+              Sign in with your GitHub account to start reviewing pull requests with AI-powered
+              insights.
             </p>
           </div>
 

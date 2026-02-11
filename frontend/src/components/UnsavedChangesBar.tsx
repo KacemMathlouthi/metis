@@ -16,7 +16,7 @@ interface UnsavedChangesBarProps {
 
 export function UnsavedChangesBar({ onSave, onRevert, saving = false }: UnsavedChangesBarProps) {
   return (
-    <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 animate-in slide-in-from-bottom-5 fade-in duration-200">
+    <div className="animate-in slide-in-from-bottom-5 fade-in fixed bottom-6 left-1/2 z-50 -translate-x-1/2 duration-200">
       <div className="flex items-center gap-6 rounded border-2 border-black bg-white px-12 py-3 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] backdrop-blur-lg">
         {/* Indicator */}
         <div className="flex items-center gap-2">

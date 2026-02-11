@@ -79,24 +79,26 @@ export const AnalyticsPage: React.FC = () => {
   }, [selectedRepo?.repository]);
 
   return (
-    <div className="space-y-6 p-4 max-w-6xl mx-auto">
+    <div className="mx-auto max-w-6xl space-y-6 p-4">
       <div className="flex flex-col gap-1">
         <h1 className="landing-display text-3xl font-black text-black">Analytics</h1>
-        <p className="text-black/60 font-medium">Overview of your code quality and team velocity.</p>
+        <p className="font-medium text-black/60">
+          Overview of your code quality and team velocity.
+        </p>
       </div>
 
       <Tabs defaultValue="statistics">
         <div className="flex justify-center">
-          <TabsList className="grid w-full grid-cols-2 border-2 border-black bg-white p-1 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] h-auto">
+          <TabsList className="grid h-auto w-full grid-cols-2 border-2 border-black bg-white p-1 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <TabsTrigger
               value="statistics"
-              className="font-bold text-xs sm:text-sm data-[state=active]:bg-[var(--metis-pastel-2)] data-[state=active]:text-black data-[state=active]:border-2 data-[state=active]:border-black data-[state=active]:shadow-sm transition-all py-2"
+              className="py-2 text-xs font-bold transition-all data-[state=active]:border-2 data-[state=active]:border-black data-[state=active]:bg-[var(--metis-pastel-2)] data-[state=active]:text-black data-[state=active]:shadow-sm sm:text-sm"
             >
               Statistics
             </TabsTrigger>
             <TabsTrigger
               value="issues"
-              className="font-bold text-xs sm:text-sm data-[state=active]:bg-[var(--metis-pastel-2)] data-[state=active]:text-black data-[state=active]:border-2 data-[state=active]:border-black data-[state=active]:shadow-sm transition-all py-2"
+              className="py-2 text-xs font-bold transition-all data-[state=active]:border-2 data-[state=active]:border-black data-[state=active]:bg-[var(--metis-pastel-2)] data-[state=active]:text-black data-[state=active]:shadow-sm sm:text-sm"
             >
               AI Detected Issues
             </TabsTrigger>

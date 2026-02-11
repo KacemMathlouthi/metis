@@ -31,7 +31,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setError(null);
       const userData = await apiClient.getMe();
       setUser(userData);
-    } catch (err) {
+    } catch {
       // 401 is expected when not logged in
       setUser(null);
       setError(null);
@@ -51,9 +51,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Don't fetch on mount - only ProtectedRoute will call refetch()
   return (
-    <AuthContext.Provider
-      value={{ user, loading, error, logout, refetch: fetchUser }}
-    >
+    <AuthContext.Provider value={{ user, loading, error, logout, refetch: fetchUser }}>
       {children}
     </AuthContext.Provider>
   );

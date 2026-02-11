@@ -7,7 +7,16 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { RefreshCw, Plus, Settings, CheckCircle2, XCircle, Code2, ExternalLink, AlertCircle } from 'lucide-react';
+import {
+  RefreshCw,
+  Plus,
+  Settings,
+  CheckCircle2,
+  XCircle,
+  Code2,
+  ExternalLink,
+  AlertCircle,
+} from 'lucide-react';
 import { useToast } from '@/contexts/ToastContext';
 import { getLanguageIcon, truncateText } from '@/lib/language-icons';
 import { Button } from '@/components/ui/button';
@@ -93,7 +102,10 @@ export const RepositoriesPage = () => {
     accountType: 'USER' | 'ORGANIZATION',
     accountName: string
   ) => {
-    const loadingId = toast.loading('Enabling repository...', `Setting up code reviews for ${repository}`);
+    const loadingId = toast.loading(
+      'Enabling repository...',
+      `Setting up code reviews for ${repository}`
+    );
 
     try {
       const defaultConfig: InstallationConfig = {
@@ -125,7 +137,10 @@ export const RepositoriesPage = () => {
   };
 
   const handleDisable = async (installationId: string) => {
-    const loadingId = toast.loading('Disabling repository...', 'Removing code review configuration');
+    const loadingId = toast.loading(
+      'Disabling repository...',
+      'Removing code review configuration'
+    );
 
     try {
       await apiClient.disableInstallation(installationId);
@@ -154,9 +169,7 @@ export const RepositoriesPage = () => {
 
   // Helper to check if a repo is enabled
   const isRepoEnabled = (repoFullName: string) => {
-    return enabledInstallations.some(
-      (inst) => inst.repository === repoFullName && inst.is_active
-    );
+    return enabledInstallations.some((inst) => inst.repository === repoFullName && inst.is_active);
   };
 
   const getEnabledInstallation = (repoFullName: string) => {
@@ -164,12 +177,12 @@ export const RepositoriesPage = () => {
   };
 
   return (
-    <div className="space-y-6 p-4 max-w-6xl mx-auto">
+    <div className="mx-auto max-w-6xl space-y-6 p-4">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
         <div>
           <h1 className="landing-display text-3xl font-black">Repository Management</h1>
-          <p className="text-sm text-black/60 mt-1">
+          <p className="mt-1 text-sm text-black/60">
             Enable code reviews for your GitHub repositories
           </p>
         </div>
@@ -178,19 +191,16 @@ export const RepositoriesPage = () => {
             onClick={handleSync}
             disabled={syncing}
             variant="neutral"
-            className="border-2 border-black font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all"
+            className="border-2 border-black font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
           >
             <RefreshCw className={`mr-2 h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
             {syncing ? 'Syncing...' : 'Sync from GitHub'}
           </Button>
           <Button
             onClick={() =>
-              window.open(
-                'https://github.com/apps/metis-ai-testing/installations/new',
-                '_blank'
-              )
+              window.open('https://github.com/apps/metis-ai-testing/installations/new', '_blank')
             }
-            className="border-2 border-black bg-[var(--metis-orange)] font-bold text-white shadow-[4px_4px_0px_0px_#000] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#000] transition-all"
+            className="border-2 border-black bg-[var(--metis-orange)] font-bold text-white shadow-[4px_4px_0px_0px_#000] transition-all hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#000]"
           >
             <ExternalLink className="mr-2 h-4 w-4" />
             Install on GitHub
@@ -241,10 +251,7 @@ export const RepositoriesPage = () => {
                       </CardDescription>
                     </div>
                   </div>
-                  <Badge
-                    variant="neutral"
-                    className="border-2 border-black bg-white font-bold"
-                  >
+                  <Badge variant="neutral" className="border-2 border-black bg-white font-bold">
                     Installation #{installation.id}
                   </Badge>
                 </div>
@@ -280,20 +287,20 @@ export const RepositoriesPage = () => {
                           </div>
 
                           <div className="min-w-0 flex-1">
-                            <p className="font-bold text-sm">{repo.full_name}</p>
+                            <p className="text-sm font-bold">{repo.full_name}</p>
                             <div className="flex items-center gap-2">
                               {/* Language badge first */}
                               {repo.language && (
                                 <Badge
                                   variant="neutral"
-                                  className="border border-black text-xs flex-shrink-0"
+                                  className="flex-shrink-0 border border-black text-xs"
                                 >
                                   {repo.language}
                                 </Badge>
                               )}
                               {/* Description - truncated to 40 chars */}
                               <span className="text-xs text-black/40">•</span>
-                              <p className="text-xs text-black/60 truncate">
+                              <p className="truncate text-xs text-black/60">
                                 {truncateText(repo.description, 60)}
                               </p>
                             </div>
@@ -316,7 +323,9 @@ export const RepositoriesPage = () => {
                                 size="sm"
                                 variant="neutral"
                                 className="border-2 border-[var(--metis-red)] bg-[var(--metis-pastel-red)] font-bold text-[var(--metis-red)] hover:bg-[var(--metis-pastel-1)]"
-                                onClick={() => setConfirmDisable({ open: true, id: enabledInst.id })}
+                                onClick={() =>
+                                  setConfirmDisable({ open: true, id: enabledInst.id })
+                                }
                               >
                                 Disable
                               </Button>
@@ -395,7 +404,7 @@ export const RepositoriesPage = () => {
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => confirmDisable.id && handleDisable(confirmDisable.id)}
-              className="bg-black text-white border-black"
+              className="border-black bg-black text-white"
             >
               Disable Reviews
             </AlertDialogAction>

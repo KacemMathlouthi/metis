@@ -23,8 +23,7 @@ import type {
   SidebarAnalyticsResponse,
 } from '@/types/api';
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 class ApiClient {
   private refreshPromise: Promise<void> | null = null;
@@ -82,14 +81,8 @@ class ApiClient {
    * Includes credentials (cookies) with every request for authentication.
    * Throws error on non-2xx responses. Caller handles 401 appropriately.
    */
-  private async request<T>(
-    endpoint: string,
-    options?: RequestInit
-  ): Promise<T> {
-    const response = await fetch(
-      `${API_BASE_URL}${endpoint}`,
-      this.buildRequestInit(options)
-    );
+  private async request<T>(endpoint: string, options?: RequestInit): Promise<T> {
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, this.buildRequestInit(options));
 
     if (response.status === 401 && !this.shouldSkipRefresh(endpoint)) {
       await this.refreshSession();
@@ -145,10 +138,7 @@ class ApiClient {
    * Creates Installation records for available repositories.
    */
   async syncInstallations(): Promise<SyncInstallationsResponse> {
-    return this.request<SyncInstallationsResponse>(
-      '/api/installations/sync',
-      { method: 'POST' }
-    );
+    return this.request<SyncInstallationsResponse>('/api/installations/sync', { method: 'POST' });
   }
 
   /**
@@ -182,13 +172,10 @@ class ApiClient {
     installationId: string,
     config: InstallationConfig
   ): Promise<Installation> {
-    return this.request<Installation>(
-      `/api/installations/${installationId}/config`,
-      {
-        method: 'PUT',
-        body: JSON.stringify({ config }),
-      }
-    );
+    return this.request<Installation>(`/api/installations/${installationId}/config`, {
+      method: 'PUT',
+      body: JSON.stringify({ config }),
+    });
   }
 
   /**
@@ -214,14 +201,18 @@ class ApiClient {
    * Get single issue with all details
    */
   async getIssue(issueNumber: number, repository: string): Promise<Issue> {
-    return this.request<Issue>(`/api/issues/${issueNumber}?repository=${encodeURIComponent(repository)}`);
+    return this.request<Issue>(
+      `/api/issues/${issueNumber}?repository=${encodeURIComponent(repository)}`
+    );
   }
 
   /**
    * Get all comments for an issue
    */
   async getIssueComments(issueNumber: number, repository: string): Promise<IssueComment[]> {
-    return this.request<IssueComment[]>(`/api/issues/${issueNumber}/comments?repository=${encodeURIComponent(repository)}`);
+    return this.request<IssueComment[]>(
+      `/api/issues/${issueNumber}/comments?repository=${encodeURIComponent(repository)}`
+    );
   }
 
   /**
@@ -231,7 +222,14 @@ class ApiClient {
     repository?: string;
     review_id?: string;
     severity?: 'INFO' | 'WARNING' | 'ERROR' | 'CRITICAL';
-    category?: 'BUG' | 'SECURITY' | 'PERFORMANCE' | 'STYLE' | 'MAINTAINABILITY' | 'DOCUMENTATION' | 'TESTING';
+    category?:
+      | 'BUG'
+      | 'SECURITY'
+      | 'PERFORMANCE'
+      | 'STYLE'
+      | 'MAINTAINABILITY'
+      | 'DOCUMENTATION'
+      | 'TESTING';
     review_status?: 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
     created_from?: string;
     created_to?: string;
@@ -311,9 +309,7 @@ class ApiClient {
    * List all agent runs for a repository
    */
   async listAgentRuns(repository: string): Promise<AgentRun[]> {
-    return this.request<AgentRun[]>(
-      `/api/agents?repository=${encodeURIComponent(repository)}`
-    );
+    return this.request<AgentRun[]>(`/api/agents?repository=${encodeURIComponent(repository)}`);
   }
 
   /**

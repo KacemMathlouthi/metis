@@ -29,15 +29,12 @@ def _extract_changed_files_from_diff_output(output: str) -> list[str]:
     return [line.strip() for line in output.splitlines() if line.strip()]
 
 
-def _build_pr_payload(issue_number: int, issue_title: str, summary: str) -> tuple[str, str]:
+def _build_pr_payload(
+    issue_number: int, issue_title: str, summary: str
+) -> tuple[str, str]:
     """Build PR title/body from issue context and agent summary."""
     title = f"Fix: issue #{issue_number} - {issue_title}".strip()
-    body = (
-        "## Summary\n\n"
-        f"{summary.strip()}\n\n"
-        "---\n"
-        f"Closes #{issue_number}"
-    )
+    body = "## Summary\n\n" f"{summary.strip()}\n\n" "---\n" f"Closes #{issue_number}"
     return title, body
 
 
@@ -65,11 +62,17 @@ async def _process_issue_with_agent_async(
 
         try:
             # 1) Load run row
-            run_query = await db.execute(select(AgentRun).where(AgentRun.id == agent_run_id))
+            run_query = await db.execute(
+                select(AgentRun).where(AgentRun.id == agent_run_id)
+            )
             agent_run = run_query.scalar_one_or_none()
             if not agent_run:
                 logger.warning("AgentRun %s not found", agent_run_id)
-                return {"status": "ignored", "reason": "agent_run_not_found", "agent_run_id": agent_run_id}
+                return {
+                    "status": "ignored",
+                    "reason": "agent_run_not_found",
+                    "agent_run_id": agent_run_id,
+                }
 
             installation_query = await db.execute(
                 select(Installation).where(
@@ -86,7 +89,10 @@ async def _process_issue_with_agent_async(
                 agent_run.error = "installation_not_found_or_inactive"
                 agent_run.completed_at = _utcnow()
                 await db.commit()
-                return {"status": "failed", "reason": "installation_not_found_or_inactive"}
+                return {
+                    "status": "failed",
+                    "reason": "installation_not_found_or_inactive",
+                }
 
             started_at = _utcnow()
             agent_run.status = "RUNNING"
@@ -117,7 +123,10 @@ async def _process_issue_with_agent_async(
                 installation_id=installation.github_installation_id,
             )
 
-            issue_title = issue_data.get("title") or (agent_run.issue_title_snapshot or "").strip()
+            issue_title = (
+                issue_data.get("title")
+                or (agent_run.issue_title_snapshot or "").strip()
+            )
             issue_body = issue_data.get("body") or (agent_run.issue_body_snapshot or "")
             issue_url = issue_data.get("html_url")
             base_branch = repo_data.get("default_branch") or "main"
@@ -151,9 +160,7 @@ async def _process_issue_with_agent_async(
             )
 
             # Bootstrap git identity/auth once; agent should only add/commit/push.
-            push_url = (
-                f"https://x-access-token:{installation_token}@github.com/{agent_run.repository}.git"
-            )
+            push_url = f"https://x-access-token:{installation_token}@github.com/{agent_run.repository}.git"
             bootstrap_cmd = (
                 f"git config user.name {shlex.quote('Metis AI')} && "
                 f"git config user.email {shlex.quote('ai@metis.dev')} && "
@@ -230,7 +237,9 @@ async def _process_issue_with_agent_async(
             summary = (final_state.result.get("summary") or "").strip()
             branch_name = (final_state.result.get("branch_name") or "").strip()
             if not summary:
-                summary = f"Implemented issue #{agent_run.issue_number} via background agent."
+                summary = (
+                    f"Implemented issue #{agent_run.issue_number} via background agent."
+                )
             if not branch_name:
                 agent_run.status = "FAILED"
                 agent_run.error = "missing_branch_name"
@@ -252,7 +261,10 @@ async def _process_issue_with_agent_async(
                 cwd="workspace/repo",
                 timeout=30,
             )
-            if branch_check_response.exit_code != 0 or not (branch_check_response.result or "").strip():
+            if (
+                branch_check_response.exit_code != 0
+                or not (branch_check_response.result or "").strip()
+            ):
                 agent_run.status = "FAILED"
                 agent_run.error = (
                     "branch_not_pushed_to_origin: "
@@ -333,7 +345,12 @@ async def _process_issue_with_agent_async(
             }
 
         except Exception as e:
-            logger.error("Background agent task failed run=%s: %s", agent_run_id, e, exc_info=True)
+            logger.error(
+                "Background agent task failed run=%s: %s",
+                agent_run_id,
+                e,
+                exc_info=True,
+            )
             await db.rollback()
             if agent_run:
                 await db.refresh(agent_run)

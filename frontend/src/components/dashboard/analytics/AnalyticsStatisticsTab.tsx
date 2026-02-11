@@ -70,7 +70,7 @@ export const AnalyticsStatisticsTab: React.FC<AnalyticsStatisticsTabProps> = ({
   if (!selectedRepository) {
     return (
       <Card className="border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-        <CardContent className="py-10 text-center text-black/60 font-medium">
+        <CardContent className="py-10 text-center font-medium text-black/60">
           Select a repository to view analytics.
         </CardContent>
       </Card>
@@ -80,7 +80,7 @@ export const AnalyticsStatisticsTab: React.FC<AnalyticsStatisticsTabProps> = ({
   if (loading) {
     return (
       <Card className="border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-        <CardContent className="py-10 text-center text-black/60 font-medium">
+        <CardContent className="py-10 text-center font-medium text-black/60">
           Loading analytics...
         </CardContent>
       </Card>
@@ -90,7 +90,7 @@ export const AnalyticsStatisticsTab: React.FC<AnalyticsStatisticsTabProps> = ({
   if (error) {
     return (
       <Card className="border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-        <CardContent className="py-10 text-center text-[var(--metis-red)] font-medium">
+        <CardContent className="py-10 text-center font-medium text-[var(--metis-red)]">
           Failed to load analytics: {error}
         </CardContent>
       </Card>
@@ -108,7 +108,7 @@ export const AnalyticsStatisticsTab: React.FC<AnalyticsStatisticsTabProps> = ({
               className="border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
             >
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-black/60 text-sm font-bold">{card.label}</CardTitle>
+                <CardTitle className="text-sm font-bold text-black/60">{card.label}</CardTitle>
                 <Icon className="h-4 w-4 text-black" />
               </CardHeader>
               <CardContent>
@@ -140,15 +140,52 @@ export const AnalyticsStatisticsTab: React.FC<AnalyticsStatisticsTabProps> = ({
                   tickLine={false}
                   axisLine={false}
                   tickMargin={8}
-                  tickFormatter={(value) => new Date(value).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                  tickFormatter={(value) =>
+                    new Date(value).toLocaleDateString(undefined, {
+                      month: 'short',
+                      day: 'numeric',
+                    })
+                  }
                 />
                 <YAxis allowDecimals={false} domain={[0, 'auto']} />
                 <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="dot" />} />
-                <Area dataKey="INFO" type="monotone" fill="var(--color-INFO)" fillOpacity={0.3} stroke="var(--color-INFO)" stackId="a" />
-                <Area dataKey="WARNING" type="monotone" fill="var(--color-WARNING)" fillOpacity={0.3} stroke="var(--color-WARNING)" stackId="a" />
-                <Area dataKey="ERROR" type="monotone" fill="var(--color-ERROR)" fillOpacity={0.3} stroke="var(--color-ERROR)" stackId="a" />
-                <Area dataKey="CRITICAL" type="monotone" fill="var(--color-CRITICAL)" fillOpacity={0.3} stroke="var(--color-CRITICAL)" stackId="a" />
-                <ChartLegend content={<ChartLegendContent payload={[]} className="flex-wrap gap-x-3 gap-y-1" />} />
+                <Area
+                  dataKey="INFO"
+                  type="monotone"
+                  fill="var(--color-INFO)"
+                  fillOpacity={0.3}
+                  stroke="var(--color-INFO)"
+                  stackId="a"
+                />
+                <Area
+                  dataKey="WARNING"
+                  type="monotone"
+                  fill="var(--color-WARNING)"
+                  fillOpacity={0.3}
+                  stroke="var(--color-WARNING)"
+                  stackId="a"
+                />
+                <Area
+                  dataKey="ERROR"
+                  type="monotone"
+                  fill="var(--color-ERROR)"
+                  fillOpacity={0.3}
+                  stroke="var(--color-ERROR)"
+                  stackId="a"
+                />
+                <Area
+                  dataKey="CRITICAL"
+                  type="monotone"
+                  fill="var(--color-CRITICAL)"
+                  fillOpacity={0.3}
+                  stroke="var(--color-CRITICAL)"
+                  stackId="a"
+                />
+                <ChartLegend
+                  content={
+                    <ChartLegendContent payload={[]} className="flex-wrap gap-x-3 gap-y-1" />
+                  }
+                />
               </AreaChart>
             </ChartContainer>
           </CardContent>
@@ -170,17 +207,36 @@ export const AnalyticsStatisticsTab: React.FC<AnalyticsStatisticsTabProps> = ({
                   tickLine={false}
                   tickMargin={10}
                   axisLine={false}
-                  tickFormatter={(value) => new Date(value).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                  tickFormatter={(value) =>
+                    new Date(value).toLocaleDateString(undefined, {
+                      month: 'short',
+                      day: 'numeric',
+                    })
+                  }
                 />
                 <YAxis allowDecimals={false} domain={[0, 'auto']} />
                 <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="dot" />} />
-                <ChartLegend content={<ChartLegendContent payload={[]} className="flex-wrap gap-x-3 gap-y-1" />} />
+                <ChartLegend
+                  content={
+                    <ChartLegendContent payload={[]} className="flex-wrap gap-x-3 gap-y-1" />
+                  }
+                />
                 <Bar dataKey="BUG" stackId="a" fill="var(--color-BUG)" radius={2} />
                 <Bar dataKey="SECURITY" stackId="a" fill="var(--color-SECURITY)" radius={2} />
                 <Bar dataKey="PERFORMANCE" stackId="a" fill="var(--color-PERFORMANCE)" radius={2} />
                 <Bar dataKey="STYLE" stackId="a" fill="var(--color-STYLE)" radius={2} />
-                <Bar dataKey="MAINTAINABILITY" stackId="a" fill="var(--color-MAINTAINABILITY)" radius={2} />
-                <Bar dataKey="DOCUMENTATION" stackId="a" fill="var(--color-DOCUMENTATION)" radius={2} />
+                <Bar
+                  dataKey="MAINTAINABILITY"
+                  stackId="a"
+                  fill="var(--color-MAINTAINABILITY)"
+                  radius={2}
+                />
+                <Bar
+                  dataKey="DOCUMENTATION"
+                  stackId="a"
+                  fill="var(--color-DOCUMENTATION)"
+                  radius={2}
+                />
                 <Bar dataKey="TESTING" stackId="a" fill="var(--color-TESTING)" radius={2} />
               </BarChart>
             </ChartContainer>

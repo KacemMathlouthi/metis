@@ -191,7 +191,9 @@ class GitCommitTool(BaseTool):
             normalized_name = (author_name or "").strip()
             normalized_email = (author_email or "").strip()
             if normalized_name and normalized_email:
-                self.sandbox.git.commit(path, message, normalized_name, normalized_email)
+                self.sandbox.git.commit(
+                    path, message, normalized_name, normalized_email
+                )
                 return ToolResult(
                     success=True,
                     data={

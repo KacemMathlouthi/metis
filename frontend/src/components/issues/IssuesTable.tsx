@@ -20,10 +20,7 @@ interface IssuesTableProps {
 
 const ITEMS_PER_PAGE = 10;
 
-export const IssuesTable: React.FC<IssuesTableProps> = ({
-  issues,
-  onRowClick,
-}) => {
+export const IssuesTable: React.FC<IssuesTableProps> = ({ issues, onRowClick }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState<'OPEN' | 'CLOSED'>('OPEN');
 
@@ -123,10 +120,10 @@ export const IssuesTable: React.FC<IssuesTableProps> = ({
   };
 
   return (
-    <div className="flex flex-col h-full gap-4">
-      <div className="flex-1 flex flex-col min-h-0 rounded-lg border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
+    <div className="flex h-full flex-col gap-4">
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
         {/* Header */}
-        <div className="flex-none flex items-center justify-between border-b-2 border-black bg-[var(--metis-pastel-1)] px-4 py-3">
+        <div className="flex flex-none items-center justify-between border-b-2 border-black bg-[var(--metis-pastel-1)] px-4 py-3">
           <div className="flex items-center gap-4">
             <button
               onClick={() => setStatusFilter('OPEN')}
@@ -152,12 +149,12 @@ export const IssuesTable: React.FC<IssuesTableProps> = ({
         </div>
 
         {/* Table */}
-        <div className="flex-1 overflow-y-auto w-full">
+        <div className="w-full flex-1 overflow-y-auto">
           {paginatedIssues.map((issue) => (
             <div
               key={issue.id}
               onClick={() => onRowClick(issue.issue_number)}
-              className="group flex items-start gap-3 border-b-2 border-black p-4 last:border-0 hover:bg-[var(--metis-pastel-1)] cursor-pointer transition-colors"
+              className="group flex cursor-pointer items-start gap-3 border-b-2 border-black p-4 transition-colors last:border-0 hover:bg-[var(--metis-pastel-1)]"
             >
               <div className="pt-1">
                 {issue.status === 'OPEN' ? (
@@ -166,28 +163,28 @@ export const IssuesTable: React.FC<IssuesTableProps> = ({
                   <CheckCircle2 className="h-4 w-4 text-purple-600" />
                 )}
               </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 flex-wrap mb-1">
-                  <h3 className="font-black text-base text-black group-hover:text-[var(--metis-orange)] transition-colors">
+              <div className="min-w-0 flex-1">
+                <div className="mb-1 flex flex-wrap items-center gap-2">
+                  <h3 className="text-base font-black text-black transition-colors group-hover:text-[var(--metis-orange)]">
                     {issue.title}
                   </h3>
-                  <div className="flex gap-1 flex-wrap">
+                  <div className="flex flex-wrap gap-1">
                     {issue.labels.map((label) => (
                       <LabelBadge key={label} label={label} />
                     ))}
                   </div>
                 </div>
-                <div className="text-xs text-black/60 flex items-center gap-1 font-medium">
+                <div className="flex items-center gap-1 text-xs font-medium text-black/60">
                   <span className="font-bold text-black">#{issue.issue_number}</span>
                   <span>opened {formatRelativeTime(issue.created_at)}</span>
                   <span>by</span>
-                  <span className="font-bold text-black hover:text-[var(--metis-orange)] hover:underline cursor-pointer">
+                  <span className="cursor-pointer font-bold text-black hover:text-[var(--metis-orange)] hover:underline">
                     {issue.author}
                   </span>
                 </div>
               </div>
               {issue.comments_count > 0 && (
-                <div className="flex items-center gap-1 text-xs font-bold text-black/60 pt-1">
+                <div className="flex items-center gap-1 pt-1 text-xs font-bold text-black/60">
                   <MessageSquare className="h-3.5 w-3.5" />
                   <span>{issue.comments_count}</span>
                 </div>
@@ -195,7 +192,7 @@ export const IssuesTable: React.FC<IssuesTableProps> = ({
             </div>
           ))}
           {paginatedIssues.length === 0 && (
-            <div className="p-8 text-center text-black/60 font-bold">
+            <div className="p-8 text-center font-bold text-black/60">
               No {statusFilter.toLowerCase()} issues found.
             </div>
           )}
@@ -203,25 +200,27 @@ export const IssuesTable: React.FC<IssuesTableProps> = ({
       </div>
 
       {/* Pagination */}
-      <div className="flex-none flex justify-center py-2">
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                  className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
-                />
-              </PaginationItem>
-              {renderPaginationNumbers()}
-              <PaginationItem>
-                <PaginationNext
-                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                  className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        </div>
+      <div className="flex flex-none justify-center py-2">
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+              />
+            </PaginationItem>
+            {renderPaginationNumbers()}
+            <PaginationItem>
+              <PaginationNext
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                className={
+                  currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'
+                }
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      </div>
     </div>
   );
 };

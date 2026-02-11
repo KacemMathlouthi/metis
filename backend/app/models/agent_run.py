@@ -79,4 +79,3 @@ class AgentRun(Base, BaseModel):
             f"<AgentRun(id={self.id}, repo={self.repository}, "
             f"issue={self.issue_number}, status={self.status})>"
         )
-

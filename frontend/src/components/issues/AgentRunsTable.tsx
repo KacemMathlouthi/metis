@@ -19,10 +19,7 @@ interface AgentRunsTableProps {
 
 const ITEMS_PER_PAGE = 25;
 
-export const AgentRunsTable: React.FC<AgentRunsTableProps> = ({
-  agentRuns,
-  onRowClick,
-}) => {
+export const AgentRunsTable: React.FC<AgentRunsTableProps> = ({ agentRuns, onRowClick }) => {
   const [currentPage, setCurrentPage] = useState(1);
 
   const formatRelativeTime = (dateStr: string | null) => {
@@ -132,10 +129,10 @@ export const AgentRunsTable: React.FC<AgentRunsTableProps> = ({
   };
 
   return (
-    <div className="flex flex-col h-full gap-4">
-      <div className="flex-1 flex flex-col min-h-0 rounded-lg border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
+    <div className="flex h-full flex-col gap-4">
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
         {/* Header */}
-        <div className="flex-none flex items-center justify-between border-b-2 border-black bg-[var(--metis-pastel-1)] px-4 py-3">
+        <div className="flex flex-none items-center justify-between border-b-2 border-black bg-[var(--metis-pastel-1)] px-4 py-3">
           <div className="flex items-center gap-4 text-sm font-black text-black">
             <div className="flex items-center gap-2">
               <Bot className="h-4 w-4" />
@@ -145,24 +142,22 @@ export const AgentRunsTable: React.FC<AgentRunsTableProps> = ({
         </div>
 
         {/* Table */}
-        <div className="flex-1 overflow-y-auto w-full">
+        <div className="w-full flex-1 overflow-y-auto">
           {paginatedRuns.map((run) => (
             <div
               key={run.id}
               onClick={() => onRowClick(run.id)}
-              className="group flex items-start gap-3 border-b-2 border-black p-4 last:border-0 hover:bg-[var(--metis-pastel-1)] cursor-pointer transition-colors"
+              className="group flex cursor-pointer items-start gap-3 border-b-2 border-black p-4 transition-colors last:border-0 hover:bg-[var(--metis-pastel-1)]"
             >
-              <div className="pt-1">
-                {getStatusIcon(run.status)}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 flex-wrap mb-1">
-                  <h3 className="font-black text-base text-black group-hover:text-[var(--metis-orange)] transition-colors">
+              <div className="pt-1">{getStatusIcon(run.status)}</div>
+              <div className="min-w-0 flex-1">
+                <div className="mb-1 flex flex-wrap items-center gap-2">
+                  <h3 className="text-base font-black text-black transition-colors group-hover:text-[var(--metis-orange)]">
                     Agent Run for Issue #{run.issue_number}
                   </h3>
-                  <AgentStatusBadge status={run.status} className="text-[10px] px-1.5 py-0" />
+                  <AgentStatusBadge status={run.status} className="px-1.5 py-0 text-[10px]" />
                 </div>
-                <div className="text-xs text-black/60 flex items-center gap-3 flex-wrap font-medium">
+                <div className="flex flex-wrap items-center gap-3 text-xs font-medium text-black/60">
                   <span>started {formatRelativeTime(run.started_at)}</span>
                   <div className="flex items-center gap-1">
                     <Clock className="h-3 w-3" />
@@ -178,7 +173,7 @@ export const AgentRunsTable: React.FC<AgentRunsTableProps> = ({
                   </div>
                 </div>
                 {run.custom_instructions && (
-                  <div className="mt-1 text-xs text-black/60 italic truncate max-w-2xl border-l-2 border-black/20 pl-2">
+                  <div className="mt-1 max-w-2xl truncate border-l-2 border-black/20 pl-2 text-xs text-black/60 italic">
                     "{run.custom_instructions}"
                   </div>
                 )}
@@ -190,12 +185,12 @@ export const AgentRunsTable: React.FC<AgentRunsTableProps> = ({
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
-                    className="text-xs text-[var(--metis-orange)] hover:underline font-bold border-2 border-black bg-[var(--metis-pastel-1)] px-2 py-1 rounded-md"
+                    className="rounded-md border-2 border-black bg-[var(--metis-pastel-1)] px-2 py-1 text-xs font-bold text-[var(--metis-orange)] hover:underline"
                   >
                     PR #{run.pr_number}
                   </a>
                 ) : run.error ? (
-                  <span className="text-xs text-[var(--metis-red)] font-bold bg-[var(--metis-pastel-red)] px-2 py-1 rounded-md border-2 border-[var(--metis-red)]">
+                  <span className="rounded-md border-2 border-[var(--metis-red)] bg-[var(--metis-pastel-red)] px-2 py-1 text-xs font-bold text-[var(--metis-red)]">
                     Error
                   </span>
                 ) : null}
@@ -203,35 +198,35 @@ export const AgentRunsTable: React.FC<AgentRunsTableProps> = ({
             </div>
           ))}
           {paginatedRuns.length === 0 && (
-            <div className="p-8 text-center text-black/60 font-bold">
-              No agent runs found.
-            </div>
+            <div className="p-8 text-center font-bold text-black/60">No agent runs found.</div>
           )}
         </div>
       </div>
 
       {/* Pagination */}
-        <div className="flex-none flex justify-center py-2">
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                  className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
-                />
-              </PaginationItem>
+      <div className="flex flex-none justify-center py-2">
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+              />
+            </PaginationItem>
 
-              {renderPaginationNumbers()}
+            {renderPaginationNumbers()}
 
-              <PaginationItem>
-                <PaginationNext
-                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                  className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        </div>
+            <PaginationItem>
+              <PaginationNext
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                className={
+                  currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'
+                }
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      </div>
     </div>
   );
 };

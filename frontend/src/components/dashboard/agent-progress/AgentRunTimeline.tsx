@@ -1,6 +1,12 @@
 import React from 'react';
 import type { ParsedToolPayload, TimelineEntry, ToolCall } from './types';
-import { CodeBlock, guessCodeLanguage, MarkdownContent, parseJsonSafely, toPrettyJson } from './utils';
+import {
+  CodeBlock,
+  guessCodeLanguage,
+  MarkdownContent,
+  parseJsonSafely,
+  toPrettyJson,
+} from './utils';
 
 function summarizeArgs(args: unknown): string[] {
   if (!args || typeof args !== 'object') return [];
@@ -59,7 +65,8 @@ function renderToolData(toolName: string | undefined, data: unknown) {
   }
 
   if (toolName === 'run_code') {
-    const result = typeof payload.result === 'string' ? payload.result : toPrettyJson(payload.result);
+    const result =
+      typeof payload.result === 'string' ? payload.result : toPrettyJson(payload.result);
     return <CodeBlock code={result} language="text" />;
   }
 
@@ -75,9 +82,7 @@ function TimelineAssistantMessage({
 }) {
   return (
     <div className="space-y-3">
-      {content.trim() && (
-        <MarkdownContent markdown={content} />
-      )}
+      {content.trim() && <MarkdownContent markdown={content} />}
 
       {toolCalls.length > 0 && (
         <div className="space-y-2">
@@ -112,8 +117,8 @@ function TimelineAssistantMessage({
                     ))}
                   </div>
                 )}
-                <details className="px-3 pb-3 pt-2">
-                  <summary className="cursor-pointer text-[11px] font-bold uppercase tracking-wider text-black/60">
+                <details className="px-3 pt-2 pb-3">
+                  <summary className="cursor-pointer text-[11px] font-bold tracking-wider text-black/60 uppercase">
                     TOOL CALL
                   </summary>
                   <div className="pt-2">{renderToolData(undefined, parsedArgs)}</div>
@@ -127,13 +132,7 @@ function TimelineAssistantMessage({
   );
 }
 
-function TimelineToolResult({
-  entry,
-  toolName,
-}: {
-  entry: TimelineEntry;
-  toolName?: string;
-}) {
+function TimelineToolResult({ entry, toolName }: { entry: TimelineEntry; toolName?: string }) {
   const parsed = parseJsonSafely(entry.content);
   const payload =
     parsed && typeof parsed === 'object'
@@ -143,8 +142,12 @@ function TimelineToolResult({
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-2">
-        <span className="rounded bg-black px-1.5 py-0.5 text-[10px] font-bold text-white">TOOL RESULT</span>
-        <span className="font-mono text-xs font-semibold text-black">{toolName || 'unknown_tool'}</span>
+        <span className="rounded bg-black px-1.5 py-0.5 text-[10px] font-bold text-white">
+          TOOL RESULT
+        </span>
+        <span className="font-mono text-xs font-semibold text-black">
+          {toolName || 'unknown_tool'}
+        </span>
         <span
           className={`rounded border px-2 py-0.5 text-[10px] font-bold ${
             payload.success === false
@@ -190,7 +193,9 @@ export const AgentRunTimeline: React.FC<AgentRunTimelineProps> = ({
     <div className="overflow-hidden rounded-lg border-2 border-black bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
       <div className="flex items-center justify-between border-b-2 border-black bg-[var(--metis-pastel-1)] px-5 py-4">
         <h2 className="text-xl font-black text-black">Execution Timeline</h2>
-        <span className="rounded bg-black px-2 py-1 text-xs font-bold text-white">{timeline.length} EVENTS</span>
+        <span className="rounded bg-black px-2 py-1 text-xs font-bold text-white">
+          {timeline.length} EVENTS
+        </span>
       </div>
 
       <div className="space-y-6 p-5">
@@ -208,15 +213,17 @@ export const AgentRunTimeline: React.FC<AgentRunTimelineProps> = ({
           return (
             <div key={`${index}-${role}`} className="relative pl-8">
               {index !== timeline.length - 1 && (
-                <div className="absolute bottom-[-26px] left-[11px] top-7 w-0.5 bg-black/15" />
+                <div className="absolute top-7 bottom-[-26px] left-[11px] w-0.5 bg-black/15" />
               )}
-              <div className="absolute left-0 top-1 z-10 flex h-6 w-6 items-center justify-center rounded-full border-2 border-black bg-white text-[10px] font-bold">
+              <div className="absolute top-1 left-0 z-10 flex h-6 w-6 items-center justify-center rounded-full border-2 border-black bg-white text-[10px] font-bold">
                 {index + 1}
               </div>
 
               <div className="overflow-hidden rounded-lg border-2 border-black bg-white shadow-[3px_3px_0px_0px_rgba(0,0,0,0.15)]">
                 <div className="flex items-center justify-between border-b-2 border-black bg-[var(--metis-pastel-1)] px-4 py-2">
-                  <span className="text-xs font-black uppercase tracking-wider text-black/65">{role}</span>
+                  <span className="text-xs font-black tracking-wider text-black/65 uppercase">
+                    {role}
+                  </span>
                   {toolName && (
                     <span className="rounded border border-black/20 bg-white px-2 py-0.5 font-mono text-[10px] font-semibold text-black">
                       {toolName}
@@ -238,7 +245,9 @@ export const AgentRunTimeline: React.FC<AgentRunTimelineProps> = ({
         })}
 
         {timeline.length === 0 && (
-          <div className="py-8 text-center text-sm font-semibold text-black/60">No timeline events available.</div>
+          <div className="py-8 text-center text-sm font-semibold text-black/60">
+            No timeline events available.
+          </div>
         )}
       </div>
     </div>

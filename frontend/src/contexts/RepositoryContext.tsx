@@ -6,13 +6,7 @@
  */
 
 import * as React from 'react';
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  type ReactNode,
-} from 'react';
+import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import type { Installation } from '@/types/api';
 import { apiClient } from '@/lib/api-client';
 
@@ -25,9 +19,7 @@ interface RepositoryContextType {
   refetchInstallations: () => Promise<void>;
 }
 
-const RepositoryContext = createContext<RepositoryContextType | undefined>(
-  undefined
-);
+const RepositoryContext = createContext<RepositoryContextType | undefined>(undefined);
 
 export function RepositoryProvider({ children }: { children: ReactNode }) {
   const [selectedRepo, setSelectedRepo] = useState<Installation | null>(null);
