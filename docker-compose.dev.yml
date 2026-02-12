@@ -65,6 +65,9 @@ services:
       CELERY_BROKER_URL: redis://redis:6379/0
       CELERY_RESULT_BACKEND: redis://redis:6379/1
       FRONTEND_URL: http://localhost:5173
+      GITHUB_SECRET_KEY_PATH: /app/private-key.pem
+    volumes:
+      - ./backend/metis-ai-testing.2025-11-21.private-key.pem:/app/private-key.pem:ro
     ports:
       - '8000:8000'
     depends_on:
@@ -75,7 +78,7 @@ services:
     command: [
       'sh',
       '-c',
-      'uv run alembic upgrade head && uv run uvicorn app.main:app --host 0.0.0.0 --port 8000'
+      'alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000'
     ]
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://localhost:8000/health']
@@ -98,6 +101,9 @@ services:
       CELERY_BROKER_URL: redis://redis:6379/0
       CELERY_RESULT_BACKEND: redis://redis:6379/1
       FRONTEND_URL: http://localhost:5173
+      GITHUB_SECRET_KEY_PATH: /app/private-key.pem
+    volumes:
+      - ./backend/metis-ai-testing.2025-11-21.private-key.pem:/app/private-key.pem:ro
     depends_on:
       postgres:
         condition: service_healthy
@@ -105,7 +111,7 @@ services:
         condition: service_healthy
       api:
         condition: service_healthy
-    command: ['uv', 'run', 'celery', '-A', 'app.core.celery_app', 'worker', '--loglevel=info']
+    command: ['celery', '-A', 'app.core.celery_app', 'worker', '--loglevel=info']
     networks:
       - metis-network
 
