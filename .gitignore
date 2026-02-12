@@ -208,5 +208,6 @@ __marimo__/
 # Docs
 docs/
 *.pem
+backend/secrets/*.json
 
 /daytona

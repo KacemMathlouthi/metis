@@ -66,8 +66,10 @@ services:
       CELERY_RESULT_BACKEND: redis://redis:6379/1
       FRONTEND_URL: http://localhost:5173
       GITHUB_SECRET_KEY_PATH: /app/private-key.pem
+      GOOGLE_APPLICATION_CREDENTIALS: /gcp/creds.json
     volumes:
       - ./backend/metis-ai-testing.2025-11-21.private-key.pem:/app/private-key.pem:ro
+      - ./backend/secrets/gcp-sa.json:/gcp/creds.json:ro
     ports:
       - '8000:8000'
     depends_on:
@@ -102,8 +104,10 @@ services:
       CELERY_RESULT_BACKEND: redis://redis:6379/1
       FRONTEND_URL: http://localhost:5173
       GITHUB_SECRET_KEY_PATH: /app/private-key.pem
+      GOOGLE_APPLICATION_CREDENTIALS: /gcp/creds.json
     volumes:
       - ./backend/metis-ai-testing.2025-11-21.private-key.pem:/app/private-key.pem:ro
+      - ./backend/secrets/gcp-sa.json:/gcp/creds.json:ro
     depends_on:
       postgres:
         condition: service_healthy
