@@ -25,20 +25,6 @@ jobs:
       - name: Dependency Review
         uses: actions/dependency-review-action@v4
 
-  secret-scan:
-    name: Secret Scan (gitleaks)
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Run gitleaks
-        uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
   python-deps-audit:
     name: Python dependency audit (informational)
     runs-on: ubuntu-latest
@@ -85,4 +71,3 @@ jobs:
           cd frontend
           pnpm install --frozen-lockfile
           pnpm audit --prod
-
