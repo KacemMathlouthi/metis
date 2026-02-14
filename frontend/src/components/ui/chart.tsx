@@ -4,6 +4,14 @@ import * as React from 'react';
 
 import { cn } from '@/lib/utils';
 
+type TooltipPayloadItem = {
+  color?: string;
+  dataKey?: string | number;
+  name?: string | number;
+  payload?: Record<string, unknown> & { fill?: string };
+  value?: number | string;
+};
+
 // Format: { THEME_NAME: CSS_SELECTOR }
 const THEMES = { light: '', dark: '.dark' } as const;
 
@@ -110,7 +118,7 @@ function ChartTooltipContent({
   color,
   nameKey,
   labelKey,
-}: React.ComponentProps<typeof RechartsPrimitive.Tooltip> &
+}: Partial<RechartsPrimitive.TooltipContentProps<number | string, string>> &
   React.ComponentProps<'div'> & {
     hideLabel?: boolean;
     hideIndicator?: boolean;
@@ -125,7 +133,7 @@ function ChartTooltipContent({
       return null;
     }
 
-    const [item] = payload;
+    const [item] = payload as unknown as ReadonlyArray<TooltipPayloadItem>;
     const key = `${labelKey || item?.dataKey || item?.name || 'value'}`;
     const itemConfig = getPayloadConfigFromPayload(config, item, key);
     const value =
@@ -151,6 +159,7 @@ function ChartTooltipContent({
   }
 
   const nestLabel = payload.length === 1 && indicator !== 'dot';
+  const typedPayload = payload as unknown as ReadonlyArray<TooltipPayloadItem>;
 
   return (
     <div
@@ -161,21 +170,27 @@ function ChartTooltipContent({
     >
       {!nestLabel ? tooltipLabel : null}
       <div className="grid gap-1.5">
-        {payload.map((item, index) => {
+        {typedPayload.map((item, index: number) => {
           const key = `${nameKey || item.name || item.dataKey || 'value'}`;
           const itemConfig = getPayloadConfigFromPayload(config, item, key);
-          const indicatorColor = color || item.payload.fill || item.color;
+          const indicatorColor = color || item.payload?.fill || item.color;
 
           return (
             <div
-              key={item.dataKey}
+              key={String(item.dataKey ?? index)}
               className={cn(
                 '[&>svg]:text-muted-foreground flex w-full flex-wrap items-stretch gap-2 [&>svg]:h-2.5 [&>svg]:w-2.5',
                 indicator === 'dot' && 'items-center'
               )}
             >
               {formatter && item?.value !== undefined && item.name ? (
-                formatter(item.value, item.name, item, index, item.payload)
+                formatter(
+                  item.value as never,
+                  String(item.name),
+                  item as never,
+                  index,
+                  item.payload as never
+                )
               ) : (
                 <>
                   {itemConfig?.icon ? (
@@ -210,9 +225,9 @@ function ChartTooltipContent({
                         {itemConfig?.label || item.name}
                       </span>
                     </div>
-                    {item.value && (
+                    {item.value !== undefined && item.value !== null && (
                       <span className="text-foreground font-mono font-medium tabular-nums">
-                        {item.value.toLocaleString()}
+                        {typeof item.value === 'number' ? item.value.toLocaleString() : item.value}
                       </span>
                     )}
                   </div>
@@ -235,7 +250,7 @@ function ChartLegendContent({
   verticalAlign = 'bottom',
   nameKey,
 }: React.ComponentProps<'div'> &
-  Pick<RechartsPrimitive.LegendProps, 'payload' | 'verticalAlign'> & {
+  Pick<RechartsPrimitive.DefaultLegendContentProps, 'payload' | 'verticalAlign'> & {
     hideIcon?: boolean;
     nameKey?: string;
   }) {
@@ -253,31 +268,33 @@ function ChartLegendContent({
         className
       )}
     >
-      {payload.map((item) => {
-        const key = `${nameKey || item.dataKey || 'value'}`;
-        const itemConfig = getPayloadConfigFromPayload(config, item, key);
+      {(payload as ReadonlyArray<RechartsPrimitive.LegendPayload>).map(
+        (item: RechartsPrimitive.LegendPayload) => {
+          const key = `${nameKey || item.dataKey || 'value'}`;
+          const itemConfig = getPayloadConfigFromPayload(config, item, key);
 
-        return (
-          <div
-            key={item.value}
-            className={cn(
-              '[&>svg]:text-foreground flex items-center gap-1.5 [&>svg]:h-3 [&>svg]:w-3'
-            )}
-          >
-            {itemConfig?.icon && !hideIcon ? (
-              <itemConfig.icon />
-            ) : (
-              <div
-                className="border-border h-2 w-2 shrink-0 rounded-[2px] border"
-                style={{
-                  backgroundColor: item.color,
-                }}
-              />
-            )}
-            {itemConfig?.label}
-          </div>
-        );
-      })}
+          return (
+            <div
+              key={item.value}
+              className={cn(
+                '[&>svg]:text-foreground flex items-center gap-1.5 [&>svg]:h-3 [&>svg]:w-3'
+              )}
+            >
+              {itemConfig?.icon && !hideIcon ? (
+                <itemConfig.icon />
+              ) : (
+                <div
+                  className="border-border h-2 w-2 shrink-0 rounded-[2px] border"
+                  style={{
+                    backgroundColor: item.color,
+                  }}
+                />
+              )}
+              {itemConfig?.label}
+            </div>
+          );
+        }
+      )}
     </div>
   );
 }
