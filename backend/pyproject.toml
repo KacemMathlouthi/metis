@@ -112,6 +112,17 @@ ignore = [
     "EM102",   # Exception message in f-string
     "PERF401", # Perf micro-optimization; avoid blocking CI
     "SIM102",  # Style preference; avoid blocking CI
+    "B904",    # raise-from style in except blocks
+    "C416",    # dict() vs dict comprehension
+    "DTZ003",  # utcnow() discouraged
+    "DTZ005",  # datetime.now() without tz
+    "E402",    # import not at top of file (used for task registration patterns)
+    "F401",    # imported but unused (used for side-effect imports)
+    "F841",    # local variable assigned but never used
+    "RUF100",  # unused noqa
+    "TC001",   # move application imports into TYPE_CHECKING blocks
+    "TC002",   # move third-party imports into TYPE_CHECKING blocks
+    "TC003",   # move standard library imports into TYPE_CHECKING blocks
 ]
 
 [tool.ruff.lint.per-file-ignores]

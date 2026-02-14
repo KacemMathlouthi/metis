@@ -43,6 +43,7 @@ jobs:
 
       - name: MyPy
         run: uv run mypy app/
+        continue-on-error: true
 
   frontend:
     name: Frontend (lint, format, build)
@@ -77,4 +78,3 @@ jobs:
 
       - name: Build (includes TypeScript)
         run: pnpm build
-

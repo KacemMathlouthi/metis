@@ -1,6 +1,5 @@
 """Tool manager for organizing tools by agent type."""
 
-
 from app.agents.tools.base import BaseTool, ToolResult
 from app.agents.tools.completion_tools import (
     FinishReviewTool,
