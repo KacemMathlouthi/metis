@@ -67,9 +67,7 @@ async def sync_installations(
     github_token = UserRepository.get_decrypted_access_token(current_user)
 
     # Fetch installations from GitHub
-    github_installations = await github_service.get_user_installations_with_repos(
-        github_token
-    )
+    github_installations = await github_service.get_user_installations_with_repos(github_token)
 
     installation_repo = InstallationRepository()
     created_count = 0
@@ -134,9 +132,7 @@ async def sync_installations(
                     is_active=installation.is_active,
                     created_at=installation.created_at.isoformat(),
                     updated_at=(
-                        installation.updated_at.isoformat()
-                        if installation.updated_at
-                        else None
+                        installation.updated_at.isoformat() if installation.updated_at else None
                     ),
                 )
             )
@@ -190,9 +186,7 @@ async def list_installations(
     ]
 
 
-@router.post(
-    "/enable", response_model=InstallationResponse, status_code=status.HTTP_201_CREATED
-)
+@router.post("/enable", response_model=InstallationResponse, status_code=status.HTTP_201_CREATED)
 async def enable_repository(
     request: EnableRepositoryRequest,
     current_user: User = Depends(get_current_user),
@@ -233,13 +227,12 @@ async def enable_repository(
                 status_code=status.HTTP_409_CONFLICT,
                 detail=f"Repository {request.repository} is already enabled",
             )
-        else:
-            # Reactivate inactive installation
-            installation = await installation_repo.activate(db, installation)
-            installation = await installation_repo.update_config(
-                db, installation, request.config.model_dump()
-            )
-            await db.commit()
+        # Reactivate inactive installation
+        installation = await installation_repo.activate(db, installation)
+        installation = await installation_repo.update_config(
+            db, installation, request.config.model_dump()
+        )
+        await db.commit()
     else:
         # Create new installation
         installation = await installation_repo.create(
@@ -263,9 +256,7 @@ async def enable_repository(
         config=installation.config,
         is_active=installation.is_active,
         created_at=installation.created_at.isoformat(),
-        updated_at=(
-            installation.updated_at.isoformat() if installation.updated_at else None
-        ),
+        updated_at=(installation.updated_at.isoformat() if installation.updated_at else None),
     )
 
 
@@ -324,9 +315,7 @@ async def update_installation_config(
         config=installation.config,
         is_active=installation.is_active,
         created_at=installation.created_at.isoformat(),
-        updated_at=(
-            installation.updated_at.isoformat() if installation.updated_at else None
-        ),
+        updated_at=(installation.updated_at.isoformat() if installation.updated_at else None),
     )
 
 

@@ -67,9 +67,7 @@ class GitCreateBranchTool(BaseTool):
             },
         )
 
-    async def execute(
-        self, branch_name: str, path: str = "workspace/repo", **kwargs
-    ) -> ToolResult:
+    async def execute(self, branch_name: str, path: str = "workspace/repo", **kwargs) -> ToolResult:
         """Execute branch creation using Daytona git.create_branch()."""
         try:
             self.sandbox.git.create_branch(path, branch_name)
@@ -102,9 +100,7 @@ class GitCheckoutBranchTool(BaseTool):
             },
         )
 
-    async def execute(
-        self, branch_name: str, path: str = "workspace/repo", **kwargs
-    ) -> ToolResult:
+    async def execute(self, branch_name: str, path: str = "workspace/repo", **kwargs) -> ToolResult:
         """Execute checkout using Daytona git.checkout_branch()."""
         try:
             self.sandbox.git.checkout_branch(path, branch_name)
@@ -138,9 +134,7 @@ class GitAddTool(BaseTool):
             },
         )
 
-    async def execute(
-        self, files: list[str], path: str = "workspace/repo", **kwargs
-    ) -> ToolResult:
+    async def execute(self, files: list[str], path: str = "workspace/repo", **kwargs) -> ToolResult:
         """Execute staging using Daytona git.add()."""
         try:
             self.sandbox.git.add(path, files)
@@ -191,9 +185,7 @@ class GitCommitTool(BaseTool):
             normalized_name = (author_name or "").strip()
             normalized_email = (author_email or "").strip()
             if normalized_name and normalized_email:
-                self.sandbox.git.commit(
-                    path, message, normalized_name, normalized_email
-                )
+                self.sandbox.git.commit(path, message, normalized_name, normalized_email)
                 return ToolResult(
                     success=True,
                     data={

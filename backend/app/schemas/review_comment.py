@@ -18,9 +18,7 @@ class ReviewCommentListItemResponse(BaseModel):
     comment_text: str = Field(..., description="Comment body")
     severity: str = Field(..., description="Severity (INFO/WARNING/ERROR/CRITICAL)")
     category: str = Field(..., description="Category (BUG/SECURITY/PERFORMANCE/etc.)")
-    github_comment_id: int | None = Field(
-        None, description="GitHub discussion comment ID (bigint)"
-    )
+    github_comment_id: int | None = Field(None, description="GitHub discussion comment ID (bigint)")
     created_at: datetime = Field(..., description="Comment creation timestamp")
 
     class Config:

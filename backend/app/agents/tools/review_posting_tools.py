@@ -9,7 +9,6 @@ from app.core.config import settings
 from app.models.review import ReviewComment
 from app.services.github import GitHubService
 
-
 SEVERITY_VALUES = {"INFO", "WARNING", "ERROR", "CRITICAL"}
 CATEGORY_VALUES = {
     "BUG",
@@ -156,8 +155,7 @@ class PostInlineReviewFindingTool(BaseTool):
                     "title": {
                         "type": "string",
                         "description": (
-                            "Short finding title (3-10 words), e.g. "
-                            "'Missing Token Type Validation'"
+                            "Short finding title (3-10 words), e.g. 'Missing Token Type Validation'"
                         ),
                     },
                     "category": {
@@ -298,8 +296,7 @@ class PostFileReviewFindingTool(BaseTool):
                     "title": {
                         "type": "string",
                         "description": (
-                            "Short finding title (3-10 words), e.g. "
-                            "'Missing Input Validation'"
+                            "Short finding title (3-10 words), e.g. 'Missing Input Validation'"
                         ),
                     },
                     "category": {

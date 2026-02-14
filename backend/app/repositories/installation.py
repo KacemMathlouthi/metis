@@ -22,9 +22,7 @@ class InstallationRepository:
     """
 
     @staticmethod
-    async def get_by_id(
-        db: AsyncSession, installation_id: UUID | str
-    ) -> Installation | None:
+    async def get_by_id(db: AsyncSession, installation_id: UUID | str) -> Installation | None:
         """Get installation by UUID.
 
         Args:
@@ -34,9 +32,7 @@ class InstallationRepository:
         Returns:
             Installation object if found, None otherwise
         """
-        result = await db.execute(
-            select(Installation).where(Installation.id == installation_id)
-        )
+        result = await db.execute(select(Installation).where(Installation.id == installation_id))
         return result.scalar_one_or_none()
 
     @staticmethod
@@ -206,9 +202,7 @@ class InstallationRepository:
         return installation
 
     @staticmethod
-    async def check_exists(
-        db: AsyncSession, github_installation_id: int, repository: str
-    ) -> bool:
+    async def check_exists(db: AsyncSession, github_installation_id: int, repository: str) -> bool:
         """Check if installation already exists for a repository.
 
         Useful for preventing duplicate enrollments when user tries
@@ -249,9 +243,7 @@ class InstallationRepository:
 
         result = await db.execute(
             select(func.count(Installation.id)).where(
-                and_(
-                    Installation.user_id == user_id, Installation.is_active == True
-                )  # noqa: E712
+                and_(Installation.user_id == user_id, Installation.is_active == True)  # noqa: E712
             )
         )
         count: int = result.scalar_one()

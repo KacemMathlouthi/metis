@@ -2,19 +2,20 @@
 
 import asyncio
 import logging
-from sqlalchemy import select, and_
 
-from app.core.celery_app import celery_app, BaseTask
+from sqlalchemy import and_, select
+
+from app.agents.implementation.review_agent import ReviewAgent
+from app.agents.loop import AgentLoop
+from app.agents.sandbox.manager import SandboxManager
+from app.agents.tools.manager import get_reviewer_tools
+from app.core.celery_app import BaseTask, celery_app
 from app.core.client import get_llm_client
 from app.db.base import AsyncSessionLocal, engine
 from app.models.installation import Installation
 from app.models.review import Review
 from app.repositories.review import ReviewRepository
 from app.services.github import GitHubService
-from app.agents.sandbox.manager import SandboxManager
-from app.agents.tools.manager import get_reviewer_tools
-from app.agents.implementation.review_agent import ReviewAgent
-from app.agents.loop import AgentLoop
 
 logger = logging.getLogger(__name__)
 INT32_MAX = 2_147_483_647
@@ -51,9 +52,7 @@ def process_pr_review_with_agent(
         pr_number: Pull request number
     """
     return asyncio.run(
-        _process_pr_review_with_agent_async(
-            self, review_id, installation_id, repository, pr_number
-        )
+        _process_pr_review_with_agent_async(self, review_id, installation_id, repository, pr_number)
     )
 
 
@@ -85,15 +84,11 @@ async def _process_pr_review_with_agent_async(
             # 1. Load Review and Installation
             logger.info(f"Loading review {review_id}")
 
-            review_query = await db.execute(
-                select(Review).where(Review.id == review_id)
-            )
+            review_query = await db.execute(select(Review).where(Review.id == review_id))
             review = review_query.scalar_one_or_none()
 
             if not review:
-                logger.warning(
-                    f"Review {review_id} not found; skipping task without retry"
-                )
+                logger.warning(f"Review {review_id} not found; skipping task without retry")
                 return {
                     "status": "ignored",
                     "reason": "review_not_found",

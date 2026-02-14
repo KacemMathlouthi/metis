@@ -1,9 +1,9 @@
 """Structured file logging for agent operations."""
 
-import logging
 import json
-from pathlib import Path
+import logging
 from datetime import datetime
+from pathlib import Path
 
 
 def setup_agent_logger(agent_id: str, log_dir: str = "logs/agents") -> logging.Logger:

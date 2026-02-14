@@ -71,9 +71,7 @@ async def _process_pr_summary_with_agent_async(
                 normalized_mode,
             )
 
-            review_query = await db.execute(
-                select(Review).where(Review.id == review_id)
-            )
+            review_query = await db.execute(select(Review).where(Review.id == review_id))
             review = review_query.scalar_one_or_none()
             if not review:
                 logger.warning("Review %s not found, skipping summary", review_id)
@@ -102,9 +100,7 @@ async def _process_pr_summary_with_agent_async(
 
             owner, repo = repository.split("/")
             pr_diff = await github.get_pr_diff(owner, repo, pr_number, installation_id)
-            pr_data = await github.get_pull_request(
-                owner, repo, pr_number, installation_id
-            )
+            pr_data = await github.get_pull_request(owner, repo, pr_number, installation_id)
 
             head_branch = (
                 review.pr_metadata.get("head_branch")
@@ -160,8 +156,7 @@ async def _process_pr_summary_with_agent_async(
                 repository=repository,
                 pr_number=pr_number,
                 pr_title=pr_data.get("title") or review.pr_metadata.get("title", ""),
-                pr_description=pr_data.get("body")
-                or review.pr_metadata.get("description", ""),
+                pr_description=pr_data.get("body") or review.pr_metadata.get("description", ""),
                 author=(pr_data.get("user") or {}).get("login")
                 or review.pr_metadata.get("author", "unknown"),
                 base_branch=base_branch,
@@ -185,9 +180,7 @@ async def _process_pr_summary_with_agent_async(
 
             if final_state.status != "completed" or not final_state.result:
                 reason = final_state.error or "agent_not_completed"
-                logger.error(
-                    "Summary agent failed review=%s reason=%s", review_id, reason
-                )
+                logger.error("Summary agent failed review=%s reason=%s", review_id, reason)
                 await db.refresh(review)
                 review.pr_metadata = {
                     **(review.pr_metadata or {}),
@@ -205,9 +198,7 @@ async def _process_pr_summary_with_agent_async(
             generated_pr_title = (final_state.result.get("pr_title") or "").strip()
             if not summary_text:
                 reason = "missing_summary_text"
-                logger.error(
-                    "Summary agent completed without summary_text review=%s", review_id
-                )
+                logger.error("Summary agent completed without summary_text review=%s", review_id)
                 await db.refresh(review)
                 review.pr_metadata = {
                     **(review.pr_metadata or {}),
@@ -222,9 +213,7 @@ async def _process_pr_summary_with_agent_async(
                 }
             if not generated_pr_title:
                 reason = "missing_pr_title"
-                logger.error(
-                    "Summary agent completed without pr_title review=%s", review_id
-                )
+                logger.error("Summary agent completed without pr_title review=%s", review_id)
                 await db.refresh(review)
                 review.pr_metadata = {
                     **(review.pr_metadata or {}),
@@ -279,9 +268,7 @@ async def _process_pr_summary_with_agent_async(
             }
 
         except Exception as e:
-            logger.error(
-                "Summary task failed review=%s error=%s", review_id, e, exc_info=True
-            )
+            logger.error("Summary task failed review=%s error=%s", review_id, e, exc_info=True)
             await db.rollback()
             if review:
                 await db.refresh(review)

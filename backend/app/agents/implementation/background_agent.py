@@ -17,7 +17,7 @@ class BackgroundAgent(BaseAgent):
         custom_instructions: str,
         tools,
         llm_client,
-        **kwargs
+        **kwargs,
     ):
         """Initialize background agent.
 
@@ -48,5 +48,5 @@ class BackgroundAgent(BaseAgent):
             initial_user_message=initial_user_message,
             tools=tools,
             llm_client=llm_client,
-            **kwargs
+            **kwargs,
         )

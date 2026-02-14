@@ -15,10 +15,10 @@ from app.models.installation import Installation
 from app.models.review import Review, ReviewComment
 from app.models.user import User
 from app.schemas.review_comment import (
-    ReviewCommentWithContextResponse,
-    ReviewContextResponse,
     ReviewCommentListItemResponse,
     ReviewCommentListResponse,
+    ReviewCommentWithContextResponse,
+    ReviewContextResponse,
 )
 
 SEVERITY_VALUES = {"INFO", "WARNING", "ERROR", "CRITICAL"}
@@ -109,9 +109,7 @@ async def list_review_comments(
         None,
         description="BUG, SECURITY, PERFORMANCE, STYLE, MAINTAINABILITY, DOCUMENTATION, TESTING",
     ),
-    review_status: str | None = Query(
-        None, description="PENDING, PROCESSING, COMPLETED, FAILED"
-    ),
+    review_status: str | None = Query(None, description="PENDING, PROCESSING, COMPLETED, FAILED"),
     created_from: datetime | None = Query(
         None, description="Include comments created on/after this ISO timestamp"
     ),
@@ -126,9 +124,7 @@ async def list_review_comments(
     """List review comments with pagination and filters."""
     normalized_severity = _validate_enum(severity, SEVERITY_VALUES, "severity")
     normalized_category = _validate_enum(category, CATEGORY_VALUES, "category")
-    normalized_review_status = _validate_enum(
-        review_status, REVIEW_STATUS_VALUES, "review_status"
-    )
+    normalized_review_status = _validate_enum(review_status, REVIEW_STATUS_VALUES, "review_status")
 
     review_filters = [
         Installation.user_id == current_user.id,

@@ -79,6 +79,4 @@ class SyncInstallationsResponse(BaseModel):
     synced: int = Field(description="Number of installations synced")
     created: int = Field(description="Number of new installations created")
     updated: int = Field(description="Number of existing installations updated")
-    installations: list[InstallationResponse] = Field(
-        description="All user installations"
-    )
+    installations: list[InstallationResponse] = Field(description="All user installations")

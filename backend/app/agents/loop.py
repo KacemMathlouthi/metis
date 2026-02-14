@@ -1,7 +1,8 @@
 """Autonomous agent execution loop."""
 
 import logging
-from app.agents.base import BaseAgent, AgentState
+
+from app.agents.base import AgentState, BaseAgent
 
 logger = logging.getLogger(__name__)
 

@@ -1,6 +1,7 @@
 """Manages Daytona sandbox lifecycle for agents."""
 
-from typing import Any, Dict
+from typing import Any
+
 from app.agents.sandbox.client import DaytonaClient
 
 
@@ -15,7 +16,7 @@ class SandboxManager:
             git_token: Git personal access token
         """
         self.client = DaytonaClient(git_username=git_username, git_token=git_token)
-        self._active_sandboxes: Dict[str, Any] = {}
+        self._active_sandboxes: dict[str, Any] = {}
 
     def acquire(
         self,
@@ -40,10 +41,9 @@ class SandboxManager:
             # Check if sandbox is still running
             if sandbox.state == "STARTED":
                 return sandbox
-            else:
-                # Sandbox stopped, start it again
-                sandbox.start()
-                return sandbox
+            # Sandbox stopped, start it again
+            sandbox.start()
+            return sandbox
 
         # Create new sandbox
         sandbox = self.client.create_sandbox(

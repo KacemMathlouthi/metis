@@ -6,17 +6,18 @@ Create Date: 2026-02-08 18:05:22.225967
 
 """
 
-from typing import Sequence, Union
+from collections.abc import Sequence
 
-from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
+from alembic import op
+
 # revision identifiers, used by Alembic.
 revision: str = "c631417e35af"
-down_revision: Union[str, Sequence[str], None] = "113096f34455"
-branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+down_revision: str | Sequence[str] | None = "113096f34455"
+branch_labels: str | Sequence[str] | None = None
+depends_on: str | Sequence[str] | None = None
 
 
 def upgrade() -> None:
@@ -56,23 +57,15 @@ def upgrade() -> None:
         sa.Column("pr_url", sa.String(length=1000), nullable=True),
         sa.Column("final_summary", sa.Text(), nullable=True),
         sa.Column("error", sa.Text(), nullable=True),
-        sa.Column(
-            "changed_files", postgresql.JSONB(astext_type=sa.Text()), nullable=False
-        ),
+        sa.Column("changed_files", postgresql.JSONB(astext_type=sa.Text()), nullable=False),
         sa.Column("system_prompt", sa.Text(), nullable=True),
         sa.Column("initial_user_message", sa.Text(), nullable=True),
-        sa.Column(
-            "conversation", postgresql.JSONB(astext_type=sa.Text()), nullable=False
-        ),
-        sa.Column(
-            "final_result", postgresql.JSONB(astext_type=sa.Text()), nullable=False
-        ),
+        sa.Column("conversation", postgresql.JSONB(astext_type=sa.Text()), nullable=False),
+        sa.Column("final_result", postgresql.JSONB(astext_type=sa.Text()), nullable=False),
         sa.Column("id", sa.UUID(), nullable=False),
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
-        sa.ForeignKeyConstraint(
-            ["installation_id"], ["installations.id"], ondelete="CASCADE"
-        ),
+        sa.ForeignKeyConstraint(["installation_id"], ["installations.id"], ondelete="CASCADE"),
         sa.ForeignKeyConstraint(["user_id"], ["users.id"], ondelete="CASCADE"),
         sa.PrimaryKeyConstraint("id"),
     )
@@ -95,15 +88,9 @@ def upgrade() -> None:
     op.create_index(
         op.f("ix_agent_runs_issue_number"), "agent_runs", ["issue_number"], unique=False
     )
-    op.create_index(
-        op.f("ix_agent_runs_repository"), "agent_runs", ["repository"], unique=False
-    )
-    op.create_index(
-        op.f("ix_agent_runs_status"), "agent_runs", ["status"], unique=False
-    )
-    op.create_index(
-        op.f("ix_agent_runs_user_id"), "agent_runs", ["user_id"], unique=False
-    )
+    op.create_index(op.f("ix_agent_runs_repository"), "agent_runs", ["repository"], unique=False)
+    op.create_index(op.f("ix_agent_runs_status"), "agent_runs", ["status"], unique=False)
+    op.create_index(op.f("ix_agent_runs_user_id"), "agent_runs", ["user_id"], unique=False)
     # ### end Alembic commands ###
 
 

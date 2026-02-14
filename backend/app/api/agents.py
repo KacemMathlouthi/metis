@@ -72,9 +72,7 @@ async def launch_agent(
     """Launch a background coding agent for a repository issue."""
     repository = payload.repository.strip()
     if "/" not in repository:
-        raise HTTPException(
-            status_code=400, detail="Invalid repository format. Use 'owner/repo'."
-        )
+        raise HTTPException(status_code=400, detail="Invalid repository format. Use 'owner/repo'.")
 
     installation_query = await db.execute(
         select(Installation).where(

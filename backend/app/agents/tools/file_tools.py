@@ -119,9 +119,7 @@ class SearchFilesTool(BaseTool):
             },
         )
 
-    async def execute(
-        self, pattern: str, path: str = "workspace/repo", **kwargs
-    ) -> ToolResult:
+    async def execute(self, pattern: str, path: str = "workspace/repo", **kwargs) -> ToolResult:
         """Execute search using Daytona fs.find_files()."""
         try:
             # Auto-prefix relative paths
@@ -181,9 +179,7 @@ class ReplaceInFilesTool(BaseTool):
         """Execute replace using Daytona fs.replace_in_files()."""
         try:
             # Prefix files with workspace/repo if not absolute
-            full_paths = [
-                f"workspace/repo/{f}" if not f.startswith("/") else f for f in files
-            ]
+            full_paths = [f"workspace/repo/{f}" if not f.startswith("/") else f for f in files]
 
             self.sandbox.fs.replace_in_files(
                 files=full_paths, pattern=pattern, new_value=replacement
