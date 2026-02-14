@@ -9,7 +9,6 @@ from app.core.config import settings
 from app.models.review import ReviewComment
 from app.services.github import GitHubService
 
-
 SEVERITY_VALUES = {"INFO", "WARNING", "ERROR", "CRITICAL"}
 CATEGORY_VALUES = {
     "BUG",

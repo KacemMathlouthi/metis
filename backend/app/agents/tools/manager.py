@@ -1,39 +1,39 @@
 """Tool manager for organizing tools by agent type."""
 
-from typing import Dict, Type
+
 from app.agents.tools.base import BaseTool, ToolResult
-from app.agents.tools.file_tools import (
-    ReadFileTool,
-    ListFilesTool,
-    SearchFilesTool,
-    ReplaceInFilesTool,
-    CreateFileTool,
-    DeleteFileTool,
-)
-from app.agents.tools.git_tools import (
-    GitStatusTool,
-    GitCreateBranchTool,
-    GitCheckoutBranchTool,
-    GitAddTool,
-    GitCommitTool,
-    GitPushTool,
-    GitPullTool,
-    GitBranchesTool,
-)
-from app.agents.tools.process_tools import (
-    RunCommandTool,
-    RunCodeTool,
-    RunTestsTool,
-    RunLinterTool,
-)
 from app.agents.tools.completion_tools import (
     FinishReviewTool,
-    FinishTaskTool,
     FinishSummaryTool,
+    FinishTaskTool,
+)
+from app.agents.tools.file_tools import (
+    CreateFileTool,
+    DeleteFileTool,
+    ListFilesTool,
+    ReadFileTool,
+    ReplaceInFilesTool,
+    SearchFilesTool,
+)
+from app.agents.tools.git_tools import (
+    GitAddTool,
+    GitBranchesTool,
+    GitCheckoutBranchTool,
+    GitCommitTool,
+    GitCreateBranchTool,
+    GitPullTool,
+    GitPushTool,
+    GitStatusTool,
+)
+from app.agents.tools.process_tools import (
+    RunCodeTool,
+    RunCommandTool,
+    RunLinterTool,
+    RunTestsTool,
 )
 from app.agents.tools.review_posting_tools import (
-    PostInlineReviewFindingTool,
     PostFileReviewFindingTool,
+    PostInlineReviewFindingTool,
 )
 from app.db.base import AsyncSessionLocal
 from app.services.github import GitHubService
@@ -49,9 +49,9 @@ class ToolManager:
             sandbox: Daytona Sandbox instance
         """
         self.sandbox = sandbox
-        self._tools: Dict[str, BaseTool] = {}
+        self._tools: dict[str, BaseTool] = {}
 
-    def register_tools(self, tool_classes: list[Type[BaseTool]]) -> None:
+    def register_tools(self, tool_classes: list[type[BaseTool]]) -> None:
         """Register a list of tool classes.
 
         Args:
@@ -109,7 +109,7 @@ class ToolManager:
 
         return await tool.execute(**kwargs)
 
-    async def execute_batch(self, tool_calls: list[dict]) -> Dict[str, ToolResult]:
+    async def execute_batch(self, tool_calls: list[dict]) -> dict[str, ToolResult]:
         """Execute multiple tool calls in parallel.
 
         Args:

@@ -1,8 +1,9 @@
 """Base classes for agent tools."""
 
 from abc import ABC, abstractmethod
+from typing import Any
+
 from pydantic import BaseModel, Field
-from typing import Any, Dict
 
 
 class ToolDefinition(BaseModel):
@@ -10,7 +11,7 @@ class ToolDefinition(BaseModel):
 
     name: str
     description: str
-    parameters: Dict[str, Any]
+    parameters: dict[str, Any]
 
 
 class ToolResult(BaseModel):
@@ -19,7 +20,7 @@ class ToolResult(BaseModel):
     success: bool
     data: Any = None
     error: str | None = None
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 class BaseTool(ABC):
@@ -37,7 +38,6 @@ class BaseTool(ABC):
     @abstractmethod
     def definition(self) -> ToolDefinition:
         """Return tool definition for LLM function calling."""
-        pass
 
     @abstractmethod
     async def execute(self, **kwargs) -> ToolResult:
@@ -49,9 +49,8 @@ class BaseTool(ABC):
         Returns:
             ToolResult with success/data/error
         """
-        pass
 
-    def to_openai_schema(self) -> Dict[str, Any]:
+    def to_openai_schema(self) -> dict[str, Any]:
         """Convert to OpenAI function calling schema.
 
         Returns:

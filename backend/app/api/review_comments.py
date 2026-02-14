@@ -15,10 +15,10 @@ from app.models.installation import Installation
 from app.models.review import Review, ReviewComment
 from app.models.user import User
 from app.schemas.review_comment import (
-    ReviewCommentWithContextResponse,
-    ReviewContextResponse,
     ReviewCommentListItemResponse,
     ReviewCommentListResponse,
+    ReviewCommentWithContextResponse,
+    ReviewContextResponse,
 )
 
 SEVERITY_VALUES = {"INFO", "WARNING", "ERROR", "CRITICAL"}

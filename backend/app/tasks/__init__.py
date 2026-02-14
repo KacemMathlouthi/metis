@@ -8,7 +8,7 @@ from app.tasks.background_agent_task import process_issue_with_agent
 from app.tasks.summary_task import process_pr_summary_with_agent
 
 __all__ = [
-    "process_pr_review_with_agent",
     "process_issue_with_agent",
+    "process_pr_review_with_agent",
     "process_pr_summary_with_agent",
 ]

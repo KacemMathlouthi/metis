@@ -13,8 +13,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.auth_deps import get_current_user
 from app.db.session import get_db
-from app.models.installation import Installation
 from app.models.agent_run import AgentRun
+from app.models.installation import Installation
 from app.models.user import User
 from app.schemas.agent_run import AgentRunListItemResponse
 from app.schemas.issue import IssueCommentResponse, IssueResponse
@@ -168,7 +168,7 @@ async def list_issues(
 
     except Exception as e:
         logger.error(f"Failed to fetch issues from GitHub: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Failed to fetch issues: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch issues: {e!s}")
 
 
 @router.get("/issues/{issue_number}", response_model=IssueResponse)
@@ -237,7 +237,7 @@ async def get_issue(
         logger.error(f"Failed to fetch issue from GitHub: {e}", exc_info=True)
         if "404" in str(e):
             raise HTTPException(status_code=404, detail=f"Issue #{issue_number} not found")
-        raise HTTPException(status_code=500, detail=f"Failed to fetch issue: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch issue: {e!s}")
 
 
 @router.get("/issues/{issue_number}/comments", response_model=list[IssueCommentResponse])
@@ -307,7 +307,7 @@ async def get_issue_comments(
 
     except Exception as e:
         logger.error(f"Failed to fetch comments from GitHub: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Failed to fetch comments: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch comments: {e!s}")
 
 
 @router.get(

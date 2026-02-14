@@ -19,8 +19,8 @@ from app.schemas.analytics import (
     AnalyticsOverviewResponse,
     CategoryDailyPoint,
     DashboardAnalyticsResponse,
-    SidebarAnalyticsResponse,
     SeverityDailyPoint,
+    SidebarAnalyticsResponse,
 )
 
 router = APIRouter(prefix="/analytics")
@@ -216,7 +216,7 @@ async def get_analytics_overview(
 
     day_buckets = [window_start.date() + timedelta(days=i) for i in range(WINDOW_DAYS)]
 
-    severity_map = {day: {key: 0 for key in SEVERITY_ORDER} for day in day_buckets}
+    severity_map = {day: dict.fromkeys(SEVERITY_ORDER, 0) for day in day_buckets}
     for row in severity_rows:
         day = row.day.date()
         key = _enum_to_str(row.severity)
@@ -235,7 +235,7 @@ async def get_analytics_overview(
         for day in day_buckets
     ]
 
-    category_map = {day: {key: 0 for key in CATEGORY_ORDER} for day in day_buckets}
+    category_map = {day: dict.fromkeys(CATEGORY_ORDER, 0) for day in day_buckets}
     for row in category_rows:
         day = row.day.date()
         key = _enum_to_str(row.category)

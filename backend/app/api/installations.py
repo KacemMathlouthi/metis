@@ -227,13 +227,12 @@ async def enable_repository(
                 status_code=status.HTTP_409_CONFLICT,
                 detail=f"Repository {request.repository} is already enabled",
             )
-        else:
-            # Reactivate inactive installation
-            installation = await installation_repo.activate(db, installation)
-            installation = await installation_repo.update_config(
-                db, installation, request.config.model_dump()
-            )
-            await db.commit()
+        # Reactivate inactive installation
+        installation = await installation_repo.activate(db, installation)
+        installation = await installation_repo.update_config(
+            db, installation, request.config.model_dump()
+        )
+        await db.commit()
     else:
         # Create new installation
         installation = await installation_repo.create(
