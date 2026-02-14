@@ -98,9 +98,7 @@ class BaseAgent(ABC):
         self.state.last_update = time.time()
         self.state.status = AgentStatus.EXECUTING
 
-        self.agent_logger.debug(
-            f"Agent {self.agent_id} - Iteration {self.state.iteration}"
-        )
+        self.agent_logger.debug(f"Agent {self.agent_id} - Iteration {self.state.iteration}")
 
         try:
             # Call LLM with function calling
@@ -153,9 +151,7 @@ class BaseAgent(ABC):
                 self.agent_logger.debug(f"Agent {self.agent_id} made no tool calls")
                 # Add assistant message to continue conversation
                 if content:
-                    self.state.messages.append(
-                        {"role": "assistant", "content": content}
-                    )
+                    self.state.messages.append({"role": "assistant", "content": content})
 
             return True
 
@@ -177,18 +173,14 @@ class BaseAgent(ABC):
 
         # Max iterations
         if self.state.iteration >= self.max_iterations:
-            logger.warning(
-                f"Agent {self.agent_id} reached max iterations: {self.state.iteration}"
-            )
+            logger.warning(f"Agent {self.agent_id} reached max iterations: {self.state.iteration}")
             self.state.status = AgentStatus.COMPLETED
             self.state.result = {"reason": "max_iterations_reached"}
             return True
 
         # Max tokens
         if self.state.tokens_used >= self.max_tokens:
-            logger.warning(
-                f"Agent {self.agent_id} reached max tokens: {self.state.tokens_used}"
-            )
+            logger.warning(f"Agent {self.agent_id} reached max tokens: {self.state.tokens_used}")
             self.state.status = AgentStatus.COMPLETED
             self.state.result = {"reason": "max_tokens_reached"}
             return True
@@ -205,9 +197,7 @@ class BaseAgent(ABC):
         # Max duration
         elapsed = time.time() - self.state.start_time
         if elapsed >= self.max_duration_seconds:
-            logger.warning(
-                f"Agent {self.agent_id} reached max duration: {elapsed:.2f}s"
-            )
+            logger.warning(f"Agent {self.agent_id} reached max duration: {elapsed:.2f}s")
             self.state.status = AgentStatus.COMPLETED
             self.state.result = {"reason": "max_duration_reached"}
             return True
@@ -291,9 +281,7 @@ class BaseAgent(ABC):
         # Add tool results
         for tc in tool_calls:
             result = results.get(tc["id"])
-            content = json.dumps(
-                result.model_dump() if result else {"error": "No result"}
-            )
+            content = json.dumps(result.model_dump() if result else {"error": "No result"})
 
             self.state.messages.append(
                 {

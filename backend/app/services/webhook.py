@@ -23,9 +23,7 @@ def verify_github_signature(payload: bytes, signature: str | None) -> bool:
     # GitHub signature format: "sha256=<signature>"
     if not signature or not secret or not signature.startswith("sha256="):
         return False
-    expected_signature = (
-        "sha256=" + hmac.new(secret.encode(), payload, hashlib.sha256).hexdigest()
-    )
+    expected_signature = "sha256=" + hmac.new(secret.encode(), payload, hashlib.sha256).hexdigest()
     return hmac.compare_digest(signature, expected_signature)
 
 

@@ -252,9 +252,7 @@ class GitHubService:
         result: dict[str, Any] = response.json()
         return result
 
-    async def get_installation_repositories(
-        self, installation_id: int
-    ) -> list[dict[str, Any]]:
+    async def get_installation_repositories(self, installation_id: int) -> list[dict[str, Any]]:
         """Get all repositories accessible to a specific installation.
 
         Uses GitHub App installation token to fetch repositories that
@@ -319,9 +317,7 @@ class GitHubService:
                     {
                         "id": installation_id,
                         "account": installation["account"],
-                        "repository_selection": installation.get(
-                            "repository_selection", "all"
-                        ),
+                        "repository_selection": installation.get("repository_selection", "all"),
                         "repositories": repos,
                         "created_at": installation.get("created_at"),
                         "updated_at": installation.get("updated_at"),
@@ -329,9 +325,7 @@ class GitHubService:
                 )
             except Exception as e:
                 # Skip installations we can't access
-                print(
-                    f"Warning: Could not fetch repos for installation {installation_id}: {e}"
-                )
+                print(f"Warning: Could not fetch repos for installation {installation_id}: {e}")
                 continue
 
         return installations_with_repos

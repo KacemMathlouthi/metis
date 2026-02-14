@@ -37,9 +37,7 @@ class ReviewRepository:
         return result.scalar_one_or_none()
 
     @staticmethod
-    async def get_by_pr(
-        db: AsyncSession, repository: str, pr_number: int
-    ) -> list[Review]:
+    async def get_by_pr(db: AsyncSession, repository: str, pr_number: int) -> list[Review]:
         """Get all reviews for a specific pull request.
 
         A PR may have multiple reviews if it's updated multiple times.
@@ -167,9 +165,7 @@ class ReviewRepository:
         return review
 
     @staticmethod
-    async def add_review_text(
-        db: AsyncSession, review: Review, review_text: str
-    ) -> Review:
+    async def add_review_text(db: AsyncSession, review: Review, review_text: str) -> Review:
         """Add review summary text after AI generation.
 
         Args:
@@ -305,9 +301,7 @@ class ReviewCommentRepository:
         return comment
 
     @staticmethod
-    async def get_by_review(
-        db: AsyncSession, review_id: UUID | str
-    ) -> list[ReviewComment]:
+    async def get_by_review(db: AsyncSession, review_id: UUID | str) -> list[ReviewComment]:
         """Get all comments for a review.
 
         Args:
@@ -373,9 +367,7 @@ class ReviewCommentRepository:
         return comment
 
     @staticmethod
-    async def count_by_severity(
-        db: AsyncSession, review_id: UUID | str
-    ) -> dict[str, int]:
+    async def count_by_severity(db: AsyncSession, review_id: UUID | str) -> dict[str, int]:
         """Count comments by severity for a review.
 
         Useful for displaying review summary statistics.

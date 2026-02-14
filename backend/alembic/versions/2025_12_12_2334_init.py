@@ -114,9 +114,7 @@ def upgrade() -> None:
         ["repository"],
         unique=False,
     )
-    op.create_index(
-        op.f("ix_installations_user_id"), "installations", ["user_id"], unique=False
-    )
+    op.create_index(op.f("ix_installations_user_id"), "installations", ["user_id"], unique=False)
     op.create_table(
         "reviews",
         sa.Column("installation_id", sa.UUID(), nullable=False),
@@ -139,9 +137,7 @@ def upgrade() -> None:
             ),
             nullable=False,
         ),
-        sa.Column(
-            "review_text", sa.Text(), nullable=True, comment="Overall review summary"
-        ),
+        sa.Column("review_text", sa.Text(), nullable=True, comment="Overall review summary"),
         sa.Column(
             "pr_metadata",
             postgresql.JSONB(astext_type=sa.Text()),
@@ -150,9 +146,7 @@ def upgrade() -> None:
         ),
         sa.Column("started_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column("completed_at", sa.DateTime(timezone=True), nullable=True),
-        sa.Column(
-            "error", sa.Text(), nullable=True, comment="Error message if status=FAILED"
-        ),
+        sa.Column("error", sa.Text(), nullable=True, comment="Error message if status=FAILED"),
         sa.Column(
             "github_review_id",
             sa.Integer(),
@@ -162,33 +156,23 @@ def upgrade() -> None:
         sa.Column("id", sa.UUID(), nullable=False),
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
-        sa.ForeignKeyConstraint(
-            ["installation_id"], ["installations.id"], ondelete="CASCADE"
-        ),
+        sa.ForeignKeyConstraint(["installation_id"], ["installations.id"], ondelete="CASCADE"),
         sa.PrimaryKeyConstraint("id"),
     )
-    op.create_index(
-        op.f("ix_reviews_completed_at"), "reviews", ["completed_at"], unique=False
-    )
+    op.create_index(op.f("ix_reviews_completed_at"), "reviews", ["completed_at"], unique=False)
     op.create_index(op.f("ix_reviews_id"), "reviews", ["id"], unique=False)
     op.create_index(
         op.f("ix_reviews_installation_id"), "reviews", ["installation_id"], unique=False
     )
-    op.create_index(
-        op.f("ix_reviews_pr_number"), "reviews", ["pr_number"], unique=False
-    )
-    op.create_index(
-        op.f("ix_reviews_repository"), "reviews", ["repository"], unique=False
-    )
+    op.create_index(op.f("ix_reviews_pr_number"), "reviews", ["pr_number"], unique=False)
+    op.create_index(op.f("ix_reviews_repository"), "reviews", ["repository"], unique=False)
     op.create_index(op.f("ix_reviews_status"), "reviews", ["status"], unique=False)
     op.create_table(
         "review_comments",
         sa.Column("review_id", sa.UUID(), nullable=False),
         sa.Column("file_path", sa.String(length=1000), nullable=False),
         sa.Column("line_number", sa.Integer(), nullable=False),
-        sa.Column(
-            "line_end", sa.Integer(), nullable=True, comment="For multi-line comments"
-        ),
+        sa.Column("line_end", sa.Integer(), nullable=True, comment="For multi-line comments"),
         sa.Column("comment_text", sa.Text(), nullable=False),
         sa.Column(
             "severity",
@@ -233,9 +217,7 @@ def upgrade() -> None:
         ["file_path"],
         unique=False,
     )
-    op.create_index(
-        op.f("ix_review_comments_id"), "review_comments", ["id"], unique=False
-    )
+    op.create_index(op.f("ix_review_comments_id"), "review_comments", ["id"], unique=False)
     op.create_index(
         op.f("ix_review_comments_review_id"),
         "review_comments",
@@ -271,9 +253,7 @@ def downgrade() -> None:
     op.drop_index(op.f("ix_installations_repository"), table_name="installations")
     op.drop_index(op.f("ix_installations_is_active"), table_name="installations")
     op.drop_index(op.f("ix_installations_id"), table_name="installations")
-    op.drop_index(
-        op.f("ix_installations_github_installation_id"), table_name="installations"
-    )
+    op.drop_index(op.f("ix_installations_github_installation_id"), table_name="installations")
     op.drop_index(op.f("ix_installations_account_name"), table_name="installations")
     op.drop_table("installations")
     op.drop_index(op.f("ix_users_username"), table_name="users")

@@ -66,9 +66,7 @@ class DaytonaClient:
 
         return sandbox
 
-    def _clone_repository(
-        self, sandbox, repository_url: str, branch: str | None = None
-    ) -> None:
+    def _clone_repository(self, sandbox, repository_url: str, branch: str | None = None) -> None:
         """Clone a Git repository into the sandbox.
 
         Args:

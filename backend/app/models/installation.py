@@ -86,9 +86,7 @@ class Installation(Base, BaseModel):
 
     # Relationships
     user = relationship("User", back_populates="installations")
-    reviews = relationship(
-        "Review", back_populates="installation", cascade="all, delete-orphan"
-    )
+    reviews = relationship("Review", back_populates="installation", cascade="all, delete-orphan")
 
     def __repr__(self) -> str:
         """String representation for debugging."""

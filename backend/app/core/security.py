@@ -15,9 +15,7 @@ from app.core.config import settings
 cipher_suite = Fernet(settings.ENCRYPTION_KEY.encode())
 
 
-def create_access_token(
-    data: dict[str, Any], expires_delta: timedelta | None = None
-) -> str:
+def create_access_token(data: dict[str, Any], expires_delta: timedelta | None = None) -> str:
     """Create JWT access token with optional custom expiration.
 
     Encodes user data into a signed JWT token.
@@ -48,9 +46,7 @@ def create_access_token(
 
 def create_refresh_token(user_id: str) -> str:
     """Create refresh token for obtaining new access tokens."""
-    expire = datetime.now(timezone.utc) + timedelta(
-        days=settings.JWT_REFRESH_TOKEN_EXPIRE_DAYS
-    )
+    expire = datetime.now(timezone.utc) + timedelta(days=settings.JWT_REFRESH_TOKEN_EXPIRE_DAYS)
     to_encode = {
         "sub": str(user_id),
         "exp": expire,

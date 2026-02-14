@@ -31,9 +31,7 @@ def upgrade() -> None:
             comment="Celery task ID for tracking",
         ),
     )
-    op.create_index(
-        op.f("ix_reviews_celery_task_id"), "reviews", ["celery_task_id"], unique=False
-    )
+    op.create_index(op.f("ix_reviews_celery_task_id"), "reviews", ["celery_task_id"], unique=False)
     # ### end Alembic commands ###
 
 

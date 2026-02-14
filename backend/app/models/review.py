@@ -49,9 +49,7 @@ class Review(Base, BaseModel):
     # Pull request information
     pr_number = Column(Integer, nullable=False, index=True)
     repository = Column(String(500), nullable=False, index=True)
-    commit_sha = Column(
-        String(40), nullable=False, comment="Git commit SHA being reviewed"
-    )
+    commit_sha = Column(String(40), nullable=False, comment="Git commit SHA being reviewed")
 
     # Review status
     status = Column(
@@ -81,9 +79,7 @@ class Review(Base, BaseModel):
 
     # Relationships
     installation = relationship("Installation", back_populates="reviews")
-    comments = relationship(
-        "ReviewComment", back_populates="review", cascade="all, delete-orphan"
-    )
+    comments = relationship("ReviewComment", back_populates="review", cascade="all, delete-orphan")
 
     def __repr__(self) -> str:
         """String representation for debugging."""
@@ -139,9 +135,7 @@ class ReviewComment(Base, BaseModel):
     )
 
     # GitHub integration
-    github_comment_id = Column(
-        BigInteger, nullable=True, comment="GitHub API comment ID (bigint)"
-    )
+    github_comment_id = Column(BigInteger, nullable=True, comment="GitHub API comment ID (bigint)")
 
     # Relationships
     review = relationship("Review", back_populates="comments")

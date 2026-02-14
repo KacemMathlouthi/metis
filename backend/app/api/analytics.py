@@ -128,9 +128,7 @@ async def get_analytics_overview(
                     case(
                         (
                             Review.status == "COMPLETED",
-                            func.extract(
-                                "epoch", Review.updated_at - Review.created_at
-                            ),
+                            func.extract("epoch", Review.updated_at - Review.created_at),
                         ),
                         else_=None,
                     )
@@ -148,9 +146,7 @@ async def get_analytics_overview(
 
     total_reviews = float(review_metrics_row.total_reviews or 0)
     completed_reviews = float(review_metrics_row.completed_reviews or 0)
-    review_completion_rate = (
-        (completed_reviews / total_reviews * 100) if total_reviews else 0.0
-    )
+    review_completion_rate = (completed_reviews / total_reviews * 100) if total_reviews else 0.0
     avg_latency_seconds = float(review_metrics_row.avg_latency_seconds or 0)
     avg_latency_seconds_value = avg_latency_seconds if avg_latency_seconds else 0.0
 
@@ -299,9 +295,7 @@ async def get_dashboard_analytics(
                     case(
                         (
                             Review.status == "COMPLETED",
-                            func.extract(
-                                "epoch", Review.updated_at - Review.created_at
-                            ),
+                            func.extract("epoch", Review.updated_at - Review.created_at),
                         ),
                         else_=None,
                     )
@@ -399,9 +393,7 @@ async def get_sidebar_analytics(
                     case(
                         (
                             Review.status == "COMPLETED",
-                            func.extract(
-                                "epoch", Review.updated_at - Review.created_at
-                            ),
+                            func.extract("epoch", Review.updated_at - Review.created_at),
                         ),
                         else_=None,
                     )

@@ -36,9 +36,7 @@ class RunCommandTool(BaseTool):
     ) -> ToolResult:
         """Execute command using Daytona process.exec()."""
         try:
-            response = self.sandbox.process.exec(
-                command=command, cwd=cwd, timeout=timeout
-            )
+            response = self.sandbox.process.exec(command=command, cwd=cwd, timeout=timeout)
 
             return ToolResult(
                 success=response.exit_code == 0,
@@ -109,9 +107,7 @@ class RunTestsTool(BaseTool):
             },
         )
 
-    async def execute(
-        self, test_path: str = ".", framework: str = "auto", **kwargs
-    ) -> ToolResult:
+    async def execute(self, test_path: str = ".", framework: str = "auto", **kwargs) -> ToolResult:
         """Execute tests using Daytona process.exec()."""
         try:
             # Auto-detect framework if specified
@@ -172,9 +168,7 @@ class RunLinterTool(BaseTool):
             },
         )
 
-    async def execute(
-        self, path: str = ".", linter: str = "auto", **kwargs
-    ) -> ToolResult:
+    async def execute(self, path: str = ".", linter: str = "auto", **kwargs) -> ToolResult:
         """Execute linter using Daytona process.exec()."""
         try:
             if linter == "auto":
@@ -190,9 +184,7 @@ class RunLinterTool(BaseTool):
             else:
                 command = f"{linter} {path}"
 
-            response = self.sandbox.process.exec(
-                command=command, cwd="workspace/repo", timeout=60
-            )
+            response = self.sandbox.process.exec(command=command, cwd="workspace/repo", timeout=60)
 
             return ToolResult(
                 success=response.exit_code == 0,

@@ -18,9 +18,7 @@ class IssueResponse(BaseModel):
     body: str | None = Field(None, description="Issue body/description")
     status: str = Field(..., description="Issue state (OPEN/CLOSED)")
     labels: list[str] = Field(default_factory=list, description="Array of label names")
-    assignees: list[str] = Field(
-        default_factory=list, description="Array of GitHub usernames"
-    )
+    assignees: list[str] = Field(default_factory=list, description="Array of GitHub usernames")
     author: str = Field(..., description="GitHub username of author")
     created_at: datetime = Field(..., description="Issue creation timestamp")
     updated_at: datetime | None = Field(None, description="Last update timestamp")
