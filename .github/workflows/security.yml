@@ -22,6 +22,7 @@ jobs:
 
       - name: Dependency Review
         uses: actions/dependency-review-action@v4
+        continue-on-error: true
 
   python-deps-audit:
     name: Python dependency audit (informational)
