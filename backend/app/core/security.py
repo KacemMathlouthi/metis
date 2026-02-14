@@ -7,7 +7,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from cryptography.fernet import Fernet
-from jose import JWTError, jwt
+import jwt
 
 from app.core.config import settings
 
@@ -63,7 +63,7 @@ def create_refresh_token(user_id: str) -> str:
 def verify_token(token: str) -> dict[str, Any]:
     """Verify and decode JWT token.
 
-    Raises JWTError if token is invalid, expired, or tampered with.
+    Raises ValueError if token is invalid, expired, or tampered with.
     Returns the decoded payload containing user_id and expiration.
     """
     try:
@@ -71,7 +71,7 @@ def verify_token(token: str) -> dict[str, Any]:
             token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM]
         )
         return payload
-    except JWTError as e:
+    except jwt.PyJWTError as e:
         raise ValueError(f"Invalid token: {e}") from e
 
 
