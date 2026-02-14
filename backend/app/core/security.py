@@ -6,8 +6,8 @@ Provides JWT token generation/validation, OAuth token encryption, and CSRF prote
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
-from cryptography.fernet import Fernet
 import jwt
+from cryptography.fernet import Fernet
 
 from app.core.config import settings
 
