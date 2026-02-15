@@ -439,9 +439,7 @@ This project is licensed under the MIT License - see [LICENSE](LICENSE) file for
 If you find Metis useful, please consider starring the repository!
 
 <a href="https://www.star-history.com/#KacemMathlouthi/metis&type=date&legend=bottom-right">
- <picture>
    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=KacemMathlouthi/metis&type=date&theme=dark&legend=bottom-right" />
- </picture>
 </a>
 
 ---
