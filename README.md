@@ -438,8 +438,21 @@ This project is licensed under the MIT License - see [LICENSE](LICENSE) file for
 
 If you find Metis useful, please consider starring the repository!
 
-<a href="https://www.star-history.com/#KacemMathlouthi/metis&type=date&legend=bottom-right">
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=KacemMathlouthi/metis&type=date&theme=dark&legend=bottom-right" />
+<a href="https://star-history.com/#KacemMathlouthi/metis&Date">
+  <picture>
+	    <source
+	      media="(prefers-color-scheme: dark)"
+	      srcset="https://api.star-history.com/svg?repos=KacemMathlouthi/metis&type=Date&theme=dark&legend=bottom-right&cache=2026-02-15"
+	    />
+	    <source
+	      media="(prefers-color-scheme: light)"
+	      srcset="https://api.star-history.com/svg?repos=KacemMathlouthi/metis&type=Date&legend=bottom-right&cache=2026-02-15"
+	    />
+    <img
+      alt="Star History Chart"
+      src="https://api.star-history.com/svg?repos=KacemMathlouthi/metis&type=Date&legend=bottom-right&cache=2026-02-15"
+    />
+  </picture>
 </a>
 
 ---
