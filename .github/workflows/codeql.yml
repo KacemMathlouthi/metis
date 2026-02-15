@@ -36,3 +36,6 @@ jobs:
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
+        # Private repositories without GitHub Advanced Security / code scanning enabled
+        # cannot upload SARIF results. Keep this informative so it doesn't block CI.
+        continue-on-error: true
