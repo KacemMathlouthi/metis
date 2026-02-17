@@ -17,24 +17,24 @@ interface UnsavedChangesBarProps {
 export function UnsavedChangesBar({ onSave, onRevert, saving = false }: UnsavedChangesBarProps) {
   return (
     <div className="animate-in slide-in-from-bottom-5 fade-in fixed bottom-6 left-1/2 z-50 -translate-x-1/2 duration-200">
-      <div className="flex items-center gap-6 rounded border-2 border-black bg-white px-12 py-3 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] backdrop-blur-lg">
+      <div className="flex w-[min(92vw,760px)] items-center justify-between gap-4 rounded border-2 border-black bg-[var(--metis-pastel-2)] px-6 py-3 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] md:px-8">
         {/* Indicator */}
         <div className="flex items-center gap-2">
-          <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-orange-500" />
-          <span className="text-sm font-bold">Unsaved changes</span>
+          <div className="h-2 w-2 animate-pulse rounded-full bg-[var(--metis-red)]" />
+          <span className="text-sm font-bold text-[var(--metis-black)]">Unsaved changes</span>
         </div>
 
         {/* Divider */}
-        <div className="h-4 w-px bg-black" />
+        <div className="h-5 w-px bg-[var(--metis-black)]" />
 
         {/* Actions */}
-        <div className="flex gap-2">
+        <div className="ml-auto flex gap-2">
           <Button
             variant="neutral"
             size="sm"
             onClick={onRevert}
             disabled={saving}
-            className="h-7 border-2 border-black px-6 text-xs font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-0.5 hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]"
+            className="h-8 border-2 border-black bg-[var(--metis-white)] px-6 text-xs font-bold text-[var(--metis-black)] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-0.5 hover:bg-[var(--metis-pastel-1)] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]"
           >
             <RotateCcw className="mr-1 h-3 w-3" />
             Revert
@@ -43,7 +43,7 @@ export function UnsavedChangesBar({ onSave, onRevert, saving = false }: UnsavedC
             size="sm"
             onClick={onSave}
             disabled={saving}
-            className="h-7 border-2 border-black bg-[#4ADE80] px-3 text-xs font-bold text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-0.5 hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]"
+            className="h-8 border-2 border-black bg-[var(--metis-orange)] px-4 text-xs font-bold text-[var(--metis-white)] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-0.5 hover:bg-[var(--metis-orange-dark)] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]"
           >
             <Save className="mr-1 h-3 w-3" />
             {saving ? 'Saving...' : 'Save'}
