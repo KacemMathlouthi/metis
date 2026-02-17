@@ -211,3 +211,5 @@ docs/
 backend/secrets/*.json
 
 /daytona
+/scripts
+cloud-sql-proxy
