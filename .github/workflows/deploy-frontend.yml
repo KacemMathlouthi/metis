@@ -1,0 +1,50 @@
+name: Deploy Frontend Service
+
+on:
+  workflow_run:
+    workflows: ["Build and Push Frontend Image"]
+    types: [completed]
+  workflow_dispatch:
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  REGION: ${{ secrets.GCP_REGION }}
+  REPOSITORY: metis
+  IMAGE_NAME: metis-frontend
+  CLOUD_RUN_REGION: ${{ secrets.GCP_REGION }}
+  FRONTEND_SERVICE: metis-frontend
+
+jobs:
+  deploy:
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main') }}
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Validate required configuration
+        run: |
+          test -n "${{ secrets.GCP_PROJECT_ID }}" || { echo "Missing repo secret: GCP_PROJECT_ID"; exit 1; }
+          test -n "${{ secrets.GCP_REGION }}" || { echo "Missing repo secret: GCP_REGION"; exit 1; }
+          test -n "${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}" || { echo "Missing repo secret: GCP_WORKLOAD_IDENTITY_PROVIDER"; exit 1; }
+          test -n "${{ secrets.GCP_SERVICE_ACCOUNT }}" || { echo "Missing repo secret: GCP_SERVICE_ACCOUNT"; exit 1; }
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Deploy frontend service
+        run: |
+          gcloud run deploy "${{ env.FRONTEND_SERVICE }}" \
+            --image="${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE_NAME }}:latest" \
+            --project="${{ env.PROJECT_ID }}" \
+            --region="${{ env.CLOUD_RUN_REGION }}" \
+            --quiet
