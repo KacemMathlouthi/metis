@@ -18,6 +18,10 @@ export const CallbackPage = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    document.title = 'Metis — Login';
+  }, []);
+
+  useEffect(() => {
     const handleCallback = async () => {
       const code = searchParams.get('code');
 
