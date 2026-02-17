@@ -2,6 +2,7 @@
  * Login page that redirects to GitHub OAuth flow.
  */
 
+import { useEffect } from 'react';
 import { Github } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -10,6 +11,10 @@ import PixelBlast from '@/components/ui/PixelBlast';
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 export const LoginPage = () => {
+  useEffect(() => {
+    document.title = 'Metis — Login';
+  }, []);
+
   const handleLogin = () => {
     // Redirect to backend OAuth endpoint
     window.location.href = `${API_BASE_URL}/auth/login/github`;

@@ -198,7 +198,7 @@ export const RepositoriesPage = () => {
           </Button>
           <Button
             onClick={() =>
-              window.open('https://github.com/apps/metis-ai-testing/installations/new', '_blank')
+              window.open('https://github.com/apps/metis-ai-agent/installations/new', '_blank')
             }
             className="border-2 border-black bg-[var(--metis-orange)] font-bold text-white shadow-[4px_4px_0px_0px_#000] transition-all hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#000]"
           >
@@ -374,7 +374,7 @@ export const RepositoriesPage = () => {
                   className="border-2 border-black bg-[var(--metis-orange)] font-bold text-white shadow-[4px_4px_0px_0px_#000]"
                   onClick={() =>
                     window.open(
-                      'https://github.com/apps/metis-ai-testing/installations/new',
+                      'https://github.com/apps/metis-ai-agent/installations/new',
                       '_blank'
                     )
                   }
