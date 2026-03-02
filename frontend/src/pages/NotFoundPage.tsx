@@ -11,6 +11,20 @@ import { useNavigate } from 'react-router-dom';
 export const NotFoundPage = () => {
   const navigate = useNavigate();
 
+  const handleGoBack = () => {
+    // Check if there's history to go back to (more than just current page)
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      // No useful history, go to home
+      navigate('/');
+    }
+  };
+
+  const handleGoHome = () => {
+    navigate('/');
+  };
+
   return (
     <div
       className="landing relative flex min-h-screen items-center justify-center p-4"
@@ -50,7 +64,7 @@ export const NotFoundPage = () => {
             <h1 className="landing-display mb-2 text-8xl font-black tracking-tighter text-[var(--metis-red)]">
               404
             </h1>
-            <h2 className="landing-display text-2xl font-black">PAGE NOT FOUND</h2>
+            <h2 className="landing-display text-2xl font-black uppercase">Page Not Found</h2>
           </div>
 
           {/* Message */}
@@ -61,9 +75,9 @@ export const NotFoundPage = () => {
           </div>
 
           {/* Actions */}
-          <div className="flex gap-3">
+          <div className="flex flex-col gap-3 sm:flex-row">
             <Button
-              onClick={() => navigate(-1)}
+              onClick={handleGoBack}
               className="flex-1 border-2 border-black bg-white text-black shadow-[4px_4px_0px_0px_#000] transition-all hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#000]"
               size="lg"
             >
@@ -71,12 +85,12 @@ export const NotFoundPage = () => {
               Go Back
             </Button>
             <Button
-              onClick={() => navigate('/')}
+              onClick={handleGoHome}
               className="flex-1 border-2 border-black bg-[var(--metis-orange)] text-white shadow-[4px_4px_0px_0px_#000] transition-all hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#000]"
               size="lg"
             >
               <Home className="mr-2 h-5 w-5" />
-              Home
+              Go Home
             </Button>
           </div>
         </CardContent>
