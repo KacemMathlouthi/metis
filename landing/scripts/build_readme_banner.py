@@ -1,12 +1,13 @@
-"""Compose the README hero banner: a background illustration, a vignette, the logo, and a tagline.
+"""Compose the Metis banner: a background illustration, a vignette, the logo, and a tagline.
 
 Usage, from the repository root:
 
     uv run --no-project --with pillow --with fonttools --with brotli --with resvg-py \\
       python landing/scripts/build_readme_banner.py <background-image>
 
-Writes static/metis-banner.jpg. The logo comes from static/metis-logo-dark.svg and the text is set
-in Geist, the landing site's font (landing/src/assets/fonts).
+Writes the README banner (static/metis-banner.jpg, 1600x800) and the landing site's social preview
+(landing/public/social-preview.jpg, 1200x630). The logo comes from static/metis-logo-dark.svg and the
+text is set in Geist, the landing site's font (landing/src/assets/fonts).
 """
 
 import io
@@ -20,12 +21,16 @@ from fontTools.varLib.instancer import instantiateVariableFont
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 ROOT = Path(__file__).resolve().parents[2]
-OUT = ROOT / 'static' / 'metis-banner.jpg'
+# (path, width, height, layout scale). The social preview runs a little larger relative to its
+# frame because link previews are shown small in feeds.
+OUTPUTS = (
+    (ROOT / 'static' / 'metis-banner.jpg', 1600, 800, 1.0),
+    (ROOT / 'landing' / 'public' / 'social-preview.jpg', 1200, 630, 0.85),
+)
 LOGO = ROOT / 'static' / 'metis-logo-dark.svg'
 GEIST = ROOT / 'landing' / 'src' / 'assets' / 'fonts' / 'Geist-Variable.woff2'
 
-WIDTH, HEIGHT = 1600, 800
-LOGO_WIDTH = 720
+LOGO_WIDTH = 720  # at scale 1.0
 TITLE = 'Open-source AI code review for GitHub'
 SUBTITLE = 'Reviews every pull request  ·  Turns issues into pull requests  ·  Self-hosted, any LLM'
 
@@ -40,13 +45,13 @@ def geist(weight: int, size: int) -> ImageFont.FreeTypeFont:
     return ImageFont.truetype(buffer, size)
 
 
-def cover(image: Image.Image) -> Image.Image:
-    """Scale and center-crop to the banner size."""
-    scale = max(WIDTH / image.width, HEIGHT / image.height)
+def cover(image: Image.Image, width: int, height: int) -> Image.Image:
+    """Scale and center-crop to the output size."""
+    scale = max(width / image.width, height / image.height)
     resized = image.resize((math.ceil(image.width * scale), math.ceil(image.height * scale)), Image.LANCZOS)
-    left = (resized.width - WIDTH) // 2
-    top = (resized.height - HEIGHT) // 2
-    return resized.crop((left, top, left + WIDTH, top + HEIGHT))
+    left = (resized.width - width) // 2
+    top = (resized.height - height) // 2
+    return resized.crop((left, top, left + width, top + height))
 
 
 def radial_mask(strength_at, size: tuple[int, int], blur: int) -> Image.Image:
@@ -70,23 +75,27 @@ def draw_centered(canvas: Image.Image, text: str, font: ImageFont.FreeTypeFont, 
     """Centered text with a soft shadow so it stays legible over busy artwork."""
     draw = ImageDraw.Draw(canvas)
     width = draw.textlength(text, font=font)
-    x = (WIDTH - width) / 2
+    x = (canvas.width - width) / 2
     shadow = Image.new('RGBA', canvas.size, (0, 0, 0, 0))
     ImageDraw.Draw(shadow).text((x, y + 2), text, font=font, fill=(0, 0, 0, 200))
     canvas.alpha_composite(shadow.filter(ImageFilter.GaussianBlur(6)))
     draw.text((x, y), text, font=font, fill=fill)
 
 
-def main() -> None:
-    if len(sys.argv) != 2:
-        sys.exit(__doc__)
-    banner = cover(Image.open(sys.argv[1]).convert('RGB')).convert('RGBA')
+def compose(source: Image.Image, width: int, height: int, scale: float) -> Image.Image:
+    """Lay out the banner at `width` x `height`; `scale` sizes the logo, type, and spacing."""
+    banner = cover(source, width, height).convert('RGBA')
 
-    logo = Image.open(io.BytesIO(bytes(resvg_py.svg_to_bytes(svg_path=str(LOGO), width=LOGO_WIDTH)))).convert('RGBA')
-    title_font, subtitle_font = geist(600, 44), geist(500, 26)
-    logo_gap, title_to_subtitle, subtitle_height = 24, 64, 34
+    def px(value: float) -> int:
+        return round(value * scale)
+
+    logo = Image.open(
+        io.BytesIO(bytes(resvg_py.svg_to_bytes(svg_path=str(LOGO), width=px(LOGO_WIDTH))))
+    ).convert('RGBA')
+    title_font, subtitle_font = geist(600, px(44)), geist(500, px(26))
+    logo_gap, title_to_subtitle, subtitle_height = px(24), px(64), px(34)
     block_height = logo.height + logo_gap + title_to_subtitle + subtitle_height
-    logo_top = (HEIGHT - block_height) // 2  # keep the logo + tagline block vertically centered
+    logo_top = (height - block_height) // 2  # keep the logo + tagline block vertically centered
     text_top = logo_top + logo.height + logo_gap
     subtitle_top = text_top + title_to_subtitle
 
@@ -98,21 +107,28 @@ def main() -> None:
     # Soft dark shadow shaped to the logo and tagline block, so all of it sits in shade.
     measure = ImageDraw.Draw(banner)
     content_width = max(logo.width, measure.textlength(TITLE, font=title_font), measure.textlength(SUBTITLE, font=subtitle_font))
-    pad_x, pad_y = 90, 70
+    pad_x, pad_y = px(90), px(70)
     shadow = Image.new('L', banner.size, 0)
     ImageDraw.Draw(shadow).rounded_rectangle(
-        ((WIDTH - content_width) / 2 - pad_x, logo_top - pad_y, (WIDTH + content_width) / 2 + pad_x, subtitle_top + 34 + pad_y),
-        radius=120,
+        ((width - content_width) / 2 - pad_x, logo_top - pad_y, (width + content_width) / 2 + pad_x, subtitle_top + subtitle_height + pad_y),
+        radius=px(120),
         fill=165,
     )
-    banner = Image.composite(black, banner, shadow.filter(ImageFilter.GaussianBlur(70)))
+    banner = Image.composite(black, banner, shadow.filter(ImageFilter.GaussianBlur(px(70))))
 
-    banner.alpha_composite(logo, ((WIDTH - logo.width) // 2, logo_top))
+    banner.alpha_composite(logo, ((width - logo.width) // 2, logo_top))
     draw_centered(banner, TITLE, title_font, text_top, (255, 255, 255, 255))
     draw_centered(banner, SUBTITLE, subtitle_font, subtitle_top, (255, 255, 255, 230))
+    return banner.convert('RGB')
 
-    banner.convert('RGB').save(OUT, 'JPEG', quality=86, optimize=True, progressive=True)
-    print(f'wrote {OUT.relative_to(ROOT)}: {WIDTH}x{HEIGHT}, {OUT.stat().st_size // 1024} KB')
+
+def main() -> None:
+    if len(sys.argv) != 2:
+        sys.exit(__doc__)
+    source = Image.open(sys.argv[1]).convert('RGB')
+    for path, width, height, scale in OUTPUTS:
+        compose(source, width, height, scale).save(path, 'JPEG', quality=86, optimize=True, progressive=True)
+        print(f'wrote {path.relative_to(ROOT)}: {width}x{height}, {path.stat().st_size // 1024} KB')
 
 
 if __name__ == '__main__':
