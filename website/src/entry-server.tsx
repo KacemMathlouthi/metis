@@ -35,7 +35,7 @@ function escapeHtml(value: string): string {
 /** Builds the per-page <head> tags. `siteUrl` is the absolute origin, without a trailing slash. */
 export function renderHead(page: PageMeta, siteUrl: string, options: { noindex?: boolean } = {}) {
   const url = `${siteUrl}${page.path === '/' ? '' : page.path}`;
-  const image = `${siteUrl}/social-preview.svg`;
+  const image = `${siteUrl}/social-preview.png`;
   const title = escapeHtml(page.title);
   const description = escapeHtml(page.description);
 
@@ -51,6 +51,9 @@ export function renderHead(page: PageMeta, siteUrl: string, options: { noindex?:
     `<meta property="og:description" content="${description}" />`,
     `<meta property="og:url" content="${escapeHtml(url)}" />`,
     `<meta property="og:image" content="${escapeHtml(image)}" />`,
+    `<meta property="og:image:width" content="1200" />`,
+    `<meta property="og:image:height" content="630" />`,
+    `<meta property="og:image:alt" content="Metis: open-source AI code review for GitHub" />`,
     `<meta name="twitter:card" content="summary_large_image" />`,
     `<meta name="twitter:title" content="${title}" />`,
     `<meta name="twitter:description" content="${description}" />`,
