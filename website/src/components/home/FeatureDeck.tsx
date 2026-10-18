@@ -20,21 +20,21 @@ const FEATURES: readonly DeckItem[] = [
     color: 'var(--color-highlight)',
   },
   {
-    id: 'summaries',
-    tabTitle: '02 · PR summaries',
-    title: 'Every pull request explains itself',
-    description:
-      'A second agent runs alongside the review. It rewrites vague titles and appends a clear summary of what changed, so reviewers start with context.',
-    visual: <SummaryVisual />,
-    color: 'var(--color-surface-alt)',
-  },
-  {
     id: 'issue-to-pr',
-    tabTitle: '03 · Issue → PR',
+    tabTitle: '02 · Issue → PR',
     title: 'From issue to pull request, hands-off',
     description:
       'Launch a coding agent on any GitHub issue. It branches, edits code, runs your tests and linters, pushes, and opens a PR for you to review.',
     visual: <IssueToPrVisual />,
+    color: 'var(--color-surface-alt)',
+  },
+  {
+    id: 'summaries',
+    tabTitle: '03 · PR summaries',
+    title: 'Every pull request explains itself',
+    description:
+      'A second agent runs alongside the review. It rewrites vague titles and appends a clear summary of what changed, so reviewers start with context.',
+    visual: <SummaryVisual />,
     color: 'var(--color-accent)',
   },
   {
@@ -64,7 +64,7 @@ export function FeatureDeck() {
         <SectionHeading
           className="mb-0 md:mb-0"
           title="What Metis does"
-          subtitle="One GitHub App, five jobs. Keep scrolling to deal the deck."
+          subtitle="Reviews the pull requests you open, and opens pull requests for the issues you pick. Keep scrolling to deal the deck."
         />
         <ArrowDown className="mx-auto mt-6 h-7 w-7 animate-bounce" aria-hidden="true" />
       </div>

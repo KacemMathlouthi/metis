@@ -34,8 +34,8 @@ export function Hero() {
           COMPANION
         </h1>
         <p className="text-ink/80 mb-10 max-w-2xl text-lg font-semibold md:text-xl">
-          An open-source GitHub App that reviews your pull requests, writes their summaries, and
-          turns issues into PRs. Self-hosted, with the LLM of your choice.
+          An open-source GitHub App with two jobs: review every pull request you open, and turn the
+          issues you pick into pull requests. Self-hosted, with the LLM of your choice.
         </p>
         <div className="flex flex-col items-center justify-center gap-5 sm:flex-row">
           <ButtonLink href="/docs/quickstart" size="lg">

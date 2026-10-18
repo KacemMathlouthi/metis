@@ -103,8 +103,8 @@ export function Capabilities() {
     <section id="capabilities" className="border-ink bg-surface-alt border-b-4 py-24">
       <div className="site-container">
         <SectionHeading
-          title="A reviewer with real tools"
-          subtitle="Metis doesn't guess from a diff. It works inside a copy of your repository, the way an engineer would."
+          title="Agents with real tools"
+          subtitle="Neither agent guesses from a diff. Both work inside a copy of your repository, the way an engineer would."
         />
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
@@ -117,7 +117,7 @@ export function Capabilities() {
 
           <Cell
             title="Runs your code"
-            description="The reviewer runs your tests and linters inside the sandbox to back up what it claims."
+            description="Both agents run your tests and linters in the sandbox: the reviewer to back up its claims, the coder to prove its change works."
           >
             <div className="flex flex-wrap justify-center gap-2">
               <Chip active>run_tests</Chip>
@@ -129,7 +129,7 @@ export function Capabilities() {
 
           <Cell
             title="Isolated by design"
-            description="Each run gets a fresh Daytona sandbox that is deleted when it ends. Agent tools never touch your servers."
+            description="Every review and every coding run gets a fresh Daytona sandbox, deleted when it ends. Agent tools never touch your servers."
           >
             <div className="border-ink relative border-4 border-dashed px-6 py-4 text-center">
               <span className="bg-surface absolute -top-3 left-3 px-1 font-mono text-[0.65rem] font-black uppercase">
@@ -142,7 +142,7 @@ export function Capabilities() {
 
           <Cell
             title="Your rules"
-            description="Pick a sensitivity per repository, add custom instructions, and ignore the files that don't matter."
+            description="Tune review sensitivity and ignored files per repository, and give coding agents extra instructions when you launch them."
           >
             <div className="flex flex-col items-center gap-3">
               <div className="flex gap-2">
@@ -178,6 +178,46 @@ export function Capabilities() {
                 </li>
               ))}
             </ol>
+          </Cell>
+
+          <Cell
+            className="md:col-span-2"
+            title="Every run on record"
+            description="Each Issue → PR run keeps its full conversation and every tool call, so you can replay exactly how a pull request was built."
+          >
+            <ol className="flex w-full max-w-xl flex-wrap justify-center gap-2">
+              {[
+                'read_file',
+                'search_files',
+                'replace_in_files',
+                'run_tests',
+                'git_commit',
+                'finish_task',
+              ].map((tool, index, tools) => (
+                <li
+                  key={tool}
+                  className={cn(
+                    'border-ink border-2 px-2 py-1 font-mono text-xs font-semibold',
+                    index === tools.length - 1 && 'bg-highlight'
+                  )}
+                >
+                  {index + 1}. {tool}
+                </li>
+              ))}
+            </ol>
+          </Cell>
+
+          <Cell
+            title="Verified before it opens"
+            description="Metis confirms the agent's branch actually landed on GitHub before it opens the pull request."
+          >
+            <div className="font-mono text-xs leading-relaxed font-semibold">
+              <p>$ git ls-remote --heads origin</p>
+              <p className="text-ink/60"> refs/heads/metis/issue-128</p>
+              <p className="border-ink bg-highlight mt-2 inline-block border-2 px-2 py-1">
+                ✔ Pull request #129 opened
+              </p>
+            </div>
           </Cell>
         </div>
       </div>
