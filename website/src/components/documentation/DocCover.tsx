@@ -29,7 +29,7 @@ export function DocCover() {
         alt=""
         fetchPriority="high"
         decoding="async"
-        className="aspect-[2/1] w-full object-cover"
+        className="aspect-[2/1] w-full object-cover object-top"
       />
     </figure>
   );
