@@ -41,7 +41,7 @@ export function Hero() {
           <ButtonLink href="/docs/quickstart" size="lg">
             SELF-HOST METIS <BookOpen />
           </ButtonLink>
-          <ButtonLink href={REPO_URL} size="lg" variant="neutral">
+          <ButtonLink href={REPO_URL} size="lg" variant="outline">
             VIEW ON GITHUB <Github />
           </ButtonLink>
         </div>
