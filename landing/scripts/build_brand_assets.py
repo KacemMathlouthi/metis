@@ -1,15 +1,14 @@
 """Build every Metis brand asset from one mark geometry.
 
-Writes the favicons (landing site + dashboard), the README logos in static/, the header
-wordmark outline, and the PNG social preview. Fonts are not vendored; fetch the SIL OFL fonts from google/fonts and pin the weights:
+Writes the favicons (landing site + dashboard), the README logos in static/, and the header
+wordmark outline (the social preview comes from build_readme_banner.py). The font is not
+vendored; fetch Space Grotesk (SIL OFL) from google/fonts and pin the weight:
 
     mkdir -p /tmp/metis-fonts && cd /tmp/metis-fonts
     curl -fLo sg.ttf "https://github.com/google/fonts/raw/main/ofl/spacegrotesk/SpaceGrotesk%5Bwght%5D.ttf"
-    curl -fLo sora.ttf "https://github.com/google/fonts/raw/main/ofl/sora/Sora%5Bwght%5D.ttf"
     uv run --no-project --with fonttools python -c "from fontTools.ttLib import TTFont; \
       from fontTools.varLib.instancer import instantiateVariableFont as i; \
-      i(TTFont('sg.ttf'), {'wght': 700}).save('SpaceGrotesk-Bold.ttf'); \
-      i(TTFont('sora.ttf'), {'wght': 600}).save('Sora-SemiBold.ttf')"
+      i(TTFont('sg.ttf'), {'wght': 700}).save('SpaceGrotesk-Bold.ttf')"
 
 Then, from the repository root:
 
@@ -28,10 +27,10 @@ from fontTools.pens.recordingPen import RecordingPen
 from fontTools.pens.svgPathPen import SVGPathPen
 from fontTools.pens.transformPen import TransformPen
 from fontTools.ttLib import TTFont
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw
 
 ROOT, FONTS = Path(sys.argv[1]), Path(sys.argv[2])
-ORANGE, INK, CREAM, WHITE = '#ff8205', '#000000', '#fff7f2', '#ffffff'
+INK, WHITE = '#000000', '#ffffff'
 # Tile gradient, top-left to bottom-right: yellow, orange-light, red.
 GRADIENT = ((0.0, '#ffd800'), (0.55, '#ffaf00'), (1.0, '#e10500'))
 
@@ -229,24 +228,4 @@ write(
     + mark_svg_body(0, 0, MARK) + '</svg>\n',
 )
 
-# --- Social preview (1200x630 PNG; social networks don't render SVG previews) -------------
-W, H = 1200, 630
-og = Image.new('RGB', (W, H), hex_rgb(CREAM))
-draw = ImageDraw.Draw(og)
-draw.rectangle([0, 0, W - 1, H - 1], outline=hex_rgb(INK), width=12)
-draw.rectangle([0, H - 64, W, H], fill=hex_rgb(INK))
-mark = render_mark(200, shadow=2.5)
-og.paste(mark, (96, 150), mark)
-display = ImageFont.truetype(str(FONTS / 'SpaceGrotesk-Bold.ttf'), 150)
-body = ImageFont.truetype(str(FONTS / 'Sora-SemiBold.ttf'), 34)
-small = ImageFont.truetype(str(FONTS / 'Sora-SemiBold.ttf'), 24)
-draw.text((350, 140), 'METIS', font=display, fill=hex_rgb(INK))
-draw.text((356, 318), 'Open-source AI code review for GitHub', font=body, fill=hex_rgb(INK))
-draw.text((356, 368), 'Reviews every pull request.', font=body, fill=(70, 70, 70))
-draw.text((356, 412), 'Turns issues into pull requests.', font=body, fill=(70, 70, 70))
-draw.rectangle([356, 470, 356 + 150, 478], fill=hex_rgb(ORANGE))
-draw.text((48, H - 48), 'SELF-HOSTED  ·  MIT LICENSED  ·  ANY LLM', font=small, fill=hex_rgb(ORANGE))
-buffer = ROOT / 'landing/public/social-preview.png'
-og.save(buffer, optimize=True)
-print('wrote landing/public/social-preview.png')
 print('GLYPH_POINTS', GLYPH_POINTS)
