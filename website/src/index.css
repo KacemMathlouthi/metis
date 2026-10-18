@@ -1,0 +1,92 @@
+@import 'tailwindcss';
+
+:root {
+  --metis-black: #000000;
+  --metis-white: #ffffff;
+  --metis-red: #e10500;
+  --metis-orange-dark: #fa500f;
+  --metis-orange: #ff8205;
+  --metis-orange-light: #ffaf00;
+  --metis-yellow: #ffd800;
+  --metis-cream: #fff7f2;
+  --metis-pastel-1: #fff1e6;
+  --metis-pastel-2: #fff6cc;
+  --metis-pastel-3: #ffe0cc;
+  --metis-pastel-4: #fff3e0;
+  --metis-pastel-red: #ffe2df;
+  --metis-pastel-orange: #ffe6d9;
+}
+
+@theme inline {
+  --font-sans: 'Sora', 'Source Code Pro', sans-serif;
+  --font-display: 'Space Grotesk', 'Sora', sans-serif;
+  --font-mono: 'Source Code Pro', ui-monospace, monospace;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* Keeps anchored headings clear of the sticky navbar. */
+    scroll-padding-top: 6rem;
+  }
+
+  body {
+    @apply bg-[var(--metis-cream)] font-sans text-black antialiased;
+  }
+
+  ::selection {
+    @apply bg-[var(--metis-yellow)] text-black;
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-black;
+  }
+
+  .font-display {
+    letter-spacing: -0.04em;
+  }
+
+  .font-display-tight {
+    font-family: var(--font-display);
+    letter-spacing: -0.06em;
+  }
+}
+
+@layer utilities {
+  @keyframes marquee {
+    0% {
+      transform: translateX(0%);
+    }
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+
+  .animate-marquee {
+    animation: marquee 30s linear infinite;
+  }
+
+  /* Auto-numbered badges for <Steps>/<Step> in the docs. */
+  .doc-steps {
+    counter-reset: doc-step;
+  }
+
+  .doc-step {
+    counter-increment: doc-step;
+  }
+
+  .doc-step-badge::before {
+    content: counter(doc-step);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    .animate-marquee,
+    .animate-pulse {
+      animation: none;
+    }
+  }
+}
