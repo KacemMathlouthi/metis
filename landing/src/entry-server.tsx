@@ -35,7 +35,7 @@ function escapeHtml(value: string): string {
 /** Builds the per-page <head> tags. `siteUrl` is the absolute origin, without a trailing slash. */
 export function renderHead(page: PageMeta, siteUrl: string, options: { noindex?: boolean } = {}) {
   const url = `${siteUrl}${page.path === '/' ? '' : page.path}`;
-  const image = `${siteUrl}/social-preview.png`;
+  const image = `${siteUrl}/social-preview.jpg`;
   const title = escapeHtml(page.title);
   const description = escapeHtml(page.description);
 
