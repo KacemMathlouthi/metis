@@ -213,3 +213,6 @@ backend/secrets/*.json
 /daytona
 /scripts
 cloud-sql-proxy
+
+# Playwright MCP
+.playwright-mcp/
