@@ -1,13 +1,5 @@
 <p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="static/metis-logo-dark.svg" />
-    <img src="static/metis-logo.svg" alt="Metis" width="360" />
-  </picture>
-</p>
-
-<p align="center">
-  <b>Open-source AI code review for GitHub.</b><br />
-  Reviews every pull request you open, and turns the issues you pick into pull requests.
+  <img src="static/metis-banner.jpg" alt="Metis: open-source AI code review for GitHub. Reviews every pull request, turns issues into pull requests, self-hosted with any LLM." width="100%" />
 </p>
 
 <p align="center">
@@ -16,6 +8,10 @@
 </p>
 
 ---
+
+<p align="center">
+  <img src="landing/src/assets/doc-covers/introduction-1600.webp" alt="" width="100%" />
+</p>
 
 ## What it does
 
