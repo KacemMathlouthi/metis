@@ -34,6 +34,10 @@ domain, then `http://localhost:4173`.
 3. Optional: once you attach a custom domain, set the `SITE_URL` environment variable to it,
    e.g. `https://getmetis.tech`.
 
+## How it works pictures
+
+Drop images into `src/assets/how-it-works/` named after their step: `review-1` to `review-4` and `issue-1` to `issue-4` (`.png`, `.jpg`, `.webp`, `.avif`, or `.svg`). They are picked up at build time and shown in a 4:3 frame. Steps without a picture show their icon.
+
 ## Adding a docs page
 
 1. Add the route's metadata to `DOC_PAGES` in `src/site.ts`. This drives the sidebar, prev/next
