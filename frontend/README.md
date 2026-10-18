@@ -1,6 +1,6 @@
 # Metis Dashboard
 
-The web app self-hosters sign in to: enable repositories, tune review settings, browse findings, and launch and follow Issue → PR agents. (The public landing page and docs live in [`../website`](../website).)
+The web app self-hosters sign in to: enable repositories, tune review settings, browse findings, and launch and follow Issue → PR agents. (The public landing page and docs live in [`../landing`](../landing).)
 
 **Stack:** React 19 with the React Compiler, TypeScript, Vite (`rolldown-vite`), Tailwind CSS v4, shadcn/ui on Radix, React Router 7.
 

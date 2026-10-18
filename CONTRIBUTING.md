@@ -32,7 +32,7 @@ make format
 make ci-local   # ruff, mypy, pytest, and the frontend build
 ```
 
-For the website: `cd website && pnpm lint && pnpm build`.
+For the landing site: `cd landing && pnpm lint && pnpm build`.
 
 ## Branches and commits
 

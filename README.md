@@ -38,7 +38,7 @@ make dev                               # API, worker, dashboard, PostgreSQL and 
 
 Then point your GitHub App's webhook at `https://<public-api-url>/webhooks/github`, sign in at `http://localhost:5173`, and enable a repository.
 
-The step-by-step guides live in the website docs (source in [`website/`](website/)):
+The step-by-step guides live in the website docs (source in [`landing/`](landing/)):
 quickstart, GitHub App setup, configuration reference, and architecture.
 
 ## How it works
@@ -57,7 +57,7 @@ GitHub webhook ─► FastAPI (verify, record, enqueue) ─► Redis ─► Cele
 | ----------- | ------------------------------------------------------------ |
 | `backend/`  | FastAPI API, Celery tasks, agents, tools, Alembic migrations |
 | `frontend/` | React dashboard (repositories, settings, findings, agent runs) |
-| `website/`  | Public landing page and docs, deployed as a static site      |
+| `landing/`  | Public landing page and docs, deployed as a static site      |
 | `daytona/`  | Daytona submodule, only needed to self-host sandboxes        |
 
 ## Development

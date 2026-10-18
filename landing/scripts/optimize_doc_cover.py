@@ -2,10 +2,10 @@
 
 Usage, from the repository root:
 
-    uv run --no-project --with pillow python website/scripts/optimize_doc_cover.py <image> <slug>
+    uv run --no-project --with pillow python landing/scripts/optimize_doc_cover.py <image> <slug>
 
 <slug> is the docs page's last path segment ("quickstart", "github-app", ...; "introduction"
-for /docs). Writes website/src/assets/doc-covers/<slug>-800.webp and <slug>-1600.webp, which
+for /docs). Writes landing/src/assets/doc-covers/<slug>-800.webp and <slug>-1600.webp, which
 the page then shows as its cover, under the title.
 """
 

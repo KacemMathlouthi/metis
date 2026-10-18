@@ -1,4 +1,4 @@
-# Metis website
+# Metis landing site
 
 The public site for Metis: what it does and how to self-host it. It is fully static and separate
 from the dashboard in `../frontend`. It has no login, no API calls, and no backend.
@@ -30,7 +30,7 @@ domain, then `http://localhost:4173`.
 ## Deploy to Vercel
 
 1. Import the repository in Vercel.
-2. Set **Root Directory** to `website`. Everything else comes from `vercel.json`.
+2. Set **Root Directory** to `landing`. Everything else comes from `vercel.json`.
 3. Optional: once you attach a custom domain, set the `SITE_URL` environment variable to it,
    e.g. `https://getmetis.tech`.
 
@@ -40,7 +40,7 @@ Each docs page shows a cover banner when `src/assets/doc-covers/<slug>-800.webp`
 exist (`slug` is set per page in `src/site.ts`). Generate both from a source illustration with:
 
 ```bash
-uv run --no-project --with pillow python website/scripts/optimize_doc_cover.py <image> <slug>
+uv run --no-project --with pillow python landing/scripts/optimize_doc_cover.py <image> <slug>
 ```
 
 ## Adding a docs page

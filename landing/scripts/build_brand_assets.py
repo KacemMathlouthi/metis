@@ -14,7 +14,7 @@ preview. Fonts are not vendored; fetch the SIL OFL fonts from google/fonts and p
 Then, from the repository root:
 
     uv run --no-project --with pillow --with fonttools \
-      python website/scripts/build_brand_assets.py . /tmp/metis-fonts
+      python landing/scripts/build_brand_assets.py . /tmp/metis-fonts
 
 Mark: orange tile with a 2-unit black frame and a black Space Grotesk Bold "M", on a 32-unit
 grid. The letter is stored as an outline, so it renders the same everywhere without the font.
@@ -141,13 +141,13 @@ def write(path: Path, content: str | bytes) -> None:
 favicon_svg = (
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">' + mark_svg_body() + '</svg>\n'
 )
-for public in ('website/public', 'frontend/public'):
+for public in ('landing/public', 'frontend/public'):
     write(ROOT / public / 'favicon.svg', favicon_svg)
 
 ico_base = render_mark(48)
-ico_base.save(ROOT / 'website/public/favicon.ico', sizes=[(16, 16), (32, 32), (48, 48)],
+ico_base.save(ROOT / 'landing/public/favicon.ico', sizes=[(16, 16), (32, 32), (48, 48)],
               append_images=[pixel_16(), render_mark(32)])
-print('wrote website/public/favicon.ico')
+print('wrote landing/public/favicon.ico')
 # The dashboard keeps its existing file name.
 ico_base.save(ROOT / 'frontend/public/metis.ico', sizes=[(16, 16), (32, 32), (48, 48)],
               append_images=[pixel_16(), render_mark(32)])
@@ -155,8 +155,8 @@ print('wrote frontend/public/metis.ico')
 
 touch = Image.new('RGB', (180, 180), hex_rgb(INK))
 touch.paste(render_mark(180).convert('RGB'))
-touch.save(ROOT / 'website/public/apple-touch-icon.png', optimize=True)
-print('wrote website/public/apple-touch-icon.png')
+touch.save(ROOT / 'landing/public/apple-touch-icon.png', optimize=True)
+print('wrote landing/public/apple-touch-icon.png')
 
 # --- README / static logos ------------------------------------------------------------
 MARK = 64          # lockup mark size
@@ -207,7 +207,7 @@ draw.text((356, 368), 'Reviews every pull request.', font=body, fill=(70, 70, 70
 draw.text((356, 412), 'Turns issues into pull requests.', font=body, fill=(70, 70, 70))
 draw.rectangle([356, 470, 356 + 150, 478], fill=hex_rgb(ORANGE))
 draw.text((48, H - 48), 'SELF-HOSTED  ·  MIT LICENSED  ·  ANY LLM', font=small, fill=hex_rgb(ORANGE))
-buffer = ROOT / 'website/public/social-preview.png'
+buffer = ROOT / 'landing/public/social-preview.png'
 og.save(buffer, optimize=True)
-print('wrote website/public/social-preview.png')
+print('wrote landing/public/social-preview.png')
 print('GLYPH_POINTS', GLYPH_POINTS)
