@@ -359,7 +359,7 @@ From `docs/TECHNICAL_ARCHITECTURE.md`, the system is designed for:
 ### AI Agent System
 
 1. **Daytona Setup**:
-   - Sign up at https://app.daytona.io or self-host using `docker compose -f infrastructure/daytona/docker/docker-compose.yaml up -d`
+   - Sign up at https://app.daytona.io or self-host by cloning https://github.com/daytonaio/daytona and running `docker compose -f docker/docker-compose.yaml up -d`
    - Get API key from https://app.daytona.io/dashboard/api-keys
    - Set `DAYTONA_API_KEY` in `.env`
    - For cloud: Set `DAYTONA_TARGET=eu` or `us`

@@ -248,7 +248,7 @@ VERTEX_LOCATION=global
 `;
 
 const SELF_HOSTED_DAYTONA = `
-git submodule update --init daytona
+git clone https://github.com/daytonaio/daytona.git
 cd daytona
 docker compose -f docker/docker-compose.yaml up -d
 # dashboard on http://localhost:3000 (dev@daytona.io / password)
@@ -321,9 +321,7 @@ export function ConfigurationPage() {
       </P>
       <EnvTable vars={DAYTONA_VARS} />
       <H3 id="self-hosted-daytona">Self-hosting Daytona</H3>
-      <P>
-        The repository includes Daytona as a submodule, with a Compose setup for running it locally:
-      </P>
+      <P>Daytona's own repository ships a Compose setup for running it locally:</P>
       <CodeBlock code={SELF_HOSTED_DAYTONA} />
       <P>
         Create an API key in that dashboard and set <Code>DAYTONA_API_URL</Code> to{' '}

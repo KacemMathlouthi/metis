@@ -91,10 +91,6 @@ export function QuickstartPage() {
       <Steps>
         <Step title="Clone the repository" id="clone">
           <CodeBlock code={CLONE} />
-          <P>
-            The repository includes Daytona as a git submodule. You only need it if you plan to
-            self-host Daytona, so a plain clone is fine.
-          </P>
         </Step>
 
         <Step title="Create your GitHub App" id="github-app">

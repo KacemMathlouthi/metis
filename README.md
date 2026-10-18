@@ -58,7 +58,6 @@ GitHub webhook ─► FastAPI (verify, record, enqueue) ─► Redis ─► Cele
 | `backend/`  | FastAPI API, Celery tasks, agents, tools, Alembic migrations |
 | `frontend/` | React dashboard (repositories, settings, findings, agent runs) |
 | `landing/`  | Public landing page and docs, deployed as a static site      |
-| `daytona/`  | Daytona submodule, only needed to self-host sandboxes        |
 
 ## Development
 
