@@ -19,7 +19,7 @@ export function DocCover() {
   if (!small || !large) return null;
 
   return (
-    <figure className="border-ink mt-8 overflow-hidden border-4 shadow-[6px_6px_0px_0px_#000]">
+    <figure className="border-ink mb-10 overflow-hidden border-4 shadow-[6px_6px_0px_0px_#000]">
       <img
         src={large}
         srcSet={`${small} 800w, ${large} 1600w`}

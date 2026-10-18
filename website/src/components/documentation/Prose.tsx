@@ -10,13 +10,15 @@ interface ChildrenProps {
 
 export function DocTitle({ eyebrow, children }: ChildrenProps & { eyebrow: string }) {
   return (
-    <header className="mb-10 border-b-4 border-black pb-8">
-      <p className="mb-3 inline-block border-2 border-black bg-[var(--metis-yellow)] px-2 py-0.5 text-xs font-black tracking-widest uppercase">
-        {eyebrow}
-      </p>
-      <h1 className="font-display text-4xl font-black uppercase md:text-5xl">{children}</h1>
+    <>
+      <header className="mb-10 border-b-4 border-black pb-8">
+        <p className="mb-3 inline-block border-2 border-black bg-[var(--metis-yellow)] px-2 py-0.5 text-xs font-black tracking-widest uppercase">
+          {eyebrow}
+        </p>
+        <h1 className="font-display text-4xl font-black uppercase md:text-5xl">{children}</h1>
+      </header>
       <DocCover />
-    </header>
+    </>
   );
 }
 
