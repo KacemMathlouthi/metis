@@ -85,7 +85,8 @@
     }
 
     .animate-marquee,
-    .animate-pulse {
+    .animate-pulse,
+    .animate-bounce {
       animation: none;
     }
   }

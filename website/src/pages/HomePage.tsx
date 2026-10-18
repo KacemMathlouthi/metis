@@ -1,4 +1,4 @@
-import { Features } from '@/components/home/Features';
+import { FeatureDeck } from '@/components/home/FeatureDeck';
 import { Hero } from '@/components/home/Hero';
 import { HowItWorks } from '@/components/home/HowItWorks';
 import { Marquee } from '@/components/home/Marquee';
@@ -11,7 +11,7 @@ export function HomePage() {
     <>
       <Hero />
       <Marquee />
-      <Features />
+      <FeatureDeck />
       <HowItWorks />
       <ReviewTerminal />
       <Stack />
