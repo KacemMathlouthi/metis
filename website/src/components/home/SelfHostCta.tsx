@@ -29,16 +29,14 @@ export function SelfHostCta() {
             loading="lazy"
             className="mb-6 h-28 w-auto mix-blend-multiply"
           />
-          <h2 className="font-display mb-6 text-4xl font-black uppercase md:text-5xl lg:text-6xl">
-            Run it yourself
-          </h2>
-          <p className="mb-8 max-w-xl text-lg font-semibold md:text-xl">
+          <h2 className="type-title mb-6">Run it yourself</h2>
+          <p className="type-lede mb-8 max-w-[60ch] text-pretty">
             Metis is free and open source. Bring your own GitHub App, LLM key, and Daytona account,
             and the whole stack starts with one command. Your code only goes to the services you
             configure.
           </p>
-          <ButtonLink href="/docs/quickstart" size="lg" variant="dark">
-            READ THE QUICKSTART <ArrowRight />
+          <ButtonLink href="/docs/quickstart" size="lg" variant="dark" className="font-medium">
+            Read the quickstart <ArrowRight />
           </ButtonLink>
         </div>
         <CodeBlock

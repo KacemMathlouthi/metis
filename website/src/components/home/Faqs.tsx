@@ -10,7 +10,7 @@ import {
 import { REPO_URL } from '@/site';
 
 const linkClasses =
-  'decoration-accent hover:decoration-ink font-bold underline decoration-2 underline-offset-2';
+  'decoration-accent hover:decoration-ink font-medium underline decoration-2 underline-offset-2';
 
 const QUESTIONS: readonly { id: string; question: string; answer: React.ReactNode }[] = [
   {
@@ -93,16 +93,16 @@ export function Faqs() {
         >
           {QUESTIONS.map((item) => (
             <AccordionItem key={item.id} value={item.id} className="px-5 md:px-6">
-              <AccordionTrigger className="py-5 text-base md:text-lg">
+              <AccordionTrigger className="py-5 text-base font-medium md:text-lg">
                 {item.question}
               </AccordionTrigger>
-              <AccordionContent className="text-ink/75 pb-5 font-semibold">
+              <AccordionContent className="type-body text-ink/75 max-w-[68ch] pb-5">
                 {item.answer}
               </AccordionContent>
             </AccordionItem>
           ))}
         </Accordion>
-        <p className="text-ink/75 mt-8 text-center font-semibold">
+        <p className="type-body text-ink/75 mt-8 text-center">
           Can't find your answer?{' '}
           <a
             href={`${REPO_URL}/issues`}

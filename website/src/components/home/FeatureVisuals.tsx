@@ -12,7 +12,7 @@ function Tag({ children, className }: { children: React.ReactNode; className?: s
   return (
     <span
       className={cn(
-        'inline-flex items-center border-2 border-black px-1.5 py-0.5 font-mono text-[0.65rem] font-black tracking-wide uppercase',
+        'inline-flex items-center border-2 border-black px-1.5 py-0.5 font-mono text-[0.65rem] font-semibold tracking-wide uppercase',
         className
       )}
     >
@@ -39,14 +39,14 @@ export function ReviewVisual() {
       </div>
       <div className="border-ink bg-surface-alt m-3 border-2 p-3">
         <div className="mb-2 flex flex-wrap items-center gap-1.5">
-          <span className="bg-accent text-ink flex h-6 w-6 items-center justify-center border-2 border-black font-sans font-black">
+          <span className="bg-accent text-ink font-display flex h-6 w-6 items-center justify-center border-2 border-black">
             M
           </span>
           <span className="font-bold">metis-bot</span>
           <Tag className="bg-danger text-white">Critical</Tag>
           <Tag className="bg-highlight">Security</Tag>
         </div>
-        <p className="mb-1 font-sans text-sm font-black">SQL injection in user lookup</p>
+        <p className="mb-1 font-sans text-sm font-semibold">SQL injection in user lookup</p>
         <p className="font-sans leading-snug text-black/70">
           <code>id</code> comes straight from the URL. Use a parameterized query instead.
         </p>
@@ -62,13 +62,11 @@ export function SummaryVisual() {
         <GitPullRequest className="h-4 w-4" /> #214 · feature/session-refresh
       </p>
       <p className="font-mono text-sm text-black/40 line-through">fix stuff</p>
-      <p className="font-display mb-4 text-lg leading-tight font-black">
+      <p className="mb-4 text-lg leading-tight font-semibold">
         Fix token refresh race in session middleware
       </p>
       <div className="border-t-2 border-dashed border-black/30 pt-3">
-        <p className="text-ink/60 mb-2 font-mono text-xs font-black tracking-widest uppercase">
-          Summary by Metis
-        </p>
+        <p className="text-ink/60 mb-2 font-mono text-xs font-medium">Summary by Metis</p>
         <ul className="space-y-1.5 font-semibold text-black/75">
           {[
             'Serializes concurrent refresh calls behind one lock',
@@ -126,7 +124,7 @@ export function LlmVisual() {
           <span
             key={provider}
             className={cn(
-              'border-2 border-black px-2 py-2 text-center text-xs font-black uppercase sm:text-sm',
+              'border-2 border-black px-2 py-2 text-center text-xs font-medium sm:text-sm',
               provider === 'Claude' ? 'bg-accent shadow-[3px_3px_0px_0px_#000]' : 'bg-transparent'
             )}
           >
@@ -163,16 +161,14 @@ export function DashboardVisual() {
           { label: 'Critical', value: '12' },
         ].map((stat) => (
           <div key={stat.label} className="border-ink bg-surface-alt border-2 p-2">
-            <p className="font-display text-xl font-black sm:text-2xl">{stat.value}</p>
+            <p className="font-display text-xl sm:text-2xl">{stat.value}</p>
             <p className="font-mono text-[0.65rem] font-bold text-black/60 uppercase">
               {stat.label}
             </p>
           </div>
         ))}
       </div>
-      <p className="mb-2 font-mono text-xs font-black text-black/60 uppercase">
-        Findings by category
-      </p>
+      <p className="mb-2 font-mono text-xs font-medium text-black/60">Findings by category</p>
       <div className="space-y-2">
         {FINDING_BARS.map((bar) => (
           <div key={bar.label} className="flex items-center gap-2">

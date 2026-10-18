@@ -80,8 +80,8 @@ function Cell({
         {children}
       </div>
       <div className="p-5 sm:p-6">
-        <h3 className="font-display text-xl font-black uppercase">{title}</h3>
-        <p className="text-ink/70 mt-2 font-semibold">{description}</p>
+        <h3 className="type-heading-24">{title}</h3>
+        <p className="type-body text-ink/70 mt-2 text-pretty">{description}</p>
       </div>
     </div>
   );
@@ -90,7 +90,7 @@ function Cell({
 const Chip = ({ children, active }: { children: React.ReactNode; active?: boolean }) => (
   <span
     className={cn(
-      'border-ink border-2 px-2.5 py-1 font-mono text-xs font-black',
+      'border-ink border-2 px-2.5 py-1 font-mono text-xs font-medium',
       active && 'bg-accent shadow-[3px_3px_0px_0px_#000]'
     )}
   >
@@ -132,10 +132,10 @@ export function Capabilities() {
             description="Every review and every coding run gets a fresh Daytona sandbox, deleted when it ends. Agent tools never touch your servers."
           >
             <div className="border-ink relative border-4 border-dashed px-6 py-4 text-center">
-              <span className="bg-surface absolute -top-3 left-3 px-1 font-mono text-[0.65rem] font-black uppercase">
+              <span className="bg-surface absolute -top-3 left-3 px-1 font-mono text-xs font-medium">
                 sandbox
               </span>
-              <p className="font-mono text-sm font-bold">workspace/repo</p>
+              <p className="font-mono text-sm font-medium">workspace/repo</p>
               <p className="text-ink/60 font-mono text-xs">deleted after the run</p>
             </div>
           </Cell>
@@ -170,7 +170,7 @@ export function Capabilities() {
                 <li
                   key={entry}
                   className={cn(
-                    'border-ink border-2 px-2 py-1 font-mono text-xs font-semibold',
+                    'border-ink border-2 px-2 py-1 font-mono text-xs',
                     index === 2 && 'bg-highlight'
                   )}
                 >
@@ -197,7 +197,7 @@ export function Capabilities() {
                 <li
                   key={tool}
                   className={cn(
-                    'border-ink border-2 px-2 py-1 font-mono text-xs font-semibold',
+                    'border-ink border-2 px-2 py-1 font-mono text-xs',
                     index === tools.length - 1 && 'bg-highlight'
                   )}
                 >
@@ -211,7 +211,7 @@ export function Capabilities() {
             title="Verified before it opens"
             description="Metis confirms the agent's branch actually landed on GitHub before it opens the pull request."
           >
-            <div className="font-mono text-xs leading-relaxed font-semibold">
+            <div className="font-mono text-xs leading-relaxed">
               <p>$ git ls-remote --heads origin</p>
               <p className="text-ink/60"> refs/heads/metis/issue-128</p>
               <p className="border-ink bg-highlight mt-2 inline-block border-2 px-2 py-1">

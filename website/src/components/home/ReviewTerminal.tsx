@@ -29,14 +29,12 @@ export function ReviewTerminal() {
     <section className="border-ink bg-ink border-b-4 py-24 text-white">
       <div className="site-container grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
         <div>
-          <h2 className="font-display mb-6 text-4xl font-black md:text-5xl lg:text-6xl">
-            IT WORKS WHERE YOU WORK
-          </h2>
-          <p className="border-accent mb-8 border-l-8 pl-6 text-xl font-semibold text-white/85">
+          <h2 className="type-title mb-6">It works where you work</h2>
+          <p className="type-lede border-accent mb-8 max-w-[60ch] border-l-8 pl-6 text-white/85">
             No new tool to adopt. Metis lives in your repository: it reviews the pull requests you
             open and answers issues with pull requests of its own, just like a teammate would.
           </p>
-          <ul className="space-y-4 text-lg font-semibold">
+          <ul className="type-body space-y-4 text-lg">
             {HIGHLIGHTS.map((highlight) => (
               <li key={highlight} className="flex items-center gap-3">
                 <CheckCircle className="text-accent h-6 w-6 shrink-0" aria-hidden="true" />
@@ -52,7 +50,7 @@ export function ReviewTerminal() {
               <span className="h-3 w-3 rounded-full bg-white/25" />
               <span className="h-3 w-3 rounded-full bg-white/25" />
               <span className="h-3 w-3 rounded-full bg-white/25" />
-              <span className="ml-4 text-xs font-semibold text-white/60">metis-bot — activity</span>
+              <span className="ml-4 text-xs text-white/60">metis-bot — activity</span>
             </div>
 
             <div className="space-y-5 p-6 text-sm leading-relaxed md:text-base">

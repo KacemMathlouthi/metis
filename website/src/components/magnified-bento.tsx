@@ -70,7 +70,7 @@ export function MagnifiedBento({ rows, title, description, className }: Magnifie
               {[...row, ...row, ...row].map((tag, tagIndex) => (
                 <div
                   key={`${tag.id}-${tagIndex}`}
-                  className="border-ink/30 text-ink/60 flex w-fit items-center gap-2 border-2 px-3 py-1.5 font-mono text-xs font-semibold whitespace-nowrap"
+                  className="border-ink/30 text-ink/60 flex w-fit items-center gap-2 border-2 px-3 py-1.5 font-mono text-xs whitespace-nowrap"
                 >
                   <tag.icon className="h-3.5 w-3.5" />
                   <span>{tag.label}</span>
@@ -94,7 +94,7 @@ export function MagnifiedBento({ rows, title, description, className }: Magnifie
               {[...row, ...row, ...row].map((tag, tagIndex) => (
                 <div
                   key={`${tag.id}-${tagIndex}`}
-                  className="border-ink bg-accent ml-6 flex w-fit scale-125 items-center gap-2 border-2 px-3 py-1.5 font-mono text-xs font-black whitespace-nowrap"
+                  className="border-ink bg-accent ml-6 flex w-fit scale-125 items-center gap-2 border-2 px-3 py-1.5 font-mono text-xs font-medium whitespace-nowrap"
                 >
                   <tag.icon className="h-3.5 w-3.5" />
                   <span>{tag.label}</span>
@@ -119,8 +119,8 @@ export function MagnifiedBento({ rows, title, description, className }: Magnifie
       </div>
 
       <div className="p-5 sm:p-6">
-        <h3 className="font-display text-xl font-black uppercase">{title}</h3>
-        <p className="text-ink/70 mt-2 font-semibold">{description}</p>
+        <h3 className="type-heading-24">{title}</h3>
+        <p className="type-body text-ink/70 mt-2 text-pretty">{description}</p>
         <ul className="sr-only">
           {rows.flat().map((tag) => (
             <li key={tag.id}>{tag.label}</li>

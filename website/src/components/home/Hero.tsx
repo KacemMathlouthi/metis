@@ -21,28 +21,28 @@ export function Hero() {
           href={REPO_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="border-ink mb-8 inline-flex items-center gap-2 border-2 px-3 py-1 font-mono text-xs font-bold hover:underline"
+          className="border-ink type-label mb-8 inline-flex items-center gap-2 border-2 px-3 py-1 font-mono whitespace-nowrap hover:underline max-sm:text-xs"
         >
           <span className="bg-accent size-2" aria-hidden="true" />
-          OPEN SOURCE · MIT · KacemMathlouthi/metis
+          Open source · MIT · KacemMathlouthi/metis
         </a>
-        <h1 className="font-display-tight mb-8 text-5xl leading-none font-black sm:text-7xl lg:text-8xl xl:text-9xl">
-          YOUR AI <br />
-          <span className="border-ink bg-accent inline-block -rotate-2 border-4 px-4 shadow-[8px_8px_0px_0px_#000]">
-            CODE
+        <h1 className="type-display mb-10">
+          Your AI <br />
+          <span className="border-ink bg-accent inline-block -rotate-2 border-4 px-4 pb-1 shadow-[8px_8px_0px_0px_#000]">
+            code
           </span>{' '}
-          COMPANION
+          companion
         </h1>
-        <p className="text-ink/80 mb-10 max-w-2xl text-lg font-semibold md:text-xl">
+        <p className="type-lede text-ink/80 mb-10 max-w-[60ch] text-pretty">
           An open-source GitHub App with two jobs: review every pull request you open, and turn the
           issues you pick into pull requests. Self-hosted, with the LLM of your choice.
         </p>
         <div className="flex flex-col items-center justify-center gap-5 sm:flex-row">
-          <ButtonLink href="/docs/quickstart" size="lg">
-            SELF-HOST METIS <BookOpen />
+          <ButtonLink href="/docs/quickstart" size="lg" className="font-medium">
+            Self-host Metis <BookOpen />
           </ButtonLink>
-          <ButtonLink href={REPO_URL} size="lg" variant="outline">
-            VIEW ON GITHUB <Github />
+          <ButtonLink href={REPO_URL} size="lg" variant="outline" className="font-medium">
+            View on GitHub <Github />
           </ButtonLink>
         </div>
       </div>

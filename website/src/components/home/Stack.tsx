@@ -28,9 +28,7 @@ const MODELS: readonly StackItem[] = [
 function StackGrid({ label, items }: { label: string; items: readonly StackItem[] }) {
   return (
     <div>
-      <h3 className="text-ink/60 mb-4 font-mono text-sm font-black tracking-widest uppercase">
-        {label}
-      </h3>
+      <h3 className="type-label text-ink/60 mb-4">{label}</h3>
       <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
         {items.map((item) => (
           <li
@@ -39,8 +37,8 @@ function StackGrid({ label, items }: { label: string; items: readonly StackItem[
           >
             <BrandLogo name={item.logo} className="size-9" />
             <div>
-              <p className="font-display text-lg leading-tight font-black">{item.name}</p>
-              <p className="text-ink/60 mt-1 text-sm font-semibold">{item.role}</p>
+              <p className="type-heading-20">{item.name}</p>
+              <p className="text-ink/70 mt-1 text-sm">{item.role}</p>
             </div>
           </li>
         ))}

@@ -105,7 +105,7 @@ function DeckCard({ item, index, totalCards, progress }: DeckCardProps) {
           // Stagger tabs across the card width, like index dividers, so stacked labels stay readable.
           marginLeft: `calc((100% - var(--deck-tab-width)) * ${totalCards > 1 ? index / (totalCards - 1) : 0})`,
         }}
-        className="relative z-10 -mb-1 flex h-12 w-[var(--deck-tab-width)] shrink-0 items-center border-4 border-b-0 border-black px-3 font-mono text-[0.65rem] font-black tracking-wide whitespace-nowrap uppercase [--deck-tab-width:10.5rem] sm:h-14 sm:px-5 sm:text-sm sm:[--deck-tab-width:14rem]"
+        className="type-label relative z-10 -mb-1 flex h-12 w-[var(--deck-tab-width)] shrink-0 items-center border-4 border-b-0 border-black px-3 font-mono whitespace-nowrap [--deck-tab-width:10.5rem] sm:h-14 sm:px-5 sm:[--deck-tab-width:14rem]"
       >
         {item.tabTitle}
       </div>
@@ -114,15 +114,10 @@ function DeckCard({ item, index, totalCards, progress }: DeckCardProps) {
         className="grid flex-1 grid-cols-1 content-center items-center gap-4 border-4 border-black p-4 pt-8 shadow-[8px_8px_0px_0px_#000] sm:p-8 md:min-h-[28rem] md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] md:gap-10"
       >
         <div className="flex flex-col items-start gap-4">
-          <h3
-            id={`deck-card-${item.id}`}
-            className="font-display text-2xl leading-tight font-black sm:text-3xl md:text-4xl"
-          >
+          <h3 id={`deck-card-${item.id}`} className="type-heading-32">
             {item.title}
           </h3>
-          <p className="text-base leading-normal font-semibold text-black/75 sm:text-lg sm:leading-relaxed">
-            {item.description}
-          </p>
+          <p className="type-lede text-ink/75 text-pretty">{item.description}</p>
         </div>
         {/* Hidden on short phone screens so the whole card fits in the sticky stage. */}
         <div aria-hidden="true" className="min-w-0 max-md:[@media(max-height:700px)]:hidden">

@@ -8,12 +8,8 @@ export function Marquee() {
       aria-hidden="true"
       className="border-ink bg-ink text-accent flex overflow-hidden border-y-4 py-4 whitespace-nowrap"
     >
-      <div className="animate-marquee inline-block text-2xl font-bold tracking-wide">
-        {REPEATED_CONTENT}
-      </div>
-      <div className="animate-marquee inline-block text-2xl font-bold tracking-wide">
-        {REPEATED_CONTENT}
-      </div>
+      <div className="animate-marquee font-display inline-block text-2xl">{REPEATED_CONTENT}</div>
+      <div className="animate-marquee font-display inline-block text-2xl">{REPEATED_CONTENT}</div>
     </div>
   );
 }

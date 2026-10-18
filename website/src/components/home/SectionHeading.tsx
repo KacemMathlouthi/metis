@@ -12,13 +12,11 @@ interface SectionHeadingProps {
 export function SectionHeading({ title, subtitle, inverted, className }: SectionHeadingProps) {
   return (
     <div className={cn('mx-auto mb-12 max-w-3xl text-center md:mb-16', className)}>
-      <h2 className="font-display text-4xl font-black uppercase md:text-5xl lg:text-6xl">
-        {title}
-      </h2>
+      <h2 className="type-title">{title}</h2>
       {subtitle && (
         <p
           className={cn(
-            'mt-4 text-lg font-semibold md:text-xl',
+            'type-lede mx-auto mt-5 max-w-[60ch] text-pretty',
             inverted ? 'text-white/75' : 'text-ink/70'
           )}
         >

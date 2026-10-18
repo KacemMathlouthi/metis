@@ -111,13 +111,13 @@ function StepCard({ step, index }: { step: Step; index: number }) {
         <div className="flex h-full items-center justify-center" aria-hidden="true">
           <Icon className="size-16" strokeWidth={1.5} />
         </div>
-        <span className="font-display border-ink bg-highlight absolute top-3 left-3 flex size-10 items-center justify-center border-4 text-xl font-black">
+        <span className="font-display border-ink bg-highlight absolute top-3 left-3 flex size-10 items-center justify-center border-4 text-xl">
           {index + 1}
         </span>
       </div>
       <div className="p-5">
-        <h4 className="font-display mb-2 text-lg font-black uppercase">{step.title}</h4>
-        <p className="text-ink/75 font-semibold">{step.description}</p>
+        <h4 className="type-heading-20 mb-2">{step.title}</h4>
+        <p className="type-body text-ink/75">{step.description}</p>
       </div>
     </li>
   );
@@ -137,14 +137,12 @@ export function HowItWorks() {
             <div key={flow.id} role="group" aria-labelledby={flow.id}>
               <div className="mb-6 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
                 <div>
-                  <p className="text-ink/60 mb-2 font-mono text-sm font-black tracking-widest uppercase">
-                    {flow.label}
-                  </p>
-                  <h3 id={flow.id} className="font-display text-3xl font-black uppercase">
+                  <p className="type-label text-ink/60 mb-2">{flow.label}</p>
+                  <h3 id={flow.id} className="type-heading-32">
                     {flow.title}
                   </h3>
                 </div>
-                <p className="text-ink/70 max-w-md font-semibold md:text-right">{flow.summary}</p>
+                <p className="type-body text-ink/70 max-w-md md:text-right">{flow.summary}</p>
               </div>
               <ol className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
                 {flow.steps.map((step, index) => (
@@ -158,7 +156,7 @@ export function HowItWorks() {
         <div className="mt-14 text-center">
           <Link
             to="/docs/architecture"
-            className="decoration-accent hover:decoration-ink inline-flex items-center gap-2 font-bold underline decoration-4 underline-offset-4"
+            className="decoration-accent hover:decoration-ink inline-flex items-center gap-2 font-medium underline decoration-4 underline-offset-4"
           >
             Read the architecture guide <ArrowRight className="h-5 w-5" />
           </Link>
