@@ -3,3 +3,4 @@ dist
 dist-server
 .vercel
 *.log
+.vite
