@@ -34,17 +34,14 @@
   --animate-accordion-up: accordion-up 200ms ease-out;
 }
 
-/*
- * Font roles. Not `inline`: utilities read these variables at use time, so a scope can
- * re-point them (see `.landing-type`) without touching component classes.
- */
+/* Geist for text, Geist Pixel for headings, Geist Mono for code. */
 @theme {
-  --font-sans: 'Sora', 'Source Code Pro', sans-serif;
-  --font-display: 'Space Grotesk', 'Sora', sans-serif;
-  --font-mono: 'Source Code Pro', ui-monospace, monospace;
+  --font-sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Geist Pixel', 'Geist Mono', monospace;
+  --font-mono: 'Geist Mono', ui-monospace, monospace;
 }
 
-/* Geist family (SIL OFL 1.1, see assets/fonts/OFL.txt). Downloaded only where used. */
+/* Geist family (SIL OFL 1.1, see assets/fonts/OFL.txt). */
 @font-face {
   font-family: 'Geist';
   src: url('./assets/fonts/Geist-Variable.woff2') format('woff2');
@@ -104,7 +101,7 @@
 }
 
 /*
- * Landing type scale (after Vercel's Geist guidance): a few fixed roles instead of ad hoc sizes.
+ * Type scale (after Vercel's Geist guidance): a few fixed roles instead of ad hoc sizes.
  * Headings use Geist Pixel at its only weight; reading text is regular; labels are medium.
  */
 @utility type-display {
@@ -172,20 +169,6 @@
 }
 
 @layer base {
-  /* Home page only: Geist for text and code, Geist Pixel for headings. */
-  .landing-type {
-    --font-sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
-    --font-display: 'Geist Pixel', 'Geist Mono', monospace;
-    --font-mono: 'Geist Mono', ui-monospace, monospace;
-    font-family: var(--font-sans);
-    /* Geist Pixel has a single weight; never let the browser fake bold or italic. */
-    font-synthesis: none;
-  }
-
-  .landing-type .font-display {
-    letter-spacing: 0;
-  }
-
   html {
     scroll-behavior: smooth;
     /* Keeps anchored headings clear of the sticky header. */
@@ -194,6 +177,8 @@
 
   body {
     @apply bg-surface text-ink font-sans antialiased;
+    /* Geist Pixel has a single weight; never let the browser fake bold or italic. */
+    font-synthesis: none;
   }
 
   ::selection {
@@ -202,15 +187,6 @@
 
   :focus-visible {
     @apply outline-ink outline-2 outline-offset-2;
-  }
-
-  .font-display {
-    letter-spacing: -0.04em;
-  }
-
-  .font-display-tight {
-    font-family: var(--font-display);
-    letter-spacing: -0.06em;
   }
 }
 
