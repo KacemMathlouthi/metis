@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { LogoMark } from '@/components/layout/LogoMark';
+import { WORDMARK_PATH, WORDMARK_VIEWBOX } from '@/components/layout/wordmark';
 import { cn } from '@/lib/utils';
 
 interface LogoProps {
@@ -18,14 +19,14 @@ export function Logo({ inverted = false }: LogoProps) {
             : 'shadow-[2px_2px_0px_0px_#000]'
         )}
       />
-      <span
-        className={cn(
-          'font-display text-2xl font-black tracking-tighter',
-          inverted ? 'text-white' : 'text-ink'
-        )}
+      <svg
+        viewBox={WORDMARK_VIEWBOX}
+        aria-hidden="true"
+        focusable="false"
+        className={cn('h-[1.05rem] w-auto', inverted ? 'text-white' : 'text-ink')}
       >
-        METIS
-      </span>
+        <path d={WORDMARK_PATH} fill="currentColor" />
+      </svg>
     </Link>
   );
 }

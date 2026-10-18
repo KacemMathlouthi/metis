@@ -1,7 +1,7 @@
 """Build every Metis brand asset from one mark geometry.
 
-Writes the favicons (website + dashboard), the README logos in static/, and the PNG social
-preview. Fonts are not vendored; fetch the SIL OFL fonts from google/fonts and pin the weights:
+Writes the favicons (landing site + dashboard), the README logos in static/, the header
+wordmark outline, and the PNG social preview. Fonts are not vendored; fetch the SIL OFL fonts from google/fonts and pin the weights:
 
     mkdir -p /tmp/metis-fonts && cd /tmp/metis-fonts
     curl -fLo sg.ttf "https://github.com/google/fonts/raw/main/ofl/spacegrotesk/SpaceGrotesk%5Bwght%5D.ttf"
@@ -16,9 +16,9 @@ Then, from the repository root:
     uv run --no-project --with pillow --with fonttools \
       python landing/scripts/build_brand_assets.py . /tmp/metis-fonts
 
-Mark: orange tile with a 2-unit black frame and a black Space Grotesk Bold "M", on a 32-unit
-grid. The letter is stored as an outline, so it renders the same everywhere without the font.
-At 16px (legacy ICO only) a hand-placed pixel M keeps it crisp.
+Mark: a yellow-to-red gradient tile with a 2-unit black frame and a white Space Grotesk Bold
+"M", on a 32-unit grid. Letters are stored as outlines, so they render the same everywhere
+without the font. At 16px (legacy ICO only) a hand-placed pixel M keeps it crisp.
 """
 
 import sys
@@ -32,6 +32,8 @@ from PIL import Image, ImageDraw, ImageFont
 
 ROOT, FONTS = Path(sys.argv[1]), Path(sys.argv[2])
 ORANGE, INK, CREAM, WHITE = '#ff8205', '#000000', '#fff7f2', '#ffffff'
+# Tile gradient, top-left to bottom-right: yellow, orange-light, red.
+GRADIENT = ((0.0, '#ffd800'), (0.55, '#ffaf00'), (1.0, '#e10500'))
 
 FRAME = 2
 # Cap height of the M inside the tile: matches 18px type in a 32px box.
@@ -59,7 +61,7 @@ def glyph_outline(font_path: Path, char: str, cap: float) -> list[tuple[float, f
 GLYPH = glyph_outline(FONTS / 'SpaceGrotesk-Bold.ttf', 'M', GLYPH_CAP)
 GLYPH_POINTS = ' '.join(f'{x:g},{y:g}' for x, y in GLYPH)
 
-PIXEL_16 = [  # legacy 16px favicon: classic pixel M, K = ink, O = orange
+PIXEL_16 = [  # legacy 16px favicon: K = ink (frame) or white (glyph), O = gradient tile
     'KKKKKKKKKKKKKKKK', 'KOOOOOOOOOOOOOOK', 'KOOOOOOOOOOOOOOK', 'KOOOOOOOOOOOOOOK',
     'KOOKKOOOOOOKKOOK', 'KOOKKKOOOOKKKOOK', 'KOOKKKKOOKKKKOOK', 'KOOKKOKKKKOKKOOK',
     'KOOKKOOKKOOKKOOK', 'KOOKKOOOOOOKKOOK', 'KOOKKOOOOOOKKOOK', 'KOOKKOOOOOOKKOOK',
@@ -71,14 +73,35 @@ def hex_rgb(value: str) -> tuple[int, int, int]:
     return tuple(int(value[i:i + 2], 16) for i in (1, 3, 5))
 
 
+def gradient_at(t: float) -> tuple[int, int, int]:
+    """Tile gradient color at position t in [0, 1] along the diagonal."""
+    for (t0, c0), (t1, c1) in zip(GRADIENT, GRADIENT[1:]):
+        if t <= t1:
+            k = (t - t0) / (t1 - t0)
+            a, b = hex_rgb(c0), hex_rgb(c1)
+            return tuple(round(a[i] + (b[i] - a[i]) * k) for i in range(3))
+    return hex_rgb(GRADIENT[-1][1])
+
+
+def gradient_image(width: int, height: int) -> Image.Image:
+    """Diagonal gradient (top-left to bottom-right), like SVG's objectBoundingBox 0,0 -> 1,1."""
+    span = max(width + height - 2, 1)
+    lut = [gradient_at(i / span) for i in range(span + 1)]
+    img = Image.new('RGB', (width, height))
+    img.putdata([lut[x + y] for y in range(height) for x in range(width)])
+    return img
+
+
 def mark_svg_body(x: float = 0, y: float = 0, size: float = 32) -> str:
     """SVG elements for the mark at (x, y) with the given size."""
     s = size / 32
+    stops = ''.join(f'<stop offset="{t:g}" stop-color="{c}"/>' for t, c in GRADIENT)
     return (
+        f'<defs><linearGradient id="metis-tile" x1="0" y1="0" x2="1" y2="1">{stops}</linearGradient></defs>'
         f'<g transform="translate({x:g} {y:g}) scale({s:g})">'
         f'<rect width="32" height="32" fill="{INK}"/>'
-        f'<rect x="{FRAME}" y="{FRAME}" width="{32 - 2 * FRAME}" height="{32 - 2 * FRAME}" fill="{ORANGE}"/>'
-        f'<polygon points="{GLYPH_POINTS}" fill="{INK}"/>'
+        f'<rect x="{FRAME}" y="{FRAME}" width="{32 - 2 * FRAME}" height="{32 - 2 * FRAME}" fill="url(#metis-tile)"/>'
+        f'<polygon points="{GLYPH_POINTS}" fill="{WHITE}"/>'
         '</g>'
     )
 
@@ -93,16 +116,25 @@ def render_mark(size: int, shadow: float = 0) -> Image.Image:
     if shadow:
         draw.rectangle([shadow * scale, shadow * scale, total * scale - 1, total * scale - 1], fill=INK)
     draw.rectangle([0, 0, 32 * scale - 1, 32 * scale - 1], fill=INK)
-    f = FRAME * scale
-    draw.rectangle([f, f, 32 * scale - f - 1, 32 * scale - f - 1], fill=ORANGE)
-    draw.polygon([(px * scale, py * scale) for px, py in GLYPH], fill=INK)
+    f = round(FRAME * scale)
+    inner = round(32 * scale) - 2 * f
+    img.paste(gradient_image(inner, inner), (f, f))
+    draw.polygon([(px * scale, py * scale) for px, py in GLYPH], fill=WHITE)
     return img.resize((size, size), Image.BOX)
 
 
 def pixel_16() -> Image.Image:
     img = Image.new('RGBA', (16, 16))
-    colors = {'K': hex_rgb(INK) + (255,), 'O': hex_rgb(ORANGE) + (255,)}
-    img.putdata([colors[c] for row in PIXEL_16 for c in row])
+    pixels = []
+    for y, row in enumerate(PIXEL_16):
+        for x, c in enumerate(row):
+            if c == 'O':
+                pixels.append(gradient_at((x + y - 2) / 24) + (255,))
+            elif x in (0, 15) or y in (0, 15):
+                pixels.append(hex_rgb(INK) + (255,))
+            else:
+                pixels.append(hex_rgb(WHITE) + (255,))
+    img.putdata(pixels)
     return img
 
 
@@ -180,6 +212,13 @@ def lockup(word_fill: str) -> str:
     )
 
 
+write(
+    ROOT / 'landing/src/components/layout/wordmark.ts',
+    '// Generated by landing/scripts/build_brand_assets.py: "METIS" in Space Grotesk Bold, outlined\n'
+    '// so the header wordmark keeps its original look without loading the font.\n'
+    f'export const WORDMARK_PATH =\n  {word_d!r};\n'.replace("'", '"')
+    + f'export const WORDMARK_VIEWBOX = "0 0 {word_w:.2f} {CAP}";\n',
+)
 write(ROOT / 'static/metis-logo.svg', lockup(INK))
 write(ROOT / 'static/metis-logo-dark.svg', lockup(WHITE))
 write(
