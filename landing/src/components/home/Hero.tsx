@@ -24,7 +24,7 @@ export function Hero() {
           className="border-ink type-label mb-8 inline-flex items-center gap-2 border-2 px-3 py-1 font-mono whitespace-nowrap hover:underline max-sm:text-xs"
         >
           <span className="bg-accent size-2" aria-hidden="true" />
-          Open source · MIT · KacemMathlouthi/metis
+          Open source · KacemMathlouthi/metis
         </a>
         <h1 className="type-display mb-10">
           Your AI <br />
