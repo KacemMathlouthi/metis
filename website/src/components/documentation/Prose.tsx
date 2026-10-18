@@ -1,6 +1,7 @@
 import type React from 'react';
 import { Link } from 'react-router-dom';
 import { AlertTriangle, Info, Link as LinkIcon } from 'lucide-react';
+import { DocCover } from '@/components/documentation/DocCover';
 import { cn, isExternalHref } from '@/lib/utils';
 
 interface ChildrenProps {
@@ -14,6 +15,7 @@ export function DocTitle({ eyebrow, children }: ChildrenProps & { eyebrow: strin
         {eyebrow}
       </p>
       <h1 className="font-display text-4xl font-black uppercase md:text-5xl">{children}</h1>
+      <DocCover />
     </header>
   );
 }

@@ -26,6 +26,8 @@ export interface PageMeta {
 export interface DocPage extends PageMeta {
   /** Short label used in the docs sidebar and prev/next links. */
   label: string;
+  /** Names the page's cover image: src/assets/doc-covers/<slug>-{800,1600}.webp. */
+  slug: string;
 }
 
 export const HOME_PAGE: PageMeta = {
@@ -38,6 +40,7 @@ export const HOME_PAGE: PageMeta = {
 export const DOC_PAGES: readonly DocPage[] = [
   {
     path: '/docs',
+    slug: 'introduction',
     label: 'Introduction',
     title: 'Introduction — Metis Docs',
     description:
@@ -45,6 +48,7 @@ export const DOC_PAGES: readonly DocPage[] = [
   },
   {
     path: '/docs/quickstart',
+    slug: 'quickstart',
     label: 'Quickstart',
     title: 'Self-host quickstart — Metis Docs',
     description:
@@ -52,6 +56,7 @@ export const DOC_PAGES: readonly DocPage[] = [
   },
   {
     path: '/docs/github-app',
+    slug: 'github-app',
     label: 'GitHub App',
     title: 'Create the GitHub App — Metis Docs',
     description:
@@ -59,6 +64,7 @@ export const DOC_PAGES: readonly DocPage[] = [
   },
   {
     path: '/docs/configuration',
+    slug: 'configuration',
     label: 'Configuration',
     title: 'Configuration reference — Metis Docs',
     description:
@@ -66,6 +72,7 @@ export const DOC_PAGES: readonly DocPage[] = [
   },
   {
     path: '/docs/architecture',
+    slug: 'architecture',
     label: 'Architecture',
     title: 'Architecture — Metis Docs',
     description:
