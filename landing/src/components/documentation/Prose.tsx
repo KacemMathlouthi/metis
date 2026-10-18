@@ -12,10 +12,10 @@ export function DocTitle({ eyebrow, children }: ChildrenProps & { eyebrow: strin
   return (
     <>
       <header className="mb-10 border-b-4 border-black pb-8">
-        <p className="mb-3 inline-block border-2 border-black bg-[var(--metis-yellow)] px-2 py-0.5 text-xs font-black tracking-widest uppercase">
+        <p className="type-label bg-highlight border-ink mb-4 inline-block border-2 px-2 py-0.5">
           {eyebrow}
         </p>
-        <h1 className="font-display text-4xl font-black uppercase md:text-5xl">{children}</h1>
+        <h1 className="type-title">{children}</h1>
       </header>
       <DocCover />
     </>
@@ -23,16 +23,13 @@ export function DocTitle({ eyebrow, children }: ChildrenProps & { eyebrow: strin
 }
 
 export function Lead({ children }: ChildrenProps) {
-  return <p className="mb-8 text-xl leading-relaxed font-semibold text-black/80">{children}</p>;
+  return <p className="type-lede text-ink/80 mb-8 max-w-[65ch]">{children}</p>;
 }
 
 /** Section heading with a hover anchor link so sections can be shared. */
 export function H2({ id, children }: ChildrenProps & { id: string }) {
   return (
-    <h2
-      id={id}
-      className="font-display group mt-14 mb-4 flex items-center gap-2 text-2xl font-black uppercase md:text-3xl"
-    >
+    <h2 id={id} className="type-heading-32 group mt-14 mb-4 flex items-center gap-2">
       {children}
       <a
         href={`#${id}`}
@@ -47,14 +44,14 @@ export function H2({ id, children }: ChildrenProps & { id: string }) {
 
 export function H3({ id, children }: ChildrenProps & { id?: string }) {
   return (
-    <h3 id={id} className="font-display mt-8 mb-3 text-xl font-black">
+    <h3 id={id} className="type-heading-20 mt-8 mb-3">
       {children}
     </h3>
   );
 }
 
 export function P({ children }: ChildrenProps) {
-  return <p className="my-4 leading-relaxed">{children}</p>;
+  return <p className="type-body my-4 max-w-[68ch]">{children}</p>;
 }
 
 export function UL({ children }: ChildrenProps) {
@@ -64,7 +61,7 @@ export function UL({ children }: ChildrenProps) {
 }
 
 export function OL({ children }: ChildrenProps) {
-  return <ol className="my-4 list-decimal space-y-2 pl-6 marker:font-bold">{children}</ol>;
+  return <ol className="my-4 list-decimal space-y-2 pl-6 marker:font-medium">{children}</ol>;
 }
 
 export function Code({ children }: ChildrenProps) {
@@ -128,9 +125,9 @@ export function Step({ title, id, children }: ChildrenProps & { title: string; i
     <li className="doc-step relative">
       <span
         aria-hidden="true"
-        className="font-display doc-step-badge absolute top-0 -left-[3.15rem] flex h-9 w-9 items-center justify-center border-4 border-black bg-[var(--metis-yellow)] text-lg font-black"
+        className="font-display doc-step-badge absolute top-0 -left-[3.15rem] flex h-9 w-9 items-center justify-center border-4 border-black bg-[var(--metis-yellow)] text-lg"
       />
-      <h3 id={id} className="font-display mb-2 text-xl font-black">
+      <h3 id={id} className="type-heading-20 mb-2">
         {title}
       </h3>
       <div className="[&>*:first-child]:mt-0">{children}</div>
@@ -151,7 +148,7 @@ export function Table({
         <thead className="bg-black text-white">
           <tr>
             {head.map((cell) => (
-              <th key={cell} scope="col" className="px-4 py-3 font-black tracking-wide uppercase">
+              <th key={cell} scope="col" className="type-label px-4 py-3">
                 {cell}
               </th>
             ))}

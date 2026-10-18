@@ -35,7 +35,7 @@ export function SelfHostCta() {
             and the whole stack starts with one command. Your code only goes to the services you
             configure.
           </p>
-          <ButtonLink href="/docs/quickstart" size="lg" variant="dark" className="font-medium">
+          <ButtonLink href="/docs/quickstart" size="lg" variant="dark">
             Read the quickstart <ArrowRight />
           </ButtonLink>
         </div>

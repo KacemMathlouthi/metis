@@ -29,7 +29,7 @@ export function Header() {
             <li key={link.href}>
               <Link
                 to={link.href}
-                className="decoration-accent px-3 py-2 text-sm font-bold decoration-2 underline-offset-4 hover:underline"
+                className="decoration-accent px-3 py-2 text-sm font-medium decoration-2 underline-offset-4 hover:underline"
               >
                 {link.label}
               </Link>

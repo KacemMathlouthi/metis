@@ -93,7 +93,7 @@ export function Faqs() {
         >
           {QUESTIONS.map((item) => (
             <AccordionItem key={item.id} value={item.id} className="px-5 md:px-6">
-              <AccordionTrigger className="py-5 text-base font-medium md:text-lg">
+              <AccordionTrigger className="py-5 text-base md:text-lg">
                 {item.question}
               </AccordionTrigger>
               <AccordionContent className="type-body text-ink/75 max-w-[68ch] pb-5">

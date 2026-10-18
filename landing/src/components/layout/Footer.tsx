@@ -74,9 +74,7 @@ export function Footer() {
 
         {FOOTER_COLUMNS.map((column) => (
           <div key={column.title}>
-            <h2 className="text-accent mb-4 text-sm font-black tracking-widest uppercase">
-              {column.title}
-            </h2>
+            <h2 className="type-label text-accent mb-4">{column.title}</h2>
             <ul className="space-y-3">
               {column.links.map((link) => (
                 <li key={link.href}>
@@ -109,7 +107,7 @@ export function Footer() {
         className="pointer-events-none relative mt-16 flex w-full justify-center overflow-hidden select-none"
       >
         <span
-          className="font-display translate-y-4 bg-clip-text pb-4 text-[9rem] leading-[0.82] font-black text-transparent opacity-90 sm:text-[13rem] md:text-[18rem] lg:text-[24rem] xl:text-[30rem]"
+          className="font-display translate-y-4 bg-clip-text pb-4 text-[9rem] leading-[0.82] text-transparent opacity-90 sm:text-[13rem] md:text-[18rem] lg:text-[24rem] xl:text-[30rem]"
           style={{
             backgroundImage:
               'linear-gradient(180deg, var(--metis-yellow) 0%, var(--metis-orange-light) 28%, var(--metis-orange) 52%, var(--metis-orange-dark) 72%, var(--metis-red) 100%)',

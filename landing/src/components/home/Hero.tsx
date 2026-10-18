@@ -38,10 +38,10 @@ export function Hero() {
           issues you pick into pull requests. Self-hosted, with the LLM of your choice.
         </p>
         <div className="flex flex-col items-center justify-center gap-5 sm:flex-row">
-          <ButtonLink href="/docs/quickstart" size="lg" className="font-medium">
+          <ButtonLink href="/docs/quickstart" size="lg">
             Self-host Metis <BookOpen />
           </ButtonLink>
-          <ButtonLink href={REPO_URL} size="lg" variant="outline" className="font-medium">
+          <ButtonLink href={REPO_URL} size="lg" variant="outline">
             View on GitHub <Github />
           </ButtonLink>
         </div>

@@ -6,9 +6,7 @@ import { DOC_PAGES, REPO_URL } from '@/site';
 function DocsNav() {
   return (
     <nav aria-label="Documentation">
-      <p className="mb-3 text-xs font-black tracking-widest text-black/60 uppercase">
-        Self-hosting
-      </p>
+      <p className="type-label text-ink/60 mb-3">Self-hosting</p>
       <ul className="flex gap-2 overflow-x-auto pb-2 lg:flex-col lg:overflow-visible lg:pb-0">
         {DOC_PAGES.map((page) => (
           <li key={page.path} className="shrink-0">
@@ -17,7 +15,7 @@ function DocsNav() {
               end
               className={({ isActive }) =>
                 cn(
-                  'block border-2 border-black px-3 py-2 text-sm font-bold transition-all',
+                  'block border-2 border-black px-3 py-2 text-sm font-medium transition-all',
                   isActive
                     ? 'bg-accent shadow-[3px_3px_0px_0px_#000]'
                     : 'hover:bg-surface-alt hover:translate-x-0.5'
@@ -43,20 +41,20 @@ function PrevNext({ currentIndex }: { currentIndex: number }) {
     <div className="mt-16 flex flex-col gap-4 sm:flex-row">
       {previous ? (
         <Link to={previous.path} className={cardClasses}>
-          <span className="flex items-center gap-1 text-xs font-black text-black/60 uppercase">
+          <span className="type-label text-ink/60 flex items-center gap-1">
             <ArrowLeft className="h-4 w-4" /> Previous
           </span>
-          <span className="font-display text-lg font-black">{previous.label}</span>
+          <span className="type-heading-20">{previous.label}</span>
         </Link>
       ) : (
         <span className="hidden flex-1 sm:block" />
       )}
       {next && (
         <Link to={next.path} className={cn(cardClasses, 'sm:items-end sm:text-right')}>
-          <span className="flex items-center gap-1 text-xs font-black text-black/60 uppercase">
+          <span className="type-label text-ink/60 flex items-center gap-1">
             Next <ArrowRight className="h-4 w-4" />
           </span>
-          <span className="font-display text-lg font-black">{next.label}</span>
+          <span className="type-heading-20">{next.label}</span>
         </Link>
       )}
     </div>
@@ -81,7 +79,7 @@ export function DocsLayout() {
             href={`${REPO_URL}/issues/new`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-sm font-bold hover:underline"
+            className="inline-flex items-center gap-2 text-sm font-medium hover:underline"
           >
             <Pencil className="h-4 w-4" /> Something unclear or out of date? Open an issue.
           </a>

@@ -34,7 +34,7 @@ function FlowNode({ title, detail, tone = 'core' }: NodeProps) {
         NODE_TONES[tone]
       )}
     >
-      <p className="font-display text-base font-black uppercase">{title}</p>
+      <p className="type-heading-20">{title}</p>
       <p className="mt-1 text-xs font-semibold text-black/70">{detail}</p>
     </div>
   );
@@ -42,7 +42,7 @@ function FlowNode({ title, detail, tone = 'core' }: NodeProps) {
 
 function FlowArrow({ label }: { label: string }) {
   return (
-    <div className="flex shrink-0 flex-col items-center justify-center px-1 py-1 text-[0.7rem] font-bold text-black/70 md:w-20">
+    <div className="flex shrink-0 flex-col items-center justify-center px-1 py-1 text-xs font-medium text-black/70 md:w-20">
       <ArrowDown className="h-5 w-5 md:hidden" aria-hidden="true" />
       <ArrowRight className="hidden h-5 w-5 md:block" aria-hidden="true" />
       <span>{label}</span>

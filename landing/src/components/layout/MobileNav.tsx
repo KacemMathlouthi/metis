@@ -40,7 +40,7 @@ export function MobileNav() {
                   <Link
                     to={link.href}
                     onClick={() => setOpen(false)}
-                    className="font-display block py-2 text-2xl font-black uppercase"
+                    className="type-heading-24 block py-2"
                   >
                     {link.label}
                   </Link>

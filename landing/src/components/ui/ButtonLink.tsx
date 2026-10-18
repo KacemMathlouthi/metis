@@ -31,7 +31,7 @@ export function ButtonLink({
   children,
 }: ButtonLinkProps) {
   const classes = cn(
-    'border-ink inline-flex items-center justify-center gap-2 border-2 font-bold whitespace-nowrap shadow-[4px_4px_0px_0px_#000] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none [&_svg]:size-5 [&_svg]:shrink-0',
+    'border-ink inline-flex items-center justify-center gap-2 border-2 font-medium whitespace-nowrap shadow-[4px_4px_0px_0px_#000] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none [&_svg]:size-5 [&_svg]:shrink-0',
     VARIANTS[variant],
     SIZES[size],
     className
