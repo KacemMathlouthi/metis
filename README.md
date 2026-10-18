@@ -9,10 +9,6 @@
 
 ---
 
-<p align="center">
-  <img src="landing/src/assets/doc-covers/introduction-1600.webp" alt="" width="100%" />
-</p>
-
 ## What it does
 
 Metis is a GitHub App you host yourself. It runs two flows on the same agent engine:
