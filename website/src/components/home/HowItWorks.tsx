@@ -12,20 +12,6 @@ import {
 } from 'lucide-react';
 import { SectionHeading } from '@/components/home/SectionHeading';
 
-/**
- * Step pictures, picked up automatically from src/assets/how-it-works/.
- * Name a file after its step key, e.g. `review-1.webp` or `issue-3.png`; until a picture
- * exists, the step shows its icon instead.
- */
-const STEP_IMAGES: Record<string, string> = Object.fromEntries(
-  Object.entries(
-    import.meta.glob<string>('/src/assets/how-it-works/*.{png,jpg,jpeg,webp,avif,svg}', {
-      eager: true,
-      import: 'default',
-    })
-  ).map(([path, url]) => [path.slice(path.lastIndexOf('/') + 1, path.lastIndexOf('.')), url])
-);
-
 interface Step {
   key: string;
   icon: LucideIcon;
@@ -117,25 +103,14 @@ const FLOWS: readonly Flow[] = [
 ];
 
 function StepCard({ step, index }: { step: Step; index: number }) {
-  const image = STEP_IMAGES[step.key];
   const Icon = step.icon;
 
   return (
     <li className="border-ink bg-surface flex flex-col border-4 shadow-[6px_6px_0px_0px_#000]">
       <div className="border-ink bg-surface-alt relative aspect-[4/3] overflow-hidden border-b-4">
-        {image ? (
-          <img
-            src={image}
-            alt=""
-            loading="lazy"
-            decoding="async"
-            className="h-full w-full object-cover"
-          />
-        ) : (
-          <div className="flex h-full items-center justify-center" aria-hidden="true">
-            <Icon className="size-16" strokeWidth={1.5} />
-          </div>
-        )}
+        <div className="flex h-full items-center justify-center" aria-hidden="true">
+          <Icon className="size-16" strokeWidth={1.5} />
+        </div>
         <span className="font-display border-ink bg-highlight absolute top-3 left-3 flex size-10 items-center justify-center border-4 text-xl font-black">
           {index + 1}
         </span>
