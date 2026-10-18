@@ -1,4 +1,5 @@
 import { Capabilities } from '@/components/home/Capabilities';
+import { Faqs } from '@/components/home/Faqs';
 import { FeatureDeck } from '@/components/home/FeatureDeck';
 import { Hero } from '@/components/home/Hero';
 import { HowItWorks } from '@/components/home/HowItWorks';
@@ -17,6 +18,7 @@ export function HomePage() {
       <HowItWorks />
       <ReviewTerminal />
       <Stack />
+      <Faqs />
       <SelfHostCta />
     </>
   );

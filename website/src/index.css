@@ -33,6 +33,27 @@
   --font-sans: 'Sora', 'Source Code Pro', sans-serif;
   --font-display: 'Space Grotesk', 'Sora', sans-serif;
   --font-mono: 'Source Code Pro', ui-monospace, monospace;
+
+  --animate-accordion-down: accordion-down 200ms ease-out;
+  --animate-accordion-up: accordion-up 200ms ease-out;
+}
+
+@keyframes accordion-down {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+  }
+}
+
+@keyframes accordion-up {
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
 }
 
 /* Shared page width: every section and the header line up on the same column. */
@@ -114,7 +135,9 @@
 
     .animate-marquee,
     .animate-pulse,
-    .animate-bounce {
+    .animate-bounce,
+    .animate-accordion-down,
+    .animate-accordion-up {
       animation: none;
     }
   }
