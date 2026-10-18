@@ -1,15 +1,31 @@
 import { Link } from 'react-router-dom';
+import { LogoMark } from '@/components/layout/LogoMark';
+import { cn } from '@/lib/utils';
 
-export function Logo() {
+interface LogoProps {
+  /** White wordmark for dark backgrounds. */
+  inverted?: boolean;
+}
+
+export function Logo({ inverted = false }: LogoProps) {
   return (
-    <Link to="/" className="flex items-center gap-2.5" aria-label="Metis home">
+    <Link to="/" className="group flex items-center gap-2.5" aria-label="Metis home">
+      <LogoMark
+        className={cn(
+          'size-8 motion-safe:transition-transform motion-safe:group-hover:-rotate-6',
+          inverted
+            ? 'shadow-[2px_2px_0px_0px_var(--color-accent)]'
+            : 'shadow-[2px_2px_0px_0px_#000]'
+        )}
+      />
       <span
-        aria-hidden="true"
-        className="border-ink bg-accent text-ink flex size-8 items-center justify-center border-2 text-lg font-black shadow-[2px_2px_0px_0px_#000]"
+        className={cn(
+          'font-display text-2xl font-black tracking-tighter',
+          inverted ? 'text-white' : 'text-ink'
+        )}
       >
-        M
+        METIS
       </span>
-      <span className="font-display text-2xl font-black tracking-tighter">METIS</span>
     </Link>
   );
 }

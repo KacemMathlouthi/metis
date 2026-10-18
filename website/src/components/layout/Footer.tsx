@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Github, Linkedin } from 'lucide-react';
 import { AuroraFooter } from '@/components/aurora-footer';
+import { Logo } from '@/components/layout/Logo';
 import { isExternalHref } from '@/lib/utils';
 import { AUTHOR_GITHUB_URL, AUTHOR_LINKEDIN_URL, REPO_BLOB_URL, REPO_URL } from '@/site';
 
@@ -40,6 +41,7 @@ export function Footer() {
     <footer className="relative overflow-hidden bg-black pt-20 text-white">
       <div className="site-container relative z-10 grid gap-12 md:grid-cols-[1.4fr_repeat(3,1fr)]">
         <div className="flex flex-col gap-6">
+          <Logo inverted />
           <p className="text-sm font-semibold">
             Made by{' '}
             <span className="bg-surface-alt text-ink inline-block -rotate-2 border-2 border-white px-2 py-0.5 shadow-[2px_2px_0px_0px_var(--color-accent)]">
