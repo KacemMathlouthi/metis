@@ -1,12 +1,12 @@
 import type React from 'react';
 
 /**
- * The Metis mark: orange tile, black frame, and a heavy M whose valley is an asymmetric
- * check mark. Drawn on a 32-unit grid; the same geometry generates the favicons, README
- * logos, and social preview, so keep them in sync if it changes.
+ * The Metis mark: orange tile, black frame, and a black Space Grotesk Bold "M", drawn as an
+ * outline on a 32-unit grid. website/scripts/build_brand_assets.py generates the favicons,
+ * README logos, and social preview from the same outline; keep them in sync if it changes.
  */
 const GLYPH_POINTS =
-  '6,24 6,8 11,8 14.2,14.6 21,8 26,8 26,24 21,24 21,12.6 13.22,20.15 11,15.56 11,24';
+  '9.25,22.3 9.25,9.7 13.66,9.7 15.84,20.68 16.16,20.68 18.34,9.7 22.75,9.7 22.75,22.3 20.45,22.3 20.45,11.45 20.12,11.45 17.96,22.3 14.04,22.3 11.88,11.45 11.55,11.45 11.55,22.3';
 
 export function LogoMark(props: React.ComponentProps<'svg'>) {
   return (

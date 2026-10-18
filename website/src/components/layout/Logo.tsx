@@ -9,10 +9,10 @@ interface LogoProps {
 
 export function Logo({ inverted = false }: LogoProps) {
   return (
-    <Link to="/" className="group flex items-center gap-2.5" aria-label="Metis home">
+    <Link to="/" className="flex items-center gap-2.5" aria-label="Metis home">
       <LogoMark
         className={cn(
-          'size-8 motion-safe:transition-transform motion-safe:group-hover:-rotate-6',
+          'size-8',
           inverted
             ? 'shadow-[2px_2px_0px_0px_var(--color-accent)]'
             : 'shadow-[2px_2px_0px_0px_#000]'

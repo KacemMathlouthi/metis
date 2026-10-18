@@ -16,15 +16,15 @@ Then, from the repository root:
     uv run --no-project --with pillow --with fonttools \
       python website/scripts/build_brand_assets.py . /tmp/metis-fonts
 
-Mark: orange tile, 2-unit black frame, heavy M whose valley is an asymmetric check mark
-(short left stroke, long right stroke), on a 32-unit grid. Stems sit on whole units so the
-32px render is pixel-exact. At 16px (legacy ICO only) a hand-placed pixel M is used, because
-the check cannot survive that resolution.
+Mark: orange tile with a 2-unit black frame and a black Space Grotesk Bold "M", on a 32-unit
+grid. The letter is stored as an outline, so it renders the same everywhere without the font.
+At 16px (legacy ICO only) a hand-placed pixel M keeps it crisp.
 """
 
 import sys
 from pathlib import Path
 
+from fontTools.pens.recordingPen import RecordingPen
 from fontTools.pens.svgPathPen import SVGPathPen
 from fontTools.pens.transformPen import TransformPen
 from fontTools.ttLib import TTFont
@@ -33,9 +33,30 @@ from PIL import Image, ImageDraw, ImageFont
 ROOT, FONTS = Path(sys.argv[1]), Path(sys.argv[2])
 ORANGE, INK, CREAM, WHITE = '#ff8205', '#000000', '#fff7f2', '#ffffff'
 
-GLYPH = [(6, 24), (6, 8), (11, 8), (14.2, 14.6), (21, 8), (26, 8), (26, 24), (21, 24),
-         (21, 12.6), (13.22, 20.15), (11, 15.56), (11, 24)]
 FRAME = 2
+# Cap height of the M inside the tile: matches 18px type in a 32px box.
+GLYPH_CAP = 12.6
+
+
+def glyph_outline(font_path: Path, char: str, cap: float) -> list[tuple[float, float]]:
+    """Polygon of a straight-edged glyph, centered in the 32-unit tile at the given cap height."""
+    font = TTFont(font_path)
+    glyph_set = font.getGlyphSet()
+    glyph = glyph_set[font.getBestCmap()[ord(char)]]
+    recorder = RecordingPen()
+    glyph.draw(recorder)
+    points = [args[0] for op, args in recorder.value if op in ('moveTo', 'lineTo')]
+    assert all(op in ('moveTo', 'lineTo', 'closePath') for op, _ in recorder.value), 'curves'
+    assert sum(op == 'moveTo' for op, _ in recorder.value) == 1, 'single contour expected'
+    xs, ys = [x for x, _ in points], [y for _, y in points]
+    scale = cap / (max(ys) - min(ys))
+    width = (max(xs) - min(xs)) * scale
+    dx = (32 - width) / 2 - min(xs) * scale
+    dy = (32 + cap) / 2 + min(ys) * scale
+    return [(round(x * scale + dx, 2), round(dy - y * scale, 2)) for x, y in points]
+
+
+GLYPH = glyph_outline(FONTS / 'SpaceGrotesk-Bold.ttf', 'M', GLYPH_CAP)
 GLYPH_POINTS = ' '.join(f'{x:g},{y:g}' for x, y in GLYPH)
 
 PIXEL_16 = [  # legacy 16px favicon: classic pixel M, K = ink, O = orange
@@ -189,3 +210,4 @@ draw.text((48, H - 48), 'SELF-HOSTED  ·  MIT LICENSED  ·  ANY LLM', font=small
 buffer = ROOT / 'website/public/social-preview.png'
 og.save(buffer, optimize=True)
 print('wrote website/public/social-preview.png')
+print('GLYPH_POINTS', GLYPH_POINTS)
