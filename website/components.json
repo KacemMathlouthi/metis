@@ -19,6 +19,7 @@
     "hooks": "@/hooks"
   },
   "registries": {
-    "@uselayouts": "https://uselayouts.com/r/{name}.json"
+    "@uselayouts": "https://uselayouts.com/r/{name}.json",
+    "@efferd": "https://efferd.com/r/{style}/{name}.json"
   }
 }

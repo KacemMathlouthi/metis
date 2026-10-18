@@ -4,6 +4,16 @@ export const AUTHOR_GITHUB_URL = 'https://github.com/KacemMathlouthi';
 export const AUTHOR_LINKEDIN_URL = 'https://linkedin.com/in/kacem-mathlouthi';
 
 export const SITE_NAME = 'Metis';
+
+/** Header navigation: landing-page sections, then the docs. */
+export const NAV_LINKS = [
+  { href: '/#features', label: 'Features' },
+  { href: '/#capabilities', label: 'Capabilities' },
+  { href: '/#how-it-works', label: 'How it works' },
+  { href: '/#stack', label: 'Stack' },
+  { href: '/#faq', label: 'FAQ' },
+  { href: '/docs', label: 'Docs' },
+] as const;
 export const DEFAULT_DESCRIPTION =
   'Metis is an open-source, self-hostable GitHub App that reviews pull requests, writes PR summaries, and turns issues into pull requests with the LLM of your choice.';
 
