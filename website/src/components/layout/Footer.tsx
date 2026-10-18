@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Github, Linkedin } from 'lucide-react';
+import { AuroraFooter } from '@/components/aurora-footer';
 import { isExternalHref } from '@/lib/utils';
 import { AUTHOR_GITHUB_URL, AUTHOR_LINKEDIN_URL, REPO_BLOB_URL, REPO_URL } from '@/site';
 
@@ -117,6 +118,8 @@ export function Footer() {
         </span>
         <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black via-black/50 to-transparent" />
       </div>
+
+      <AuroraFooter />
     </footer>
   );
 }
