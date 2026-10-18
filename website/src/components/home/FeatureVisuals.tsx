@@ -87,18 +87,18 @@ export function SummaryVisual() {
 }
 
 const AGENT_STEPS = [
-  { icon: CircleDot, label: 'Issue #128 · Export reviews as CSV', tone: 'bg-transparent' },
-  { icon: GitBranch, label: 'git_create_branch metis/issue-128', tone: 'bg-transparent' },
-  { icon: Wrench, label: 'replace_in_files · 3 files', tone: 'bg-transparent' },
-  { icon: Play, label: 'run_tests · 42 passed', tone: 'bg-transparent' },
-  { icon: Upload, label: 'git_push origin metis/issue-128', tone: 'bg-transparent' },
+  { icon: CircleDot, label: 'Issue #128 · Export reviews as CSV', tone: 'bg-surface' },
+  { icon: GitBranch, label: 'git_create_branch metis/issue-128', tone: 'bg-surface' },
+  { icon: Wrench, label: 'replace_in_files · 3 files', tone: 'bg-surface' },
+  { icon: Play, label: 'run_tests · 42 passed', tone: 'bg-surface' },
+  { icon: Upload, label: 'git_push origin metis/issue-128', tone: 'bg-surface' },
   { icon: Check, label: 'Pull request #129 opened', tone: 'bg-highlight' },
 ] as const;
 
 export function IssueToPrVisual() {
   return (
     <ol className={cn(FRAME, 'relative space-y-2.5 p-4')}>
-      <span className="absolute top-6 bottom-6 left-[1.85rem] w-1 bg-black" />
+      <span className="bg-ink absolute top-6 bottom-6 left-[30px] w-1" />
       {AGENT_STEPS.map(({ icon: Icon, label, tone }) => (
         <li key={label} className="relative flex items-center gap-3">
           <span
