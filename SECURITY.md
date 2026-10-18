@@ -1,42 +1,15 @@
 # Security Policy
 
-## Supported Versions
-Metis is under active development. Security fixes are applied to the latest `main` branch and to the most recent tagged release when available.
+## Reporting a vulnerability
 
-## Reporting a Vulnerability
-Please do not open public issues for security vulnerabilities.
+Please don't open a public issue. Report it privately through
+[GitHub's private vulnerability reporting](https://github.com/KacemMathlouthi/metis/security/advisories/new)
+or by contacting [@KacemMathlouthi](https://github.com/KacemMathlouthi).
 
-Report privately by contacting the maintainer:
-- GitHub: `@KacemMathlouthi`
-- Repository: `https://github.com/KacemMathlouthi/metis`
+Include what is affected, how to reproduce it, and the impact. You can expect an acknowledgment within 72 hours and a triage decision within 7 days. Fixes land on `main`.
 
-Include:
-- Vulnerability description and impact
-- Reproduction steps or proof of concept
-- Affected files/endpoints/components
-- Suggested remediation if available
+## Scope
 
-## Response Process
-Targets (best effort):
-- Initial acknowledgment: within 72 hours
-- Triage decision: within 7 days
-- Fix timeline: based on severity and exploitability
+The most sensitive areas are webhook signature verification, authentication and sessions, token encryption and secrets, repository authorization, and the boundaries of the agent sandbox and its tools.
 
-When a fix is released, maintainers will publish:
-- Impact summary
-- Affected versions
-- Mitigation and upgrade guidance
-
-## Security Scope Notes
-Security-sensitive areas in this project include:
-- Authentication and session handling
-- GitHub webhook signature validation
-- Token encryption and secret management
-- Agent sandbox execution and tool boundaries
-- Repository authorization and ownership checks
-
-## Safe Harbor
-Good-faith security research and responsible disclosure are welcomed. Please avoid:
-- Accessing data that is not yours
-- Disrupting service availability
-- Public disclosure before a coordinated fix
+Good-faith research is welcome. Don't access data that isn't yours, disrupt services, or disclose an issue publicly before it is fixed.

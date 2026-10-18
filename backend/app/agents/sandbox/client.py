@@ -94,6 +94,6 @@ class DaytonaClient:
             Daytona Sandbox instance or None
         """
         try:
-            return self._client.find_one(sandbox_id)
+            return self._client.get(sandbox_id)
         except Exception:
             return None

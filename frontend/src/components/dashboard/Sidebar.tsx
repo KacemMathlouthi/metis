@@ -14,6 +14,7 @@ import {
   Clock3,
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { MetisMark } from '@/components/MetisMark';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRepository } from '@/contexts/RepositoryContext';
 import { apiClient } from '@/lib/api-client';
@@ -86,9 +87,7 @@ export const AppSidebar: React.FC = () => {
     <Sidebar collapsible="icon" className="landing bg-[var(--metis-white)]">
       <SidebarHeader className="bg-[var(--metis-white)]">
         <div className="flex items-center gap-2 px-2 py-1 group-data-[collapsible=icon]:justify-center">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center border-2 border-black bg-gradient-to-br from-[var(--metis-yellow)] via-[var(--metis-orange-light)] to-[var(--metis-red)] text-lg font-black text-white shadow-[2px_2px_0px_0px_#000]">
-            M
-          </div>
+          <MetisMark className="h-8 w-8 shrink-0 shadow-[2px_2px_0px_0px_#000]" />
           <span className="landing-display text-xl font-black tracking-tighter group-data-[collapsible=icon]:hidden">
             METIS
           </span>

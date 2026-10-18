@@ -101,6 +101,7 @@ ignore = [
     "E501",    # Formatter is source of truth; long strings/prompts are common
     "ISC001",  # String literal concatenation style; not worth blocking CI
     "PLR0913", # Too many arguments
+    "PLR0917", # Too many positional arguments (stable since ruff 0.17; same policy as PLR0913)
     "PLR0911", # Too many return statements (often OK in endpoint/task flows)
     "PLR0912", # Too many branches (often OK in endpoint/task flows)
     "PLR0915", # Too many statements (often OK in endpoint/task flows)

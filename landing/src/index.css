@@ -1,0 +1,233 @@
+@import 'tailwindcss';
+
+:root {
+  --metis-black: #000000;
+  --metis-white: #ffffff;
+  --metis-red: #e10500;
+  --metis-orange-dark: #fa500f;
+  --metis-orange: #ff8205;
+  --metis-orange-light: #ffaf00;
+  --metis-yellow: #ffd800;
+  --metis-cream: #fff7f2;
+  --metis-pastel-1: #fff1e6;
+  --metis-pastel-2: #fff6cc;
+  --metis-pastel-3: #ffe0cc;
+  --metis-pastel-4: #fff3e0;
+  --metis-pastel-red: #ffe2df;
+  --metis-pastel-orange: #ffe6d9;
+}
+
+/*
+ * Semantic palette for the landing page. Keep new UI on these few roles instead of the full
+ * brand palette: one accent carries every call to action, yellow is a small highlight, and red
+ * is reserved for severity.
+ */
+@theme inline {
+  --color-surface: var(--metis-cream);
+  --color-surface-alt: var(--metis-pastel-3);
+  --color-ink: var(--metis-black);
+  --color-accent: var(--metis-orange);
+  --color-highlight: var(--metis-yellow);
+  --color-danger: var(--metis-red);
+
+  --animate-accordion-down: accordion-down 200ms ease-out;
+  --animate-accordion-up: accordion-up 200ms ease-out;
+}
+
+/* Geist for text, Geist Pixel for headings, Geist Mono for code. */
+@theme {
+  --font-sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Geist Pixel', 'Geist Mono', monospace;
+  --font-mono: 'Geist Mono', ui-monospace, monospace;
+}
+
+/* Geist family (SIL OFL 1.1, see assets/fonts/OFL.txt). */
+@font-face {
+  font-family: 'Geist';
+  src: url('./assets/fonts/Geist-Variable.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Geist Mono';
+  src: url('./assets/fonts/GeistMono-Variable.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Geist Pixel';
+  src: url('./assets/fonts/GeistPixel-Square.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@keyframes accordion-down {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+  }
+}
+
+@keyframes accordion-up {
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
+
+/* Shared page width: every section and the header line up on the same column. */
+@utility site-container {
+  width: 100%;
+  max-width: 84rem;
+  margin-inline: auto;
+  padding-inline: 1rem;
+
+  @media (width >= 48rem) {
+    padding-inline: 2rem;
+  }
+
+  @media (width >= 80rem) {
+    padding-inline: 3rem;
+  }
+}
+
+/*
+ * Type scale (after Vercel's Geist guidance): a few fixed roles instead of ad hoc sizes.
+ * Headings use Geist Pixel at its only weight; reading text is regular; labels are medium.
+ */
+@utility type-display {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 8vw, 6.5rem);
+  font-weight: 400;
+  line-height: 0.95;
+  letter-spacing: 0;
+  /* Headings never strand a single word on the last line. */
+  text-wrap: balance;
+}
+
+@utility type-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.25rem, 5vw, 3.75rem);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: 0;
+  text-wrap: balance;
+}
+
+@utility type-heading-32 {
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: 0;
+  text-wrap: balance;
+}
+
+@utility type-heading-24 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: 0;
+  text-wrap: balance;
+}
+
+@utility type-heading-20 {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 400;
+  line-height: 1.25;
+  letter-spacing: 0;
+  text-wrap: balance;
+}
+
+@utility type-lede {
+  font-size: clamp(1.125rem, 1.5vw, 1.3125rem);
+  font-weight: 400;
+  line-height: 1.55;
+}
+
+@utility type-body {
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+@utility type-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* Keeps anchored headings clear of the sticky header. */
+    scroll-padding-top: 4.5rem;
+  }
+
+  body {
+    @apply bg-surface text-ink font-sans antialiased;
+    /* Geist Pixel has a single weight; never let the browser fake bold or italic. */
+    font-synthesis: none;
+  }
+
+  ::selection {
+    @apply bg-highlight text-ink;
+  }
+
+  :focus-visible {
+    @apply outline-ink outline-2 outline-offset-2;
+  }
+}
+
+@layer utilities {
+  @keyframes marquee {
+    0% {
+      transform: translateX(0%);
+    }
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+
+  .animate-marquee {
+    animation: marquee 30s linear infinite;
+  }
+
+  /* Auto-numbered badges for <Steps>/<Step> in the docs. */
+  .doc-steps {
+    counter-reset: doc-step;
+  }
+
+  .doc-step {
+    counter-increment: doc-step;
+  }
+
+  .doc-step-badge::before {
+    content: counter(doc-step);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    .animate-marquee,
+    .animate-pulse,
+    .animate-bounce,
+    .animate-accordion-down,
+    .animate-accordion-up {
+      animation: none;
+    }
+  }
+}
