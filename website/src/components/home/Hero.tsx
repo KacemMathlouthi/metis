@@ -5,7 +5,7 @@ import { REPO_URL } from '@/site';
 
 export function Hero() {
   return (
-    <header className="relative flex min-h-[calc(100vh-156px)] flex-col items-center justify-center overflow-hidden border-b-4 border-black px-4 py-16 text-center">
+    <header className="relative -mt-14 flex min-h-[calc(100svh-4rem)] flex-col items-center justify-center overflow-hidden pt-28 pb-20 text-center">
       <img
         src={handshakeWithAi}
         alt=""
@@ -14,26 +14,26 @@ export function Hero() {
         fetchPriority="high"
         className="pointer-events-none absolute top-1/2 right-0 left-0 z-0 h-auto w-full -translate-y-1/2 opacity-20 mix-blend-multiply"
       />
-      <div className="pointer-events-none absolute inset-0 z-0 bg-[radial-gradient(circle_at_0%_0%,rgba(252,211,77,0.35),transparent_42%)]" />
-      <div className="pointer-events-none absolute inset-0 z-0 bg-[radial-gradient(circle_at_100%_100%,rgba(251,146,60,0.24),transparent_40%)]" />
+      <div className="pointer-events-none absolute inset-0 z-0 bg-[radial-gradient(ellipse_at_top,rgba(255,130,5,0.18),transparent_60%)]" />
 
-      <div className="relative z-10 max-w-5xl">
+      <div className="site-container relative z-10 flex flex-col items-center">
         <a
           href={REPO_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="mb-6 inline-block rotate-[-2deg] border-2 border-black bg-white px-3 py-1 text-xs font-bold shadow-[4px_4px_0px_0px_var(--metis-orange)] hover:underline"
+          className="border-ink mb-8 inline-flex items-center gap-2 border-2 px-3 py-1 font-mono text-xs font-bold hover:underline"
         >
+          <span className="bg-accent size-2" aria-hidden="true" />
           OPEN SOURCE · MIT · KacemMathlouthi/metis
         </a>
-        <h1 className="font-display-tight mb-8 text-5xl leading-none font-black sm:text-6xl md:text-8xl">
+        <h1 className="font-display-tight mb-8 text-5xl leading-none font-black sm:text-7xl lg:text-8xl xl:text-9xl">
           YOUR AI <br />
-          <span className="inline-block -rotate-2 border-4 border-black bg-[var(--metis-orange)] px-4 text-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+          <span className="border-ink bg-accent inline-block -rotate-2 border-4 px-4 shadow-[8px_8px_0px_0px_#000]">
             CODE
           </span>{' '}
           COMPANION
         </h1>
-        <p className="mx-auto mb-10 max-w-2xl border-2 border-black bg-white/95 p-4 text-base font-semibold shadow-[6px_6px_0px_0px_var(--metis-orange-light)] md:text-lg">
+        <p className="text-ink/80 mb-10 max-w-2xl text-lg font-semibold md:text-xl">
           An open-source GitHub App that reviews your pull requests, writes their summaries, and
           turns issues into PRs. Self-hosted, with the LLM of your choice.
         </p>

@@ -6,7 +6,7 @@ export function Marquee() {
   return (
     <div
       aria-hidden="true"
-      className="flex overflow-hidden border-b-4 border-black bg-black py-4 whitespace-nowrap text-[var(--metis-orange-light)]"
+      className="border-ink bg-ink text-accent flex overflow-hidden border-y-4 py-4 whitespace-nowrap"
     >
       <div className="animate-marquee inline-block text-2xl font-bold tracking-wide">
         {REPEATED_CONTENT}

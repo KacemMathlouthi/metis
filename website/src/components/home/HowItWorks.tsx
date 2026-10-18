@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
+import { SectionHeading } from '@/components/home/SectionHeading';
 
 const STEPS = [
   {
@@ -26,27 +27,26 @@ const STEPS = [
 
 export function HowItWorks() {
   return (
-    <section id="how-it-works" className="border-b-4 border-black bg-white px-4 py-20">
-      <div className="mx-auto max-w-6xl">
-        <h2 className="font-display mb-4 text-center text-4xl font-black uppercase md:text-5xl">
-          How it works
-        </h2>
-        <p className="mx-auto mb-14 max-w-2xl text-center text-lg font-semibold text-black/70">
-          From <code className="font-mono">git push</code> to review comments, without you lifting a
-          finger.
-        </p>
+    <section id="how-it-works" className="border-ink border-b-4 py-24">
+      <div className="site-container">
+        <SectionHeading
+          title="How it works"
+          subtitle={
+            <>
+              From <code className="font-mono">git push</code> to review comments, without you
+              lifting a finger.
+            </>
+          }
+        />
 
-        <ol className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <ol className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
           {STEPS.map((step, index) => (
-            <li
-              key={step.title}
-              className="relative border-4 border-black bg-[var(--metis-cream)] p-6 shadow-[6px_6px_0px_0px_#000]"
-            >
-              <span className="font-display mb-4 flex h-12 w-12 items-center justify-center border-4 border-black bg-[var(--metis-yellow)] text-2xl font-black">
+            <li key={step.title} className="border-ink border-4 p-6 shadow-[6px_6px_0px_0px_#000]">
+              <span className="font-display border-ink bg-highlight mb-5 flex h-12 w-12 items-center justify-center border-4 text-2xl font-black">
                 {index + 1}
               </span>
               <h3 className="font-display mb-2 text-xl font-black uppercase">{step.title}</h3>
-              <p className="font-semibold text-black/80">{step.description}</p>
+              <p className="text-ink/75 font-semibold">{step.description}</p>
             </li>
           ))}
         </ol>
@@ -54,7 +54,7 @@ export function HowItWorks() {
         <div className="mt-12 text-center">
           <Link
             to="/docs/architecture"
-            className="inline-flex items-center gap-2 font-bold underline decoration-[var(--metis-orange)] decoration-4 underline-offset-4 hover:decoration-black"
+            className="decoration-accent hover:decoration-ink inline-flex items-center gap-2 font-bold underline decoration-4 underline-offset-4"
           >
             Read the architecture guide <ArrowRight className="h-5 w-5" />
           </Link>

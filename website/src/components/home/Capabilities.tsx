@@ -21,6 +21,7 @@ import {
   Wrench,
   XCircle,
 } from 'lucide-react';
+import { SectionHeading } from '@/components/home/SectionHeading';
 import { MagnifiedBento, type BentoTag } from '@/components/magnified-bento';
 import { cn } from '@/lib/utils';
 
@@ -68,19 +69,19 @@ function Cell({
   return (
     <div
       className={cn(
-        'flex flex-col border-4 border-black bg-white shadow-[6px_6px_0px_0px_#000]',
+        'border-ink bg-surface flex flex-col border-4 shadow-[6px_6px_0px_0px_#000]',
         className
       )}
     >
       <div
         aria-hidden="true"
-        className="flex min-h-36 flex-1 items-center justify-center border-b-4 border-black bg-[var(--metis-cream)] p-5"
+        className="border-ink flex min-h-36 flex-1 items-center justify-center border-b-4 p-5"
       >
         {children}
       </div>
       <div className="p-5 sm:p-6">
         <h3 className="font-display text-xl font-black uppercase">{title}</h3>
-        <p className="mt-2 font-semibold text-black/70">{description}</p>
+        <p className="text-ink/70 mt-2 font-semibold">{description}</p>
       </div>
     </div>
   );
@@ -89,8 +90,8 @@ function Cell({
 const Chip = ({ children, active }: { children: React.ReactNode; active?: boolean }) => (
   <span
     className={cn(
-      'border-2 border-black px-2.5 py-1 font-mono text-xs font-black',
-      active ? 'bg-[var(--metis-orange)] text-white shadow-[3px_3px_0px_0px_#000]' : 'bg-white'
+      'border-ink border-2 px-2.5 py-1 font-mono text-xs font-black',
+      active && 'bg-accent shadow-[3px_3px_0px_0px_#000]'
     )}
   >
     {children}
@@ -99,18 +100,12 @@ const Chip = ({ children, active }: { children: React.ReactNode; active?: boolea
 
 export function Capabilities() {
   return (
-    <section
-      id="capabilities"
-      className="border-b-4 border-black bg-[var(--metis-pastel-2)] px-4 py-20"
-    >
-      <div className="mx-auto max-w-6xl">
-        <h2 className="font-display mb-4 text-center text-4xl font-black uppercase md:text-5xl">
-          A reviewer with real tools
-        </h2>
-        <p className="mx-auto mb-14 max-w-2xl text-center text-lg font-semibold text-black/70">
-          Metis doesn't guess from a diff. It works inside a copy of your repository, the way an
-          engineer would.
-        </p>
+    <section id="capabilities" className="border-ink bg-surface-alt border-b-4 py-24">
+      <div className="site-container">
+        <SectionHeading
+          title="A reviewer with real tools"
+          subtitle="Metis doesn't guess from a diff. It works inside a copy of your repository, the way an engineer would."
+        />
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
           <MagnifiedBento
@@ -136,12 +131,12 @@ export function Capabilities() {
             title="Isolated by design"
             description="Each run gets a fresh Daytona sandbox that is deleted when it ends. Agent tools never touch your servers."
           >
-            <div className="relative border-4 border-dashed border-black bg-white px-6 py-4 text-center">
-              <span className="absolute -top-3 left-3 bg-[var(--metis-cream)] px-1 font-mono text-[0.65rem] font-black uppercase">
+            <div className="border-ink relative border-4 border-dashed px-6 py-4 text-center">
+              <span className="bg-surface absolute -top-3 left-3 px-1 font-mono text-[0.65rem] font-black uppercase">
                 sandbox
               </span>
               <p className="font-mono text-sm font-bold">workspace/repo</p>
-              <p className="font-mono text-xs text-black/60">deleted after the run</p>
+              <p className="text-ink/60 font-mono text-xs">deleted after the run</p>
             </div>
           </Cell>
 
@@ -175,8 +170,8 @@ export function Capabilities() {
                 <li
                   key={entry}
                   className={cn(
-                    'border-2 border-black px-2 py-1 font-mono text-xs font-semibold',
-                    index === 2 ? 'bg-[var(--metis-yellow)]' : 'bg-white'
+                    'border-ink border-2 px-2 py-1 font-mono text-xs font-semibold',
+                    index === 2 && 'bg-highlight'
                   )}
                 >
                   {entry}

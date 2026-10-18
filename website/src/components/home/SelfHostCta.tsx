@@ -17,30 +17,35 @@ make dev
 
 export function SelfHostCta() {
   return (
-    <section className="border-b-4 border-black bg-[var(--metis-pastel-3)] px-4 py-20">
-      <div className="mx-auto grid max-w-6xl items-center gap-12 md:grid-cols-2">
+    <section className="border-ink bg-accent border-b-4 py-24">
+      <div className="site-container grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
         <div>
+          {/* The GIF has an opaque white background; multiply blends it into the section color. */}
           <img
             src={lechat}
             alt=""
             width={894}
             height={469}
             loading="lazy"
-            className="mb-6 h-28 w-auto border-4 border-black bg-white shadow-[4px_4px_0px_0px_#000]"
+            className="mb-6 h-28 w-auto mix-blend-multiply"
           />
-          <h2 className="font-display mb-6 text-4xl font-black uppercase md:text-5xl">
+          <h2 className="font-display mb-6 text-4xl font-black uppercase md:text-5xl lg:text-6xl">
             Run it yourself
           </h2>
-          <p className="mb-8 text-lg font-semibold">
+          <p className="mb-8 max-w-xl text-lg font-semibold md:text-xl">
             Metis is free and open source. Bring your own GitHub App, LLM key, and Daytona account,
             and the whole stack starts with one command. Your code only goes to the services you
             configure.
           </p>
-          <ButtonLink href="/docs/quickstart" size="lg">
+          <ButtonLink href="/docs/quickstart" size="lg" variant="dark">
             READ THE QUICKSTART <ArrowRight />
           </ButtonLink>
         </div>
-        <CodeBlock code={QUICKSTART} title="terminal" className="my-0" />
+        <CodeBlock
+          code={QUICKSTART}
+          title="terminal"
+          className="my-0 shadow-[8px_8px_0px_0px_#000]"
+        />
       </div>
     </section>
   );

@@ -1,4 +1,5 @@
 import { ArrowDown } from 'lucide-react';
+import { SectionHeading } from '@/components/home/SectionHeading';
 import { ScrollStackDeck, type DeckItem } from '@/components/scroll-stack-deck';
 import {
   DashboardVisual,
@@ -16,7 +17,7 @@ const FEATURES: readonly DeckItem[] = [
     description:
       'Every opened or updated pull request gets reviewed. Metis explores the surrounding code, not just the diff, and posts findings on the exact lines, tagged by severity and category.',
     visual: <ReviewVisual />,
-    color: 'var(--metis-yellow)',
+    color: 'var(--color-highlight)',
   },
   {
     id: 'summaries',
@@ -25,7 +26,7 @@ const FEATURES: readonly DeckItem[] = [
     description:
       'A second agent runs alongside the review. It rewrites vague titles and appends a clear summary of what changed, so reviewers start with context.',
     visual: <SummaryVisual />,
-    color: 'var(--metis-pastel-3)',
+    color: 'var(--color-surface-alt)',
   },
   {
     id: 'issue-to-pr',
@@ -34,7 +35,7 @@ const FEATURES: readonly DeckItem[] = [
     description:
       'Launch a coding agent on any GitHub issue. It branches, edits code, runs your tests and linters, pushes, and opens a PR for you to review.',
     visual: <IssueToPrVisual />,
-    color: 'var(--metis-orange-light)',
+    color: 'var(--color-accent)',
   },
   {
     id: 'any-llm',
@@ -43,7 +44,7 @@ const FEATURES: readonly DeckItem[] = [
     description:
       'Built on LiteLLM. Use Gemini, GPT, Claude, Mistral, Azure OpenAI, or a model you host yourself. Switching is one environment variable.',
     visual: <LlmVisual />,
-    color: 'var(--metis-pastel-red)',
+    color: 'var(--color-highlight)',
   },
   {
     id: 'dashboard',
@@ -52,20 +53,19 @@ const FEATURES: readonly DeckItem[] = [
     description:
       'Choose which repositories get reviewed, tune each one, browse every finding, and replay agent runs step by step.',
     visual: <DashboardVisual />,
-    color: '#ffffff',
+    color: 'var(--color-surface-alt)',
   },
 ];
 
 export function FeatureDeck() {
   return (
-    <section id="features" className="border-b-4 border-black">
-      <div className="px-4 pt-20 text-center">
-        <h2 className="font-display mb-4 text-4xl font-black uppercase underline decoration-[var(--metis-red)] decoration-8 md:text-5xl">
-          What Metis does
-        </h2>
-        <p className="mx-auto max-w-2xl text-lg font-semibold text-black/70">
-          One GitHub App, five jobs. Keep scrolling to deal the deck.
-        </p>
+    <section id="features" className="border-ink border-b-4">
+      <div className="site-container pt-24">
+        <SectionHeading
+          className="mb-0 md:mb-0"
+          title="What Metis does"
+          subtitle="One GitHub App, five jobs. Keep scrolling to deal the deck."
+        />
         <ArrowDown className="mx-auto mt-6 h-7 w-7 animate-bounce" aria-hidden="true" />
       </div>
       <ScrollStackDeck items={FEATURES} />

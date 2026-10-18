@@ -28,8 +28,8 @@ const STACK_SCALE_STEP = 0.035;
 const ENTRY_OFFSET = 900;
 /** Scroll distance allotted to each card, in viewport heights. */
 const SCROLL_PER_CARD_VH = 85;
-/** Height of the sticky site navbar plus breathing room, in px. */
-const STAGE_TOP_INSET = 96;
+/** Height of the sticky site header plus breathing room, in px. */
+const STAGE_TOP_INSET = 76;
 
 interface Keyframes {
   steps: number[];
@@ -159,11 +159,11 @@ export function ScrollStackDeck({ items, className }: ScrollStackDeckProps) {
     >
       {/* Sticky stage: leaves room under the navbar for every tab pushed up by the stack. */}
       <div
-        className="sticky top-0 flex h-screen w-full items-start justify-center px-4"
+        className="site-container sticky top-0 flex h-screen items-start justify-center"
         style={{ paddingTop: STAGE_TOP_INSET + (items.length - 1) * STACK_OFFSET }}
       >
         {/* All cards share one grid cell, so every card stretches to the tallest one. */}
-        <div className="grid w-full max-w-5xl">
+        <div className="grid w-full max-w-6xl">
           {items.map((item, index) => (
             <DeckCard
               key={item.id}

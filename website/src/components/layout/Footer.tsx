@@ -38,11 +38,11 @@ const SOCIAL_LINK_CLASSES =
 export function Footer() {
   return (
     <footer className="relative overflow-hidden bg-black pt-20 text-white">
-      <div className="relative z-10 mx-auto grid max-w-6xl gap-12 px-4 md:grid-cols-[1.4fr_repeat(3,1fr)]">
+      <div className="site-container relative z-10 grid gap-12 md:grid-cols-[1.4fr_repeat(3,1fr)]">
         <div className="flex flex-col gap-6">
           <p className="text-sm font-semibold">
             Made by{' '}
-            <span className="inline-block -rotate-2 border-2 border-white bg-[var(--metis-pastel-orange)] px-2 py-0.5 text-black shadow-[2px_2px_0px_0px_var(--metis-red)]">
+            <span className="bg-surface-alt text-ink inline-block -rotate-2 border-2 border-white px-2 py-0.5 shadow-[2px_2px_0px_0px_var(--color-accent)]">
               Kacem Mathlouthi
             </span>{' '}
             with 💗
@@ -55,7 +55,7 @@ export function Footer() {
               href={AUTHOR_GITHUB_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className={`${SOCIAL_LINK_CLASSES} shadow-[2px_2px_0px_0px_var(--metis-red)]`}
+              className={`${SOCIAL_LINK_CLASSES} shadow-[2px_2px_0px_0px_var(--color-accent)]`}
             >
               <Github className="h-4 w-4" /> GITHUB
             </a>
@@ -63,7 +63,7 @@ export function Footer() {
               href={AUTHOR_LINKEDIN_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className={`${SOCIAL_LINK_CLASSES} shadow-[2px_2px_0px_0px_var(--metis-orange-dark)]`}
+              className={`${SOCIAL_LINK_CLASSES} shadow-[2px_2px_0px_0px_var(--color-accent)]`}
             >
               <Linkedin className="h-4 w-4" /> LINKEDIN
             </a>
@@ -72,7 +72,7 @@ export function Footer() {
 
         {FOOTER_COLUMNS.map((column) => (
           <div key={column.title}>
-            <h2 className="mb-4 text-sm font-black tracking-widest text-[var(--metis-orange-light)] uppercase">
+            <h2 className="text-accent mb-4 text-sm font-black tracking-widest uppercase">
               {column.title}
             </h2>
             <ul className="space-y-3">

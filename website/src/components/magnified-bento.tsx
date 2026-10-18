@@ -47,14 +47,14 @@ export function MagnifiedBento({ rows, title, description, className }: Magnifie
   return (
     <div
       className={cn(
-        'flex h-full flex-col border-4 border-black bg-white shadow-[6px_6px_0px_0px_#000]',
+        'border-ink bg-surface flex h-full flex-col border-4 shadow-[6px_6px_0px_0px_#000]',
         className
       )}
     >
       <div
         ref={containerRef}
         aria-hidden="true"
-        className="relative h-[200px] w-full overflow-hidden border-b-4 border-black bg-[var(--metis-cream)] sm:h-[240px]"
+        className="border-ink bg-surface relative h-[200px] w-full overflow-hidden border-b-4 sm:h-[240px]"
       >
         <motion.div
           style={{ WebkitMaskImage: inverseMask, maskImage: inverseMask }}
@@ -70,7 +70,7 @@ export function MagnifiedBento({ rows, title, description, className }: Magnifie
               {[...row, ...row, ...row].map((tag, tagIndex) => (
                 <div
                   key={`${tag.id}-${tagIndex}`}
-                  className="flex w-fit items-center gap-2 border-2 border-black/30 bg-white px-3 py-1.5 font-mono text-xs font-semibold whitespace-nowrap text-black/60"
+                  className="border-ink/30 text-ink/60 flex w-fit items-center gap-2 border-2 px-3 py-1.5 font-mono text-xs font-semibold whitespace-nowrap"
                 >
                   <tag.icon className="h-3.5 w-3.5" />
                   <span>{tag.label}</span>
@@ -94,7 +94,7 @@ export function MagnifiedBento({ rows, title, description, className }: Magnifie
               {[...row, ...row, ...row].map((tag, tagIndex) => (
                 <div
                   key={`${tag.id}-${tagIndex}`}
-                  className="ml-6 flex w-fit scale-125 items-center gap-2 border-2 border-black bg-[var(--metis-orange)] px-3 py-1.5 font-mono text-xs font-black whitespace-nowrap text-white"
+                  className="border-ink bg-accent ml-6 flex w-fit scale-125 items-center gap-2 border-2 px-3 py-1.5 font-mono text-xs font-black whitespace-nowrap"
                 >
                   <tag.icon className="h-3.5 w-3.5" />
                   <span>{tag.label}</span>
@@ -114,13 +114,13 @@ export function MagnifiedBento({ rows, title, description, className }: Magnifie
           <MagnifyingLens size={LENS_SIZE} />
         </motion.div>
 
-        <div className="pointer-events-none absolute inset-y-0 left-0 z-20 w-1/5 bg-gradient-to-r from-[var(--metis-cream)] to-transparent" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 z-20 w-1/5 bg-gradient-to-l from-[var(--metis-cream)] to-transparent" />
+        <div className="from-surface pointer-events-none absolute inset-y-0 left-0 z-20 w-1/5 bg-gradient-to-r to-transparent" />
+        <div className="from-surface pointer-events-none absolute inset-y-0 right-0 z-20 w-1/5 bg-gradient-to-l to-transparent" />
       </div>
 
       <div className="p-5 sm:p-6">
         <h3 className="font-display text-xl font-black uppercase">{title}</h3>
-        <p className="mt-2 font-semibold text-black/70">{description}</p>
+        <p className="text-ink/70 mt-2 font-semibold">{description}</p>
         <ul className="sr-only">
           {rows.flat().map((tag) => (
             <li key={tag.id}>{tag.label}</li>
@@ -144,11 +144,11 @@ function MagnifyingLens({ size }: { size: number }) {
       />
       <path
         d="M484.104 428.784L373.8 318.472L318.36 373.912L428.672 484.216L484.104 428.784Z"
-        fill="var(--metis-red)"
+        fill="var(--color-ink)"
       />
       <path
         d="M471.664 441.224L361.344 330.928L330.8 361.48L441.12 471.76L471.664 441.224Z"
-        fill="var(--metis-orange-dark)"
+        fill="var(--color-accent)"
       />
       <path
         d="M495.2 423.2C504 432 432.8 504 423.2 495.2L417.6 489.6C408.8 480.8 480 408.8 489.6 417.6L495.2 423.2Z"
