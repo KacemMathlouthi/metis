@@ -10,7 +10,7 @@ import { Stack } from '@/components/home/Stack';
 
 export function HomePage() {
   return (
-    <>
+    <div className="landing-type">
       <Hero />
       <Marquee />
       <FeatureDeck />
@@ -20,6 +20,6 @@ export function HomePage() {
       <Stack />
       <Faqs />
       <SelfHostCta />
-    </>
+    </div>
   );
 }
