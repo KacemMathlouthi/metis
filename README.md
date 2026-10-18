@@ -1,5 +1,8 @@
 <p align="center">
-  <img src="static/metis-logo.svg" alt="Metis" width="420" />
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="static/metis-logo-dark.svg" />
+    <img src="static/metis-logo.svg" alt="Metis" width="360" />
+  </picture>
 </p>
 
 <p align="center">
